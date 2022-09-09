@@ -1,7 +1,7 @@
 name: flutter_getit
 description: Integrate GetIt with Flutter Navigation
 version: 0.0.1
-homepage:
+repository: https://github.com/rodrigorahman/getit_flutter
 
 environment:
   sdk: '>=2.18.0 <3.0.0'
