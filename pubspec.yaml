@@ -1,6 +1,6 @@
 name: flutter_getit
 description: Integrate GetIt with Flutter Navigation
-version: 0.0.1
+version: 0.0.2
 repository: https://github.com/rodrigorahman/getit_flutter
 
 environment:
