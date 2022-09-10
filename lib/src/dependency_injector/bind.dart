@@ -7,7 +7,6 @@ typedef BindRegister<T> = T Function(Injector i);
 class Bind<T extends Object> {
   BindRegister<T> bindRegister;
   bool lazyInstance;
-  
 
   Bind._(
     this.bindRegister,
