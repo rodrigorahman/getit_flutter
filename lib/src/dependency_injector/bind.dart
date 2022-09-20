@@ -19,17 +19,26 @@ class Bind<T extends Object> {
     }
   }
 
+  Bind._factory(this.bindRegister) : lazyInstance = false {
+    GetIt.I.registerFactory(() => bindRegister(Injector()));
+  }
+
   void unRegister() {
     GetIt.I.unregister<T>();
   }
 
-  static Bind instance<T extends Object>(
+  static Bind singleton<T extends Object>(
     BindRegister<T> bindRegister,
   ) =>
       Bind<T>._(bindRegister, false);
 
-  static Bind lazy<T extends Object>(
+  static Bind lazySingleton<T extends Object>(
     BindRegister<T> bindRegister,
   ) =>
       Bind<T>._(bindRegister, true);
+
+  static Bind factory<T extends Object>(
+    BindRegister<T> bindRegister,
+  ) =>
+      Bind<T>._factory(bindRegister);
 }

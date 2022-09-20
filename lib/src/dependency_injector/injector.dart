@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 class Injector {
-  T get<T extends Object>() {
+  static T get<T extends Object>() {
     try {
       return GetIt.I.get<T>();
     } on AssertionError catch (e) {
@@ -17,5 +17,5 @@ class Injector {
 }
 
 extension InjectorContext on BuildContext {
-  T get<T extends Object>() => Injector().get<T>();
+  T get<T extends Object>() => Injector.get<T>();
 }

@@ -24,7 +24,6 @@ class _GetItPageRouteState extends State<GetItPageRoute> {
   @override
   void dispose() {
     for (var bind in bindings) {
-      // GetIt.I.unregister(instance: bind.instanceRegister);
       bind.unRegister();
     }
     super.dispose();
