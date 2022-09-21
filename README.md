@@ -1,14 +1,129 @@
 # Flutter GetIt
 
-Projeto que permite você utilizar o GetIt como um dependency injection porém controlado pelo ciclo de vida do Flutter, fazendo o register e o unregister na navegação da página.
+Projeto que permite você utilizar o get_it como um dependency injection porém controlado pelo ciclo de vida do Flutter, fazendo o register e o unregister na navegação da página.
 
-## Existem 3 tipos possíveis de Widgets
+## Existem 4 tipos possíveis de Widgets
 
+- **FlutterGetItApplicationBinding**
 - **FlutterGetItPageRoute**
 - **FlutterGetItWidget**
 - **FlutterGetItPageBuilder**
 
 ## Entenda a diferença de cada um deles
+
+### FlutterGetItApplicationBinding
+
+Application binding são os bindings que NUNCA serão removido de dentro do get_it a ideia é disponibilizar as classes que são utilizadas por diversas páginas do sistemas, fazendo com que você não precise declarar em todas as views
+
+**ex:**
+
+```dart
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return FlutterGetItApplicationBinding(
+      bindingsBuilder: () => [
+        Bind.lazySingleton((i) => UserModel(
+            name: 'Rodrigo Rahman',
+            email: 'rodrigorahman@academiadoflutter.com.br'))
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        routes: {
+          '/': (context) => FlutterGetItPageBuilder(
+                binding: () => Bind.singleton((i) => HomeController()),
+                page: (context) => const HomePage(),
+              ),
+          '/products': (context) => const ProductsRoute()
+        },
+      ),
+    );
+  }
+}
+```
+
+## Configurando FlutterGetItApplicationBinding
+
+Existem algumas possiblidades de configuração do FlutterGetItApplicationBinding
+
+Descrição dos Atributos
+
+>**child:** Nesse atributo você deve informar o widget que será iniciado normalmente será adicionado o MaterialApp
+
+>**builder:** Esse atributo pode ser utilizado para quando você já quer disponível o BuildContext ou mesmo para buscar alguma classe que foi injetada nos bindings do FlutterGetItApplicationBinding.
+
+>**bindingsBuilder:** Esse atributo você deve informar para fazer os bindings, aconselhamos a utilização dele somente se você tiver poucas classes para adicionar no get_it pois caso tenha uma quantidade grande aconselhamos a utilização do bindings deixando assim seu código muito mais organizado.
+
+>**bindings:** Nesse atribuito você deve enviar uma classe filha de ApplicationBindings esse atributo é utilizado para quando você quer um pouco mais de organização ou mesmo você tem muitos bindings para serem adicionados no inicio da aplicação
+
+Abaixo um exemplo com cada uma das configurações:
+
+ex:
+```dart
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return FlutterGetItApplicationBinding(
+      bindingsBuilder: () => [
+        Bind.lazySingleton((i) => UserModel(
+        name: 'Rodrigo Rahman',
+        email: 'rodrigorahman@academiadoflutter.com.br'))
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        routes: {
+          '/': (context) => FlutterGetItPageBuilder(
+                binding: () => Bind.singleton((i) => HomeController()),
+                page: (context) => const HomePage(),
+              ),
+          '/products': (context) => const ProductsRoute()
+        },
+      ),
+    );
+  }
+}
+```
+Ex: bindings e builder
+
+```dart
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return FlutterGetItApplicationBinding(
+      bindings: ExampleApplicationBindings(),
+      builder: (context, child) {
+        debugPrint(
+          context.get<UserModel>().email,
+        );
+        return MaterialApp(
+          title: context.get<UserModel>().email,
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          routes: {
+            '/': (context) => FlutterGetItPageBuilder(
+                  binding: () => Bind.singleton((i) => HomeController()),
+                  page: (context) => const HomePage(),
+                ),
+            '/products': (context) => const ProductsRoute()
+          },
+        );
+      },
+    );
+  }
+}
+
+```
 
 ### FlutterGetItPageRoute
 

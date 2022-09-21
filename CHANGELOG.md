@@ -1,5 +1,9 @@
 # Versions
 
+## 1.2.0
+
+* Adicionando FlutterGetItApplicationBinding
+
 ## 1.1.1
 
 * Removendo Warnings

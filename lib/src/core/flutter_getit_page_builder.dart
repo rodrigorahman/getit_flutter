@@ -1,14 +1,14 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_getit/src/core/flutter_getit_core.dart';
+import 'package:flutter_getit/src/core/typedefs.dart';
 
 import '../../flutter_getit.dart';
 
-typedef BindBuilder = Bind Function();
-
 class FlutterGetItPageBuilder extends FlutterGetitCore {
-  // Informe a pagina que deve ser carregada
+  /// Informe a pagina que deve ser carregada
   final WidgetBuilder page;
-  // Informe os bindings que devem ser carregados e descartados
+
+  /// Informe os bindings que devem ser carregados e descartados
   final BindBuilder binding;
 
   const FlutterGetItPageBuilder({

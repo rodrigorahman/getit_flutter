@@ -1,8 +1,7 @@
 import 'package:get_it/get_it.dart';
 
+import '../core/typedefs.dart';
 import 'injector.dart';
-
-typedef BindRegister<T> = T Function(Injector i);
 
 class Bind<T extends Object> {
   BindRegister<T> bindRegister;
