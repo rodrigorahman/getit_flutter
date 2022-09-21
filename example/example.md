@@ -25,7 +25,7 @@ class HomePage extends StatelessWidget {
 ## Exemplo de rota
 
 ```dart
-class HomeRoute extends GetItPageRoute {
+class HomeRoute extends FlutterGetItPageRoute {
   
   const HomeRoute({super.key});
   
@@ -35,7 +35,7 @@ class HomeRoute extends GetItPageRoute {
   ];  
   
   @override
-  WidgetBuilder get view => (context) => HomePage();
+  WidgetBuilder get page => (context) => HomePage();
 }
 ```
 

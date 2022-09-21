@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'bind.dart';
 
+@Deprecated(
+    'Please change to [FlutterGetItPageRoute] class, this class will be removed in the next release')
 abstract class GetItPageRoute extends StatefulWidget {
   List<Bind> get bindings => [];
   WidgetBuilder get view;
