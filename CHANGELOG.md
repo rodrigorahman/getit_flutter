@@ -1,5 +1,9 @@
 # Versions
 
+## 1.1.1
+
+* Removendo Warnings
+
 ## 1.1.0
 
 * Criação de 3 novos tipos de Widget (FlutterGetItPageRoute, FlutterGetItWidget, FlutterGetItPageBuilder) cada um com seu objetivo

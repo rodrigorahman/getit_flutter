@@ -1,4 +1,4 @@
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_getit/src/core/flutter_getit_core.dart';
 
 import '../../flutter_getit.dart';
