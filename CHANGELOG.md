@@ -1,5 +1,11 @@
 # Versions
 
+## 1.2.1
+
+* Suporte a secondary register, esse recurso permite que vc coloque no binding um objeto que já está registrado na arvore de componentes
+evitando assim a duplicidade e erro do getit Object is already registeres inside GetIt;
+
+
 ## 1.2.0
 
 * Adicionando FlutterGetItApplicationBinding
