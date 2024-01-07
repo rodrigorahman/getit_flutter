@@ -1,10 +1,10 @@
 # Versions
 
-## 2.0.0
-- Removido classe deprecated GetItPageRoute
-- **Break Change**:
-    Rename classe FlutterGet**i**tWidget para FlutterGet**I**tWidget
+## 2.0.0-dev.1
+- Reescrita do package com suporte a módulos
 
+- **Break Change**:
+    Leia a documentação e caso você já tenha implementado no seu projeto veja a documentação de migração da versão 1 para a versão 2
 
 ## 1.2.1
 
