@@ -1,9 +1,9 @@
-library flutter_getit;
-
-export 'src/core/flutter_getit_application_binding.dart';
-export 'src/core/flutter_getit_page_builder.dart';
-export 'src/core/flutter_getit_page_route.dart';
-export 'src/core/flutter_getit_widget.dart';
-export 'src/dependency_injector/bind.dart';
-export 'src/dependency_injector/getit_page_route.dart';
+export 'src/config/flutter_getit_config.dart' show FlutterGetIt;
+export 'src/dependency_injector/binds/bind.dart';
 export 'src/dependency_injector/injector.dart';
+export 'src/routers/flutter_getit_page_router.dart';
+export 'src/routers/flutter_getit_page_builder.dart';
+export 'src/routers/flutter_getit_module.dart' show FlutterGetItModule;
+export 'src/routers/flutter_getit_module_page_router.dart';
+export 'src/widget/flutter_getit_widget.dart';
+export 'src/debug/debug_mode.dart';

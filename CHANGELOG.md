@@ -1,5 +1,11 @@
 # Versions
 
+## 2.0.0
+- Removido classe deprecated GetItPageRoute
+- **Break Change**:
+    Rename classe FlutterGet**i**tWidget para FlutterGet**I**tWidget
+
+
 ## 1.2.1
 
 * Suporte a secondary register, esse recurso permite que vc coloque no binding um objeto que já está registrado na arvore de componentes

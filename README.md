@@ -2,20 +2,76 @@
 
 Projeto que permite você utilizar o get_it como um dependency injection porém controlado pelo ciclo de vida do Flutter, fazendo o register e o unregister na navegação da página.
 
-## Existem 4 tipos possíveis de Widgets
+
+# Existem 5 tipos classes para controle das dependências
 
 - **FlutterGetItApplicationBinding**
 - **FlutterGetItPageRoute**
 - **FlutterGetItWidget**
 - **FlutterGetItPageBuilder**
+- **FlutterGetItModuleRoute**
 
-## Entenda a diferença de cada um deles
 
-### FlutterGetItApplicationBinding
+# Configurando flutter_getit 
 
-Application binding são os bindings que NUNCA serão removido de dentro do get_it a ideia é disponibilizar as classes que são utilizadas por diversas páginas do sistemas, fazendo com que você não precise declarar em todas as views
+A configuração das rotas são feitas baseadas na classes [FlutterGetItPageRoute], [FlutterGetItModuleRoute] ou por rotas nativas do flutter. 
 
-**ex:**
+O flutter_getit não fará nenhuma mágica com as rotas ele apenas vai automatizar a criação das rotas nomeadas do Flutter puro. Isso é importante pois você pode usar todo o poder de navegação do flutter sem a necessidade de nenhuma adaptação ou conhecimento extra do package.
+
+A classe responsável pela configuração é a [FlutterGetIt] dentro dela existe o método estático ***routes*** com os paramêtros [ modules, pages e custom], abaixo um detalhe de cada um deles: 
+
+| Campo       | Descrição
+|-------------|-------------
+| modules     | Esse atributo recebe uma lista de módulos [FlutterGetItModuleRoute] esse atribuito traz a possibilidade de modularizar todo o seu sistema, mais a baixo teremos um tópico especifico sobre ele
+| pages       | Caso você não tenha a necessidade modularizar o seu sistema ou quer apenas implementar uma rota simples diretamente para uma pagina você deve adicionar nessa lista, ela vai receber classes filhas de FlutterGetItPageRoute
+| custom      | Aqui você pode customizar as rotas da mesma forma que você já fazia com o flutter puro, enviando um map com a rota e uma função que recebe context.
+
+
+> **Obs:** Todos os campos são opcionais, podendo ser utilizados em conjunto ou separadamente
+
+## Veja um exemplo de configuração com todos os parametros.
+
+```dart
+class MyApp extends StatelessWidget {
+  
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: context.get<UserModel>().email,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      routes: FlutterGetIt.routes(
+        pages: [
+          const ProductsRoute(),
+        ],
+        modules: [
+          AuthModule(),
+        ],
+        custom: {
+          '/': (context) => FlutterGetItPageBuilder(
+                binding: () => Bind.singleton((i) => HomeController()),
+                page: (context) => const HomePage(),
+              ),
+          '/counter': (context) => Scaffold(body: CounterWidget())
+        },
+      ),
+    );
+  }
+}
+```
+
+
+
+## FlutterGetItApplicationBinding
+
+Application binding são os bindings que **NUNCA** serão removido de dentro do get_it utilize essa class para declarar as dependências que ficarão ativas por todo o sistema. 
+
+Normalmente utilizado para classes que são core do sistema.
+
+> *****ATENÇÃO:*** AS CLASSES DECLARADAS AQUI NUNCA SERÃO REMOVIDAS DA MEMÓRIA SENDO ASSIM TOME CUIDADO. AQUI NÃO É O LUGAR DE COLOCAR MUITAS CLASSES E SIM SOMENTE O QUE FOR UTILIZADO POR MAIS DE UMA PAGINA OU VOCÊ QUEIRA DEIXAR GLOBAL PARA O SISTEMA.**
 
 ```dart
 class MyApp extends StatelessWidget {
@@ -33,13 +89,12 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        routes: {
-          '/': (context) => FlutterGetItPageBuilder(
-                binding: () => Bind.singleton((i) => HomeController()),
-                page: (context) => const HomePage(),
-              ),
-          '/products': (context) => const ProductsRoute()
-        },
+      
+        routes: FlutterGetIt.routes(
+          pages: [
+            const ProductsRoute(),
+          ],
+        ),
       ),
     );
   }
@@ -48,21 +103,17 @@ class MyApp extends StatelessWidget {
 
 ## Configurando FlutterGetItApplicationBinding
 
-Existem algumas possiblidades de configuração do FlutterGetItApplicationBinding
+Descrição dos atributos FlutterGetItApplicationBinding:
 
-Descrição dos Atributos
+| Campo       | Descrição
+|-------------|-------------
+| child       | Nesse atributo você deve informar o widget que será iniciado normalmente será adicionado o MaterialApp 2      
+| builder     | Esse atributo pode ser utilizado para quando você já quer disponível o BuildContext ou mesmo para buscar alguma classe que foi injetada nos bindings do FlutterGetItApplicationBinding.
+| bindings    | Nesse atribuito você deve enviar uma classe filha de ApplicationBindings, a classe ApplicationBindings é onde você define as dependências que o flutter_getit deve disponibilizar para a aplicação como um todo.
+| bindingsBuilder | Esse atributo permite você informar cada uma das suas dependências em formato de array. **OBS:** aconselhamos a utilização dele somente se você tiver poucas classes, em caso de uma quantidade grande de classes aconselhamos a utilização do bindings deixando assim seu código muito mais organizado.
 
->**child:** Nesse atributo você deve informar o widget que será iniciado normalmente será adicionado o MaterialApp
 
->**builder:** Esse atributo pode ser utilizado para quando você já quer disponível o BuildContext ou mesmo para buscar alguma classe que foi injetada nos bindings do FlutterGetItApplicationBinding.
-
->**bindingsBuilder:** Esse atributo você deve informar para fazer os bindings, aconselhamos a utilização dele somente se você tiver poucas classes para adicionar no get_it pois caso tenha uma quantidade grande aconselhamos a utilização do bindings deixando assim seu código muito mais organizado.
-
->**bindings:** Nesse atribuito você deve enviar uma classe filha de ApplicationBindings esse atributo é utilizado para quando você quer um pouco mais de organização ou mesmo você tem muitos bindings para serem adicionados no inicio da aplicação
-
-Abaixo um exemplo com cada uma das configurações:
-
-ex:
+### **Exemplo utilizando ***[bindingsBuilder]*****
 ```dart
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -71,28 +122,27 @@ class MyApp extends StatelessWidget {
     return FlutterGetItApplicationBinding(
       bindingsBuilder: () => [
         Bind.lazySingleton((i) => UserModel(
-        name: 'Rodrigo Rahman',
-        email: 'rodrigorahman@academiadoflutter.com.br'))
+          name: 'Rodrigo Rahman',
+          email: 'rodrigorahman@academiadoflutter.com.br'),
+        )
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,
-        ),
-        routes: {
-          '/': (context) => FlutterGetItPageBuilder(
-                binding: () => Bind.singleton((i) => HomeController()),
-                page: (context) => const HomePage(),
-              ),
-          '/products': (context) => const ProductsRoute()
-        },
+        )
+      ),
+      routes: FlutterGetIt.routes(
+        pages: [
+          const ProductsRoute(),
+        ],
       ),
     );
   }
 }
 ```
-Ex: bindings e builder
 
+### **Exemplo utilizando *[bindings]* e *[builder]*** 
 ```dart
 
 class MyApp extends StatelessWidget {
@@ -105,33 +155,42 @@ class MyApp extends StatelessWidget {
         debugPrint(
           context.get<UserModel>().email,
         );
-        return MaterialApp(
+        return child
+      },
+      child: MaterialApp(
           title: context.get<UserModel>().email,
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          routes: {
-            '/': (context) => FlutterGetItPageBuilder(
-                  binding: () => Bind.singleton((i) => HomeController()),
-                  page: (context) => const HomePage(),
-                ),
-            '/products': (context) => const ProductsRoute()
-          },
+          routes: FlutterGetIt.routes(
+            pages: [
+              const ProductsRoute(),
+            ],
+          ),
         );
-      },
     );
   }
 }
 
 ```
 
-### FlutterGetItPageRoute
+## FlutterGetItPageRoute
 
-Utilizado para controlar por navegação, sendo utilizado especificamente em rotas no Flutter ex
+A class [FlutterGetItPageRoute] é responsável pelas páginas Flutter é nela que configuramos as dependências e a página que será carregada pelo Flutter.
+
+| Metodo      | Descrição
+|-------------|-------------
+| bindings    | Nesse getter você declara as dependências que a página irá utilizar
+| page        | Nesse getter você deve retornar uma função com sua página, no atributo você receberá uma variável context que é o BuildContext da página e com ele você pode recuperar instancias ou fazer o que for necessário.
+| routeName   | Nesse getter você deve informar a rota que será configurada dentro do flutter
+
 
 ```dart
 class ProductsRoute extends FlutterGetItPageRoute {
   const ProductsRoute({super.key});
+
+  @override
+  String get routeName => '/products';
 
   @override
   List<Bind<Object>> get bindings => [
@@ -140,41 +199,22 @@ class ProductsRoute extends FlutterGetItPageRoute {
 
   @override
   WidgetBuilder get page => (context) => ProductsPage();
-}
-
-
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      routes: {
-        '/products': (context) => const ProductsRoute()
-      },
-    );
-  }
+  
 }
 ```
 
-## Getter page
-
-Método page você deve retornar uma função com a sua página. No atributo você receberá uma variável context que é o BuildContext da página e com ele você pode recuperar instancias ou fazer o que for necessário.
-
-## Getter bindings
-
-Esse método será a base para a injeção das dependencias, você deve registrar as classes que serão utilizadas na view e o getit_flutter fará o restante.
-
 ### FlutterGetItWidget
 
-Essa classe deve ser utilizada quando você quer ter esse mesmo suporte porém para Componentes (Widgets)
+Classe que da suporte a controle de depêndencias(bindings) para widgets simples que podem ser usados em partes do sistema e não tenha a necessidade de estar associado diretamente a uma rota.
+
+| Metodo      | Descrição
+|-------------|-------------
+| bindings    | Esse método será a base para a injeção das dependencias, você deve registrar as classes que serão utilizadas na view e o getit_flutter fará o restante.
+| widget      | Método widget você deve retornar uma função com a seu widget(componente), no atributo você receberá uma variável context que é o BuildContext da página e com ele você pode recuperar instancias ou fazer o que for necessário.
+
 
 ```dart
-class CounterWidget extends FlutterGetitWidget {
+class CounterWidget extends FlutterGetItWidget {
   @override
   List<Bind<Object>> get bindings =>
       [Bind.lazySingleton((i) => CounterController())];
@@ -204,18 +244,18 @@ class HomePage extends StatelessWidget {
 }
 ```
 
-## Getter widget
-
-Método widget você deve retornar uma função com a seu widget(componente), no atributo você receberá uma variável context que é o BuildContext da página e com ele você pode recuperar instancias ou fazer o que for necessário.
-
-## Getter bindings (Identico ao Getter bindings do FlutterGetItPageRoute)
-
-Esse método será a base para a injeção das dependencias, você deve registrar as classes que serão utilizadas na view e o getit_flutter fará o restante.
-
-
 ### FlutterGetItPageBuilder
 
-Esse Widget é um atalho para quando você tem um único binding e não que crir uma classe de Rota;
+Classe facilitadora, utilizada quando você necessita de uma única classe de dependência(binding) e não quer criar uma classe apartada para essa rota.
+
+>**OBS.:** na configuração essa classe deve ser adicionada na tag de configuração custom conforme o exemplo abaixo:
+
+| Metodo      | Descrição
+|-------------|-------------
+| binding     | Esse atributo você deve retornar o binding que você quer adicionar na página e o getit_flutter fará o restante.
+| page        | Esse atributo você deve retornar uma função com a sua página, no atributo dessa função você receberá uma variável context que é o BuildContext da página e com ele você pode recuperar instancias ou fazer o que for necessário.
+
+
 
 ```dart
 class MyApp extends StatelessWidget {
@@ -227,7 +267,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      routes: {
+      custom: {
         '/': (context) => FlutterGetItPageBuilder(
               binding: () => Bind.singleton((i) => HomeController()),
               page: (context) => const HomePage(),
@@ -238,13 +278,128 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-## Atributo page
+### FlutterGetItModuleRoute
 
-Atributo page você deve retornar uma função com a sua página e no atributo você receberá uma variável context que é o BuildContext da página e com ele você pode recuperar instancias ou fazer o que for necessário.
+Essa classe da o suporte ao projeto utilizar uma arquitetura de módulos, com ela você pode compartilhar bindings ou mesmo utilizar qualquer outra classe de rota internamente.
 
-## Atributo binding
+| Metodo      | Descrição
+|-------------|-------------
+| moduleRouteName | Esse getter você deve informar qual a rota base para seu módulo, esse valor será concatenado com as rotas das páginas (Lembre sempre de começar com /).
+| bindings     | Esse getter você deve retornar o binding que você quer adicionar na página e o getit_flutter fará o restante.
+| pages        | esse getter você deve retornar um mapa com as rotas desse módulo, no valor do mapa você deve retornar uma função que no atributo receberá o context(BuildContext), o retorno deve ser um widget e pode ser uma página simples ou qualquer classe do FlutterGetIt([FlutterGetItModuleRoute] [FlutterGetItPageRoute], [FlutterGetItPageBuilder] ou [FlutterGetItWidget])
 
-Esse atributo você deve retornar o binding que você quer adicionar na página e o getit_flutter fará o restante.
+```dart
+
+class AuthModule extends FlutterGetItModuleRoute {
+  @override
+  String get moduleRouteName => '/auth';
+
+  @override
+  List<Bind> get bindings => [
+        Bind.singleton<AuthService>(
+            (i) => AuthService(name: 'Rodrigo', email: 'auth@academiadoflutter.com.br'))
+      ];
+
+  @override
+  Map<String, WidgetBuilder> get pages => {
+        '/login': (context) => const AuthLogin(),
+        '/register': (context) => const AuthRegister()
+      };
+}
+
+class AuthLogin extends StatelessWidget {
+  const AuthLogin({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final user = context.get<AuthService>();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
+      body: Column(
+        children: [
+          Text(user.name),
+          Text(user.email),
+          TextButton(
+            onPressed: () => Navigator.of(context).pushNamed('/Auth/page2'),
+            child: const Text('Modulo page2'),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class AuthRegister extends StatelessWidget {
+  const AuthRegister({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final user = context.get<AuthService>();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Register'),
+      ),
+      body: Column(
+        children: [Text(user.name), Text(user.email)],
+      ),
+    );
+  }
+}
+
+```
+
+> Para configuração você deve passar essa classe no atributo modules do [FlutterGetIt.route]:´
+
+```dart
+class MyApp extends StatelessWidget {
+  
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: context.get<UserModel>().email,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      routes: FlutterGetIt.routes(
+        modules: [
+          AuthModule(),
+        ],
+      ),
+    );
+  }
+}
+```
+
+Existe uma grande vantagem da utilização do [FlutterGetItModuleRoute] em conjunto com [FlutterGetItPageRoute] pois você não tem a necessidade de declarar classes especificas da pagina dentro do módulo
+
+Normalmente quando utilizamos a arquitetura de módulos é muito comum termos a declaração das controllers das páginas declaradas dentro do módulo, como o exemplo abaixo: 
+
+```dart
+class AuthModule extends FlutterGetItModuleRoute {
+  @override
+  String get moduleRouteName => '/auth';
+
+  @override
+  List<Bind> get bindings => [
+        Bind.factory<AuthLoginController>(
+            (i) => AuthLoginController()),
+        Bind.factory<AuthRegisterController>(
+            (i) => AuthLoginController())
+      ];
+
+  @override
+  Map<String, WidgetBuilder> get pages => {
+        '/login': (context) => const AuthLogin(),
+        '/register': (context) => const AuthRegister()
+      };
+}
+```
+
+Dessa forma temos a necessidade de declarar nosso controllers como sendo factory deixando a construção um pouco mais complexa e mantendo a controller mesmo que você saia da tela 
 
 ## Binds
 
