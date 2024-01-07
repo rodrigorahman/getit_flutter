@@ -1,5 +1,6 @@
 export 'src/config/flutter_getit_config.dart' show FlutterGetIt;
 export 'src/dependency_injector/binds/bind.dart';
+export 'src/dependency_injector/binds/application_bindings.dart';
 export 'src/dependency_injector/injector.dart';
 export 'src/routers/flutter_getit_page_router.dart';
 export 'src/routers/flutter_getit_page_builder.dart';

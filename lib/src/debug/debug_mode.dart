@@ -7,7 +7,7 @@ class DebugMode {
   late final FlutterGetItContainerRegister _register;
 
   DebugMode() {
-    _register = Injector().call<FlutterGetItContainerRegister>();
+    _register = Injector.get<FlutterGetItContainerRegister>();
   }
   void printRegister() {
     _register.references().forEach((key, value) {

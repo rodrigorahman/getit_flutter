@@ -31,12 +31,11 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
       module: (FlutterGetItModule(:moduleRouteName, :bindings)),
     ) = widget;
     id = moduleRouteName;
-    final injector = Injector();
-    containerRegister = injector<FlutterGetItContainerRegister>()
+    containerRegister = Injector.get<FlutterGetItContainerRegister>()
       ..register(id, bindings)
       ..load(id);
 
-    final flutterGetItContext = injector<FlutterGetItContext>();
+    final flutterGetItContext = Injector.get<FlutterGetItContext>();
     flutterGetItContext.registerId(moduleRouteName);
 
     super.initState();
@@ -44,7 +43,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
 
   @override
   void dispose() {
-    final flutterGetItContext = Injector()<FlutterGetItContext>();
+    final flutterGetItContext = Injector.get<FlutterGetItContext>();
     if (!flutterGetItContext.isSameIdLoad(id)) {
       containerRegister.unRegister(id);
     }

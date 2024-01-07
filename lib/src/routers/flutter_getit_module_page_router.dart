@@ -22,10 +22,9 @@ class _FlutterGetItModulePageRouterState
 
   @override
   void initState() {
-    final injector = Injector();
-    final navObserver = injector<FlutterGetItNavigatorObserver>();
+    final navObserver = Injector.get<FlutterGetItNavigatorObserver>();
     routeId = navObserver.currentRoute ?? hashCode.toString();
-    containerRegister = injector<FlutterGetItContainerRegister>()
+    containerRegister = Injector.get<FlutterGetItContainerRegister>()
       ..register(routeId, widget.bindings)
       ..load(routeId);
 

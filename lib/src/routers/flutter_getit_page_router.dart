@@ -20,12 +20,11 @@ class _FlutterGetItPageRouterState extends State<FlutterGetItPageRouter> {
   @override
   void initState() {
     routeId = widget.routeName;
-    final injector = Injector();
-    containerRegister = injector<FlutterGetItContainerRegister>()
+    containerRegister = Injector.get<FlutterGetItContainerRegister>()
       ..register(routeId, widget.bindings)
       ..load(routeId);
 
-    final flutterGetItContext = injector<FlutterGetItContext>();
+    final flutterGetItContext = Injector.get<FlutterGetItContext>();
     flutterGetItContext.registerId(routeId);
 
     super.initState();

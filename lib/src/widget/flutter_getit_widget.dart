@@ -25,7 +25,7 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
   @override
   void initState() {
     id = widget.key.toString();
-    containerRegister = Injector().call<FlutterGetItContainerRegister>()
+    containerRegister = Injector.get<FlutterGetItContainerRegister>()
       ..register(id, widget.bindings, withTag: true)
       ..load(id);
 
