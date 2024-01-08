@@ -1,8 +1,29 @@
 name: flutter_getit
 description: Integrating with 'get_it,' it efficiently manages Flutter project dependencies, providing robust page control, route management, and module flexibility
-version: 2.0.0-dev.4
+version: 2.0.0-dev.5
 repository: https://github.com/rodrigorahman/getit_flutter
 issue_tracker: https://github.com/rodrigorahman/getit_flutter/issues
+tags:
+  - dependency
+  - package
+  - version
+  - pubspec
+  - management
+  - dev_dependencies
+  - dependencies
+  - pub.dev
+  - routes
+  - navigation
+  - modules
+  - modularity
+
+topics:
+  - dependency-injection
+  - di
+  - injection
+  - router
+  - routing
+
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
