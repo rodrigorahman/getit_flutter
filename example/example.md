@@ -1,6 +1,5 @@
-# Exemplos
 
-## Exemplo de page
+## User Injection
 
 ```dart
 class HomePage extends StatelessWidget {
@@ -22,10 +21,10 @@ class HomePage extends StatelessWidget {
 }
 ```
 
-## Exemplo de rota
+## Route
 
 ```dart
-class HomeRoute extends FlutterGetItPageRoute {
+class HomeRoute extends FlutterGetItPageRouter {
   
   const HomeRoute({super.key});
   
@@ -35,13 +34,16 @@ class HomeRoute extends FlutterGetItPageRoute {
   ];  
   
   @override
-  WidgetBuilder get page => (context) => HomePage();
+  WidgetBuilder get view => (context) => HomePage();
 }
 ```
 
-## Exemplo de configuração
+## Configuration
 
 ```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_getit/flutter_getit.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -50,12 +52,28 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomeRouter(),
+    return FlutterGetIt(
+      // "Add here the pages that will be loaded."
+      pages: [
+        FlutterGetItPageBuilder(
+          page: (context) => const MyHomePage(title: 'home'),
+          path: '/',
+        ),
+      ],
+      // In this method, the MaterialApp or Cupertino App should be returned.
+      builder: (context, routes, flutterGetItNavObserver) {
+        return MaterialApp(
+          title: 'Flutter Demo',
+          // Add the flutterGetItNavObserver attribute here.
+          navigatorObservers: [flutterGetItNavObserver],
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+          ),
+          // Add the routes attribute here.
+          routes: routes,
+        );
+      },
     );
   }
 }
