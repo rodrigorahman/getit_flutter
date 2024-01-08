@@ -1,4 +1,6 @@
 # Versions
+## 2.0.0-dev.4
+- fix: updated package description to adhere to the rule of a maximum of 180 characters
 
 ## 2.0.0-dev.3
 - docs: Added documentation in English
