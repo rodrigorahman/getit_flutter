@@ -1,6 +1,6 @@
 name: flutter_getit
 description: Project that enables you to use get_it for dependency injection, controlled by Flutter's lifecycle, by registering and unregistering during page navigation.
-version: 2.0.0-dev.1
+version: 2.0.0-dev.2
 repository: https://github.com/rodrigorahman/getit_flutter
 issue_tracker: https://github.com/rodrigorahman/getit_flutter/issues
 

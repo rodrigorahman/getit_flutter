@@ -1,4 +1,7 @@
 # Versions
+## 2.0.0-dev.2
+- Fix: adicionado ApplicationBindings no export
+- docs: Documentação atualizada (Versao 1)
 
 ## 2.0.0-dev.1
 - Reescrita do package com suporte a módulos
