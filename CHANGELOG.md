@@ -1,4 +1,9 @@
 # Versions
+
+## 2.0.0-dev.3
+- docs: Added documentation in English
+- docs: Improvements to the project documentation
+
 ## 2.0.0-dev.2
 - Fix: adicionado ApplicationBindings no export
 - docs: Documentação atualizada (Versao 1)

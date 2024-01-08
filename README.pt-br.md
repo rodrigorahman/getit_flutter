@@ -8,35 +8,37 @@
 [![English](https://img.shields.io/badge/Language-English-red?style=for-the-badge)](README.md)
 </div>
 
-This package is an essential tool for efficient dependency management in the lifecycle of your Flutter project. It provides robust support for page control, including route management, and the flexibility to work with modules.
+Este pacote é uma ferramenta essencial para o gerenciamento eficiente de dependências no ciclo de vida do seu projeto Flutter. Ele oferece suporte robusto para o controle de páginas, incluindo a gestão de rotas e a flexibilidade de trabalhar com módulos.
 
-## **Key Features:**
+## **Recursos Principais:**
 
-**Dynamic Dependency Control:** Leveraging the powerful get_it engine, this package automatically registers and removes dependencies as needed, optimizing performance and ensuring the efficiency of your application.
+**Controle Dinâmico de Dependências:** Utilizando o poderoso mecanismo do get_it, este pacote registra e remove automaticamente as dependências conforme necessário, otimizando o desempenho e garantindo a eficiência do seu aplicativo.
 
-**Flexible Modules:** Embrace the modularity of your code. This package makes it easy to create and manage modules, making your project more organized and easy to maintain.
+**Módulos Flexíveis:** Aproveite a modularidade do seu código. Este pacote facilita a criação e gerenciamento de módulos, tornando seu projeto mais organizado e fácil de manter.
 
-Additional Benefits:
+Benefícios Adicionais:
 
-**Automatic Dependency Cleanup:** The package takes care of removing dependencies when they are no longer needed, ensuring efficient management of your application's resources.
-
->Flutter GetIt offers various approaches to control routes and load bindings for your application, including page routes, builders, and modules. You will see details of each of them later on.
+**Limpeza Automática de Dependências:** O pacote se encarrega de retirar as dependências quando não são mais necessárias, garantindo uma gestão eficiente dos recursos do seu aplicativo.
 
 
-# Getting Started
+>O Flutter GetIt oferece diversas abordagens para controlar as rotas e carregar os bindings da sua aplicação, incluindo rotas de páginas, builders e módulos você verá detalhes de cada uma delas mais pra frente 
 
-## Setting up flutter_getit
 
-Configuring Flutter GetIt is done by adding a widget around your MaterialApp. By including the widget and implementing the builder attribute, three attributes will be passed to you:
+# Inicio
 
-| Field                   | Description
+## Configurando flutter_getit 
+
+A configuração do Flutter GetIt é realizada adicionando um widget ao redor do seu MaterialApp. Ao incluir o widget e implementar o atributo builder, três atributos serão enviados para você:
+
+| Campo                   | Descrição
 |-------------------------|-------------
 | context                 | BuildContext
-| routes                  | A map that should be added to the routes tag of MaterialApp or CupertinoApp
-| flutterGetItNavObserver | This attribute is a NavigatorObserver and should be added to the **navigatorObservers** attribute of MaterialApp.
+| routes                  | Um mapa que deve ser adicionando na tag routes do MaterialApp ou CupertinoApp
+| flutterGetItNavObserver | Esse atributo é um NavigatorObserver esse atributo deve ser adicionado no atributo **navigatorObservers** do MaterialApp.
 |
 
-The **[routes]** and **[flutterGetItNavObserver]** attributes should be forwarded to the MaterialApp, as illustrated in the example below:
+
+Os atributos **[routes]** e **[flutterGetItNavObserver]** devem ser repassados para o MaterialApp, conforme ilustrado no exemplo abaixo:
 
 ```dart
 import 'package:flutter/material.dart';
@@ -77,13 +79,13 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-Flutter GetIt does not override Flutter's default routes; it creates a structure using Flutter's native lifecycle. This approach avoids unnecessary rewriting of application navigation, preventing bugs and undesired issues.
+O Flutter GetIt não reescreve as rotas padrão do Flutter; ele cria uma estrutura utilizando o ciclo de vida nativo do Flutter. Essa abordagem evita a reescrita desnecessária da navegação da aplicação, prevenindo bugs e problemas indesejados
 
-However, for it to have control over dependencies, you must register your application's pages in the **[pages]** attribute as shown in the example above, or **[modules]** as you will see a bit later.
+Porém para ele ter o controle das dependências você deve registrar as páginas da sua aplicação nos atributos [pages] conforme o exemplo acima ou [modules] que você verá um pouco mais pra frente.
 
 ## FlutterGetItPageBuilder
 
-In the example above, you saw the simplest way to implement a route within flutter_getit. If your page is as simple as our initial page, you can use the builder class, adding the page and the path to which it will respond.
+No exemplo acima, você viu a forma mais simples de implementar uma rota dentro do flutter_getit. Se a sua página for tão simples quanto a nossa página inicial, você pode utilizar a classe de builder, adicionando a página e o caminho ao qual ela irá responder.
 
 ```dart
 FlutterGetItPageBuilder(
@@ -94,7 +96,7 @@ FlutterGetItPageBuilder(
 ),
 ```
 
-Now, if you need to control a dependency right when your home_page is loaded, you can use the **binding** attribute. By adding this attribute, you can specify the dependency that will be used on your page.
+Agora, se você precisa controlar alguma dependência logo no carregamento da sua home_page, você pode utilizar o atributo binding. Ao adicionar este atributo, é possível especificar a dependência que será utilizada na sua página
 
 ```dart
 FlutterGetItPageBuilder(
@@ -108,13 +110,13 @@ FlutterGetItPageBuilder(
 
 ```
 
-This way, flutter_getit will add, during the loading of your screen, an instance of PageXController to get_it, enabling the use of your page. However, it's essential to note that upon leaving this screen, flutter_getit will remove the instance from your application's memory, ensuring efficient resource management.
+Dessa forma, o flutter_getit adicionará, durante o carregamento da sua tela, uma instância de PageXController ao get_it, possibilitando a utilização da sua página. No entanto, é importante destacar que ao sair dessa tela, o flutter_getit eliminará a instância da memória do seu aplicativo, garantindo uma gestão eficiente dos recursos.
 
-## Application Dependencies
+## Dependências de aplicação
 
-Every project requires dependencies that should stay active throughout the entire application, e.g., RestClient(Dio), Log, and many others. For FlutterGetIt, you can easily make these available. Just, during the initialization [FlutterGetIt], provide the parameter [bindingsBuilder] or [bindings].
+Todo projeto necessita de dependencias que devem ficar ativas pela aplicação toda, ex: RestClient(Dio), Log e muitas outras. Para o FlutterGetIt, você pode facilmente disponibilizar isso. Basta, durante a inicialização [FlutterGetIt], enviar o parâmetro [bindingsBuilder] ou [bindings].
 
-## Example using **[bindingsBuilder]**
+## Exemplo utilizando **[bindingsBuilder]**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -158,9 +160,10 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-## Attribute [bindings]
+## Atributo [bindings]
 
-In large projects, the list of application dependencies can be extensive. To keep the project more organized, I suggest using the **"bindings"** attribute. With it, you can provide a class for loading your dependencies.
+Em projetos grandes, a lista de dependências de uma aplicação pode ser extensa. Para manter o projeto mais organizado, sugiro o uso do atributo **"bindings"**. Com ele, você pode fornecer uma classe para o carregamento das suas dependências.
+
 
 ```dart
 // Crie uma classe extendendo [ApplicationBindings]
@@ -209,9 +212,9 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-## Retrieving Instance
+## Recuperando instancia
 
-There are two ways to retrieve an instance from flutter_getit. One of them is through the [Injector] class, and the other is through an extension added to the BuildContext using [context.get].
+Existem duas formas de recuperar uma instância do flutter_getit. Uma delas é por meio da classe [Injector], e a outra é por meio de uma extensão adicionada no BuildContext usando [context.get].
 
 ```dart
 Injector.get<ServiceForApplication>();
@@ -221,7 +224,7 @@ Injector.get<ServiceForApplication>();
 context.get<ServiceForApplication>();
 ```
 
-### Example using ***[context.get]***
+### Exemplo utilizando ***[context.get]***
 
 
 ```dart
@@ -242,7 +245,7 @@ class HomePage extends StatelessWidget {
 }
 ```
 
-### Example using Injector 
+### Exemplo utilizando Injector 
 
 ```dart
 class HomePage extends StatelessWidget {
@@ -263,25 +266,26 @@ class HomePage extends StatelessWidget {
 }
 ```
 
-## It doesn't stop there
+## Não para por ai
 
-With just these steps, you can already use Flutter GetIt, but there are many more features available.
+Apenas com esses passos, você já pode utilizar o Flutter GetIt, mas há muito mais recursos disponíveis. 
 
-Keeping your project organized is always the best approach, providing greater ease during maintenance. With that in mind, we added support for routes and modules in the package, offering an even more robust and structured experience.
+Manter seu projeto organizado é sempre a melhor abordagem, proporcionando maior facilidade durante a manutenção e pensando nisso, adicionamos suporte a rotas e módulos no pacote, proporcionando uma experiência ainda mais robusta e estruturada.
 
-# Routes
+# Rotas
 
-With the [FlutterGetItPageBuilder] class, you are already working with managed routes, but you can make your project even more organized using the **[FlutterGetItPageRouter]** class.
+Com a classe [FlutterGetItPageBuilder] você já está trabalhando com as rotas gerênciadas porém você pode deixar seu projeto mais organizado utilizando a classe **[FlutterGetItPageRouter]**
 
 ## FlutterGetItPageRouter
 
-This class is responsible for defining routes in your application. Here's an example:
+Essa classe é responsável pela definição de rotas da sua aplicação. Veja um exemplo:
 
-| Method | Description
+| Método | Descrição
 |--------|-----------
-| bindings | A method where you declare each of your dependencies
-| routeName | A method where you should return the path of your route
-| view | A method that returns the widget representing your Stateless or Stateful Widget (your page).
+| bindings | Método onde você vai declarar cada uma das suas dependências
+| routeName | Método onde você deve retornar o path da sua rota
+| view | Método que retorna o widget que representa seu Stateless ou Stateful Widget (sua página).
+
 
 ```dart
 class LoginRoute extends FlutterGetItPageRouter {
@@ -320,9 +324,9 @@ class LoginPage extends StatelessWidget {
   }
 }
 ```
-In the example above, we chose not to create a simple route using the builder. Instead, we created a class that represents our route. In this class, you define the dependencies of this route [bindings], the name of the route [routeName], which will be accessed by the Flutter Navigator, and the [view], which is the method that returns the widget representing your StatelessWidget or StatefulWidget.
+No exemplo acima, optamos por não criar uma rota simples usando o builder. Em vez disso, criamos uma classe que representa a nossa rota. Nessa classe, você define as dependências dessa rota [bindings], o nome da rota [routeName], que será acessada pelo Navigator do Flutter, e a [view], que é o método que retorna o widget representando seu StatelessWidget ou StatefulWidget.
 
-# Configuring your route
+# Configurando sua rota
 
 ```dart
 import 'package:flutter/material.dart';
@@ -358,17 +362,18 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-# Modules
+# Módulos
 
-Starting from version 2.0, flutter_getit also supports modules.
+A partir da versão 2.0, o flutter_getit também oferece suporte a módulos.
 
-To use the module concept of flutter_getit, you should first create your class representing your module by extending the [FlutterGetItModule] class.
+Para utilizar o conceito de módulos do flutter_getit, você deve primeiro criar a sua classe que representará o seu módulo, estendendo a classe [FlutterGetItModule].
 
-| Method             | Description
-|--------------------|-------------
-| moduleRouteName    | In this getter, you should provide the base route for your module. This value will be concatenated with the routes of the pages (Always start with /).
-| bindings           | In this getter, you should return the bindings you want to add to the page, and get_it_flutter will take care of the rest.
-| pages              | In this getter, you should return a map with the routes of this module. In the map value, you should return a function that, as an attribute, receives the context (BuildContext). The return of this function should be a widget, which can be a simple page or [FlutterGetItModulePageRouter].
+
+| Metodo      | Descrição
+|-------------|-------------
+| moduleRouteName | Nesse getter, você deve informar a rota base para o seu módulo. Esse valor será concatenado com as rotas das páginas (Lembre-se sempre de começar com /).
+| bindings     | Nesse getter, você deve retornar os bindings que deseja adicionar à página, e o get_it_flutter cuidará do restante.
+| pages        | Nesse getter, você deve retornar um mapa com as rotas desse módulo. No valor do mapa, você deve retornar uma função que, como atributo, receberá o contexto (BuildContext). O retorno dessa função deve ser um widget, que pode ser uma página simples ou [FlutterGetItModulePageRouter].
 
 ```dart
 class AuthModule extends FlutterGetItModule {
@@ -393,13 +398,13 @@ class AuthModule extends FlutterGetItModule {
 }
 ```
 
-Let's start with bindings. This getter works exactly like the others; the difference lies in the lifecycle. A binding within a module will only be removed when the user exits the module as a whole. For example:
+Vamos começar pelos bindings. Esse getter funciona exatamente como os outros, a diferença está no ciclo de vida. Um binding dentro de um módulo só será eliminado quando o usuário sair do módulo como um todo. Por exemplo:
 
-If the user enters the screen ***/auth/login***, it means they entered the module ***/auth*** on the page ***/login***. If the user clicks on a link that goes to the screen ***/auth/register***, flutter_getit will understand that the user is going to the same module and will not remove the dependencies of the module ***/auth***. It will only remove the dependencies of the module ***/auth*** when the user exits the module and goes to another, such as ***/products/***.
+Se o usuário entrar na tela ***/auth/login***, significa que ele entrou no módulo ***/auth*** na página ***/login***. Se o usuário clicar em um link que vá para a tela ***/auth/register***, o flutter_getit entenderá que o usuário está indo para o mesmo módulo e não eliminará as dependências do módulo ***/auth***. Ele só eliminará as dependências do módulo ***/auth*** quando o usuário sair do módulo e for para outro, como por exemplo, ***/products/***.
 
-## Configuring a module
+## Configurando um módulo
 
-To configure a module, simply add the attribute modules to [FlutterGetIt]:
+Para configurar um módulo, basta adicionar no [FlutterGetIt] o atributo modules:
 
 
 ```dart
@@ -433,11 +438,11 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-And automatically, flutter_getit will create the routes ***/auth/login*** and ***/auth/register***.
+E automaticamente, o flutter_getit criará as rotas ***/auth/login*** e ***/auth/register***
 
-## Module's Differentiator with [FlutterGetItModulePageRouter]
+## Diferencial do modulo em conjunto com [FlutterGetItModulePageRouter]
 
-Working with modules may occasionally require declaring controllers or specific dependencies that will be used exclusively on one of the module's pages. An example of this is controllers, often associated with a single page. However, some packages usually require you to declare the controller instance within the module, as exemplified below:
+Trabalhar com módulos pode ocasionalmente exigir a declaração de controllers ou dependências específicas que serão usadas exclusivamente em uma das páginas do módulo. Um exemplo disso são as controllers, muitas vezes associadas a uma única página. No entanto, alguns pacotes geralmente exigem que você declare a instância da controller dentro do módulo, como exemplificado abaixo:
 
 ```dart
 class AuthModule extends FlutterGetItModule {
@@ -466,13 +471,13 @@ class AuthModule extends FlutterGetItModule {
 }
 ```
 
-Unlike other approaches, flutter_getit allows the login and registration controllers to remain active only when needed.
+Diferentemente de outras abordagens, o flutter_getit permite que as controllers do login e do registro permaneçam ativas somente quando necessárias.
 
 ## FlutterGetItModulePageRouter
 
-The [FlutterGetItModulePageRouter] class helps you with that. See the example:
+A classe [FlutterGetItModulePageRouter] te ajuda com isso. Veja o exemplo:
 
-Below, we created a LoginPageRoute class where we declared the bindings and the view that will be presented.
+Abaixo, criamos uma classe LoginPageRoute onde declaramos os bindings e qual a view que será apresentada.
 
 ```dart
 class LoginPageRoute extends FlutterGetItModulePageRouter{
@@ -488,7 +493,7 @@ class LoginPageRoute extends FlutterGetItModulePageRouter{
 }
 ```
 
-Now, in our AuthModule, in the login route, we no longer point directly to the LoginPage but to the route [LoginPageRoute].
+Agora, no nosso AuthModule, na rota de login, não apontamos mais diretamente para a página LoginPage, mas sim para a rota [LoginPageRoute].
 
 ```dart 
 class AuthModule extends FlutterGetItModule {
@@ -510,21 +515,21 @@ class AuthModule extends FlutterGetItModule {
 
 ```
 
-This approach allows the flutter_getit mechanism to recognize these dependencies as distinct entities, loading the LoginController only when the corresponding screen is active and removing it when the screen is unloaded. This prevents the creation of unnecessary instances in your application, contributing to more efficient resource management.
+Essa abordagem permite que o mecanismo do flutter_getit reconheça essas dependências como entidades distintas, carregando a LoginController apenas quando a tela correspondente estiver ativa e eliminando-a quando a tela for descarregada. Isso evita a criação de instâncias desnecessárias em sua aplicação, contribuindo para uma gestão mais eficiente de recursos
 
-## Types of Binds
+## Tipos de Binds
 
-So far, you've only seen one type of binding, **Bind.lazySingleton**. However, flutter_getit supports all other bindings supported by the get_it engine:
+Até agora, você viu apenas um tipo de binding, **Bind.lazySingleton**. No entanto, o flutter_getit suporta todos os outros bindings suportados pelo motor get_it:
 
-These possibilities are three:
+Essas possibilidades são três:
 
-| Bind | Description
+| Bind | Descrição
 |------|----------
-| Bind.lazySingleton| This bind will initialize the dependency only when the user calls it for the first time. After that, it becomes a singleton, returning the same instance every time it is requested.
-| Bind.singleton | Unlike lazySingleton, singleton initializes the instance immediately when the page loads.
-| Bind.factory | The factory ensures that every time you request an instance from the dependency manager, it will provide a new instance.
+| Bind.lazySingleton| Esse bind vai inicializar a dependência somente quando o usuário chamá-la pela primeira vez. Após isso, ela se tornará um singleton, retornando a mesma instância toda vez que for requisitada.
+| Bind.singleton | Ao contrário do lazySingleton, o singleton fará a inicialização da instância imediatamente quando a página carregar.
+| Bind.factory | A factory faz com que toda vez que você solicitar uma instância para o gerenciador de dependências, ele fornecerá uma nova instância.
 
-### Complete Example
+### Exemplo Completo
 
 ```dart
 class LoginRoute extends FlutterGetItModulePageRouter {
@@ -543,7 +548,7 @@ class LoginRoute extends FlutterGetItModulePageRouter {
 }
 ```
 
-## Different Registration Forms
+## Diferentes formas de registros
 
 ### Lazy Singleton (Bind.lazySingleton)
 
@@ -551,18 +556,18 @@ class LoginRoute extends FlutterGetItModulePageRouter {
     Bind.lazySingleton((i) => HomeController())
 ```
 
-Lazy Singleton ensures that every time a new instance is requested from the dependency manager, it provides the same instance. However, unlike singleton, this Bind does not initialize the instance immediately when the page loads; it will be created only when requested for the first time.
+O Lazy Singleton faz com que, toda vez que for solicitada uma nova instância ao gerenciador de dependências, ele fornecerá a mesma instância. No entanto, ao contrário do singleton, esse Bind não inicializa a instância imediatamente no carregamento da página; ela será criada somente quando solicitada pela primeira vez.
 
 #### Singleton (Bind.singleton)
-
 
 ```dart
     Bind.singleton((i) => HomeController())
 ```
 
-Singleton ensures that every time a new instance is requested from the dependency manager, it provides the same instance.
+O singleton faz com que toda vez que for solicitada uma nova instância ao gerenciador de dependências, ele fornecerá a mesma instância.
 
-> **Note:** Bind.singleton has the characteristic of initializing the class immediately when the page loads.
+>**Obs:** O Bind.singleton tem a característica de iniciar a classe logo no carregamento da página.
+
 
 ### Factory (Bind.factory)
 
@@ -570,9 +575,10 @@ Singleton ensures that every time a new instance is requested from the dependenc
     Bind.factory((i) => HomeController())
 ```
 
-A factory ensures that every time you request an instance from the dependency manager, it provides a new instance.
+A factory faz com que toda vez que você solicitar uma instância ao gerenciador de dependências, ele fornecerá uma nova instância.
 
 
-## Project with example
 
-[Project with example](https://github.com/rodrigorahman/flutter_getit_2_example)
+## Projeto com exemplo
+
+[Projeto exemplo](https://github.com/rodrigorahman/flutter_getit_2_example)
