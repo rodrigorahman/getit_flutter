@@ -4,8 +4,8 @@
 
 **Languages:**
 
-[![Portuguese](https://img.shields.io/badge/Language-Portuguese-red?style=for-the-badge)](README.pt-br.md)
-[![English](https://img.shields.io/badge/Language-English-red?style=for-the-badge)](README.md)
+[![Portuguese](https://img.shields.io/badge/Language-Portuguese-red?style=for-the-badge)](https://github.com/rodrigorahman/getit_flutter/blob/refactory_2_0_0/README.pt-br.md)
+[![English](https://img.shields.io/badge/Language-English-red?style=for-the-badge)](https://github.com/rodrigorahman/getit_flutter/blob/refactory_2_0_0/README.md)
 </div>
 
 This package is an essential tool for efficient dependency management in the lifecycle of your Flutter project. It provides robust support for page control, including route management, and the flexibility to work with modules.
