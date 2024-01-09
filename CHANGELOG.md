@@ -1,5 +1,8 @@
 # Versions
 
+## 2.0.0-dev.7
+- fix: added .pubignore um devtools
+
 ## 2.0.0-dev.6
 - feat: Added `flutter_getit` to DevTools, enabling the visualization of existing instances through DevTools.
 
