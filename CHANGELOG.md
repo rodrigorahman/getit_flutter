@@ -1,6 +1,6 @@
 # Versions
 
-## 2.0.0-dev.5
+## 2.0.0-dev.6
 - feat: Added `flutter_getit` to DevTools, enabling the visualization of existing instances through DevTools.
 
 ## 2.0.0-dev.5
