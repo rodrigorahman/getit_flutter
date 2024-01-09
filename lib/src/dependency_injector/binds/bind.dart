@@ -18,6 +18,8 @@ final class Bind<T extends Object> {
     this.type,
   );
 
+  String get bindingClassName => T.toString();
+
   static Bind singleton<T extends Object>(
     BindRegister<T> bindRegister,
   ) =>
