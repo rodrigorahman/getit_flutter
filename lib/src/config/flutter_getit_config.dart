@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../core/flutter_getit_container_register.dart';
@@ -48,7 +50,7 @@ class _FlutterGetItState extends State<FlutterGetIt> {
     final getIt = GetIt.I;
     final containerRegister = getIt.registerSingleton(
         FlutterGetItContainerRegister(debugMode: widget.debugMode));
-    getIt.registerLazySingleton(() => DebugMode());
+    getIt.registerSingleton(DebugMode());
     getIt.registerLazySingleton(() => observer);
     getIt.registerLazySingleton(() => FlutterGetItContext());
     _registerAndLoadDependencies(containerRegister);
@@ -75,7 +77,9 @@ class _FlutterGetItState extends State<FlutterGetIt> {
     if (modules != null) {
       for (var module in modules) {
         for (var page in module.pages.entries) {
-          routesMap['${module.moduleRouteName}${page.key}'] = (_) {
+          final routeName = '${module.moduleRouteName}${page.key}';
+          
+          routesMap[routeName.replaceAll(r'//', r'/')] = (_) {
             return FlutterGetItPageModule(
               module: module,
               page: page.value,
