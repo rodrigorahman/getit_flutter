@@ -1,4 +1,9 @@
 # Versions
+## 2.0.0-dev.9
+- feat: changed layout devtools extension
+
+## 2.0.0-dev.8
+- fix: Exclude /build to extension
 
 ## 2.0.0-dev.7
 - fix: added .pubignore um devtools
