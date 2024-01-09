@@ -1,10 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+
 import '../core/flutter_getit_container_register.dart';
 import '../core/flutter_getit_context.dart';
 import '../core/navigator/flutter_getit_navigator_observer.dart';
+import '../core/unknown_route_page.dart';
 import '../debug/debug_mode.dart';
 import '../dependency_injector/binds/application_bindings.dart';
 import '../routers/flutter_getit_module.dart';
@@ -35,7 +35,6 @@ class FlutterGetIt extends StatefulWidget {
 
   /// [pages] Define the pages that will serve as named routes based on [FlutterGetItPageRoute].
   final List<FlutterGetItPageRouterInterface>? pages;
-
   @override
   State<FlutterGetIt> createState() => _FlutterGetItState();
 }
@@ -78,26 +77,28 @@ class _FlutterGetItState extends State<FlutterGetIt> {
       for (var module in modules) {
         for (var page in module.pages.entries) {
           var moduleRouteName = module.moduleRouteName;
-          
-          if(moduleRouteName != '/' && moduleRouteName.endsWith('/')){
-            debugPrint('ERROR:The module ($moduleRouteName) should not end with /');
+
+          if (moduleRouteName != '/' && moduleRouteName.endsWith('/')) {
+            debugPrint(
+                'ERROR:The module ($moduleRouteName) should not end with /');
             moduleRouteName = moduleRouteName.replaceFirst(RegExp(r'/$'), '');
           }
 
-          if(moduleRouteName != '/' && !moduleRouteName.startsWith('/')){
-            debugPrint('ERROR: The module ($moduleRouteName) should start with /');
+          if (moduleRouteName != '/' && !moduleRouteName.startsWith('/')) {
+            debugPrint(
+                'ERROR: The module ($moduleRouteName) should start with /');
             moduleRouteName = '/$moduleRouteName';
           }
-          
+
           var pageRouteName = page.key;
-          if(!pageRouteName.startsWith(r'/')){
+          if (!pageRouteName.startsWith(r'/')) {
             debugPrint('ERROR: Page ($pageRouteName) should starts with /');
             pageRouteName = '/${page.key}';
           }
 
           var finalRoute = '$moduleRouteName$pageRouteName';
 
-          if(finalRoute == '$moduleRouteName/') {
+          if (finalRoute == '$moduleRouteName/') {
             finalRoute = moduleRouteName;
           }
 
@@ -122,6 +123,13 @@ class _FlutterGetItState extends State<FlutterGetIt> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(context, _routes(), observer);
+    return widget.builder(
+        context,
+        _routes(),
+        observer,
+        (settings) => MaterialPageRoute(
+              builder: (BuildContext context) =>
+                  UnknownRoutePage(settings: settings, observer: observer),
+            ));
   }
 }

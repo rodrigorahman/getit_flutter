@@ -10,6 +10,8 @@ typedef BindBuilder = Bind Function();
 typedef BindRegister<T> = T Function(Injector i);
 
 typedef ApplicationBuilder = Widget Function(
-    BuildContext context,
-    Map<String, WidgetBuilder> routes,
-    NavigatorObserver flutterGetItNavObserver);
+  BuildContext context,
+  Map<String, WidgetBuilder> routes,
+  NavigatorObserver flutterGetItNavObserver,
+  Route<dynamic> Function(RouteSettings settings) onUnknownRoute,
+);
