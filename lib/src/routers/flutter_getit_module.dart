@@ -32,8 +32,8 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
     ) = widget;
     id = moduleRouteName;
     containerRegister = Injector.get<FlutterGetItContainerRegister>()
-      ..register(id, bindings)
-      ..load(id);
+      ..register('$id-module', bindings)
+      ..load('$id-module');
 
     final flutterGetItContext = Injector.get<FlutterGetItContext>();
     flutterGetItContext.registerId(moduleRouteName);
@@ -45,7 +45,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
   void dispose() {
     final flutterGetItContext = Injector.get<FlutterGetItContext>();
     if (!flutterGetItContext.isSameIdLoad(id)) {
-      containerRegister.unRegister(id);
+      containerRegister.unRegister('$id-module');
     }
     super.dispose();
   }

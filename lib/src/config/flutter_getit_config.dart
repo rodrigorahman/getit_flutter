@@ -79,7 +79,7 @@ class _FlutterGetItState extends State<FlutterGetIt> {
         for (var page in module.pages.entries) {
           var moduleRouteName = module.moduleRouteName;
           
-          if(moduleRouteName.endsWith('/')){
+          if(moduleRouteName != '/' && moduleRouteName.endsWith('/')){
             debugPrint('The module ($moduleRouteName) should not end with /');
             moduleRouteName = moduleRouteName.replaceFirst(RegExp(r'/$'), '');
           }
@@ -90,7 +90,13 @@ class _FlutterGetItState extends State<FlutterGetIt> {
             pageRouteName = '/${page.key}';
           }
 
-          routesMap['$moduleRouteName$pageRouteName'] = (_) {
+          var finalRoute = '$moduleRouteName$pageRouteName';
+
+          if(finalRoute == '$moduleRouteName/') {
+            finalRoute = moduleRouteName;
+          }
+
+          routesMap[finalRoute] = (_) {
             return FlutterGetItPageModule(
               module: module,
               page: page.value,
