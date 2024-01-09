@@ -96,7 +96,7 @@ class _FlutterGetItState extends State<FlutterGetIt> {
             finalRoute = moduleRouteName;
           }
 
-          routesMap[finalRoute] = (_) {
+          routesMap[finalRoute.replaceAll(r'//', '/')] = (_) {
             return FlutterGetItPageModule(
               module: module,
               page: page.value,
