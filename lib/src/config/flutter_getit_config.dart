@@ -20,7 +20,8 @@ class FlutterGetIt extends StatefulWidget {
     this.debugMode = false,
   }) : assert(
             (bindingsBuilder != null && bindings == null ||
-                bindingsBuilder == null && bindings != null),
+                bindingsBuilder == null && bindings != null ||
+                bindingsBuilder == null && bindings == null),
             'You must send only one of the attributes (bindingBuilder or bindings)');
 
   final ApplicationBuilder builder;
