@@ -16,6 +16,8 @@ class FlutterGetItPageModule extends StatefulWidget {
 
   final FlutterGetItModule module;
   final WidgetBuilder page;
+  Injector get injector => Injector();
+  Injector get i => injector;
 
   @override
   State<FlutterGetItPageModule> createState() => _FlutterGetItPageModuleState();

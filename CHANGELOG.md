@@ -1,6 +1,9 @@
 # Versions
 
 ## 2.0.0-dev.10
+- feat: Add getter Injector in routes
+
+## 2.0.0-dev.10
 - fix: Error due to no binding (either binding or bindingBuilder) being sent. The assertion in FlutterGetItConfig caused the initialization to fail
 
 ## 2.0.0-dev.9
