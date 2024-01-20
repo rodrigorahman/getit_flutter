@@ -9,9 +9,6 @@ abstract class FlutterGetItPageRouter extends StatefulWidget
     implements FlutterGetItPageRouterInterface {
   const FlutterGetItPageRouter({super.key});
 
-  Injector get injector => Injector();
-  Injector get i => injector;
-
   @override
   State<FlutterGetItPageRouter> createState() => _FlutterGetItPageRouterState();
 }

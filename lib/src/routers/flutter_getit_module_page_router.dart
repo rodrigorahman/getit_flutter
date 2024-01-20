@@ -7,8 +7,6 @@ import '../core/navigator/flutter_getit_navigator_observer.dart';
 abstract class FlutterGetItModulePageRouter extends StatefulWidget {
   List<Bind> get bindings => [];
   WidgetBuilder get view;
-  Injector get injector => Injector();
-  Injector get i => injector;
 
   const FlutterGetItModulePageRouter({super.key});
 

@@ -1,6 +1,9 @@
 # Versions
 
-## 2.0.0-dev.10
+## 2.0.0-dev.12
+- fix: remove injector in routes, injector already within the context
+
+## 2.0.0-dev.11
 - feat: Add getter Injector in routes
 
 ## 2.0.0-dev.10
