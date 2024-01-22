@@ -1,4 +1,4 @@
-import 'bind.dart';
+import '../../../flutter_getit.dart';
 
 abstract class ApplicationBindings {
   List<Bind> bindings();

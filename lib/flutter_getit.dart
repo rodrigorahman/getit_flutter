@@ -8,3 +8,4 @@ export 'src/routers/flutter_getit_module.dart' show FlutterGetItModule;
 export 'src/routers/flutter_getit_module_page_router.dart';
 export 'src/widget/flutter_getit_widget.dart';
 export 'src/debug/debug_mode.dart';
+export 'src/dependency_injector/binds/flutter_get_it_binding_register.dart';

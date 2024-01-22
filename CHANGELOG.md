@@ -1,5 +1,8 @@
 # Versions
 
+## 2.0.0-dev.13
+- feat: Implement method for permanent binding registration under specific key (FlutterGetItBindingRegister)
+
 ## 2.0.0-dev.12
 - fix: remove injector in routes, injector already within the context
 
