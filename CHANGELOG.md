@@ -1,5 +1,43 @@
 # Versions
 
+## 2.0.0
+Aprimorando a apresentação e a clareza do texto da versão 2.0.0:
+
+## Version 2.0.0 Highlights
+
+### Major Changes
+- **Breaking Change**: For existing users, please review the detailed in the documentation.
+- Complete package rewrite to support modular architecture.
+
+### Enhancements
+- `ApplicationBindings` are now included in the export list for improved integration.
+- A significant update to the documentation, including an English version for broader accessibility.
+- Revised the example to align with version 2.0 standards.
+
+### Technical Improvements
+- Package description updated to comply with the 180-character limit rule.
+- Integration of `flutter_getit` into DevTools, allowing for effective visualization of existing instances.
+- Enhanced DevTools extension layout for better user experience.
+
+### Fixes
+- Resolved an initialization failure caused by the absence of binding (either binding or bindingBuilder) in FlutterGetItConfig.
+- Eliminated redundant injector in routes, utilizing the existing context injector for efficiency.
+
+### Documentation and Metadata
+- Expanded project documentation, focusing on clarity and comprehensiveness.
+- Enhanced pubspec.yaml with additional tags and topics to facilitate easier discovery on pub.dev.
+- License transitioned from Apache-2 to MIT, reflecting changes in licensing preferences.
+
+### Development Tool Adjustments
+- Implemented `.pubignore` in DevTools for optimized performance.
+- Excluded the /build folder from the extension to streamline the development process.
+
+### New Features
+- Introduced a new method for registering permanent bindings under a specific key (FlutterGetItBindingRegister), adding flexibility and control for developers.
+
+This comprehensive update in version 2.0.0 aims to enhance usability, streamline integration, and expand accessibility, reflecting our commitment to continuous.
+
+
 ## 2.0.0-dev.13
 - feat: Implement method for permanent binding registration under specific key (FlutterGetItBindingRegister)
 
