@@ -1,22 +1,43 @@
 name: flutter_getit
-description: Project that allows you to use get_it as a dependency injection but controlled by Flutter's lifecycle, registering and unregistering in page navigation.
-version: 1.2.1
+description: Integrating with 'get_it,' it efficiently manages Flutter project dependencies, providing robust page control, route management, and module flexibility
+version: 2.0.0
 repository: https://github.com/rodrigorahman/getit_flutter
 issue_tracker: https://github.com/rodrigorahman/getit_flutter/issues
+tags:
+  - dependency
+  - package
+  - version
+  - pubspec
+  - management
+  - dev_dependencies
+  - dependencies
+  - pub.dev
+  - routes
+  - navigation
+  - modules
+  - modularity
+
+topics:
+  - dependency-injection
+  - di
+  - injection
+  - router
+  - routing
+
 
 environment:
-  sdk: '>=2.18.0 <3.0.0'
-  flutter: ">=1.17.0"
+  sdk: '>=3.2.3 <4.0.0'
+  flutter: ">=3.16.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  get_it: ^7.2.0
+  get_it: ^7.6.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
