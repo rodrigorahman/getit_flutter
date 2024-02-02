@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 
 import '../flutter_getit_context.dart';
 
-class FlutterGetItNavigatorObserver extends NavigatorObserver {
+final class FlutterGetItNavigatorObserver extends NavigatorObserver {
   String? currentRoute;
   String? previousRoute;
 

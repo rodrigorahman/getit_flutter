@@ -9,14 +9,18 @@ class Injector {
   static T get<T extends Object>([String? tag]) {
     try {
       return GetIt.I.get<T>(instanceName: tag);
-    } on AssertionError catch (e) {
+    } on AssertionError catch (e, s) {
       log(e.message.toString());
-      throw Exception('${T.toString()} not found in injector}');
+
+      return Error.throwWithStackTrace(
+        Exception('$T not found in injector}'),
+        s,
+      );
     }
   }
 
   /// Callable classe para facilitar a recuperação pela instancia e não pelo atributo de classe, podendo ser passado como parâmetro
-  T call<T extends Object>([String? tag]) => get<T>();
+  T call<T extends Object>([String? tag]) => get<T>(tag);
 }
 
 /// Extension para adicionar o recurso do injection dentro do BuildContext

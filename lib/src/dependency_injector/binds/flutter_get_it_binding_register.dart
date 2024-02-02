@@ -9,8 +9,7 @@ final class FlutterGetItBindingRegister {
   /// constant application binding that remains active throughout the entire
   /// lifecycle of the application under a specific key.
   static void registerPermanentBinding(String key, List<Bind> bindings) {
-    final container = Injector.get<FlutterGetItContainerRegister>();
-    container
+    Injector.get<FlutterGetItContainerRegister>()
       ..register(key, bindings)
       ..load(key);
   }
