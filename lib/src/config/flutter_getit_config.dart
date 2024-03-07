@@ -48,7 +48,8 @@ class _FlutterGetItState extends State<FlutterGetIt> {
     observer = FlutterGetItNavigatorObserver();
     final getIt = GetIt.I;
     final containerRegister = getIt.registerSingleton(
-        FlutterGetItContainerRegister(debugMode: widget.debugMode));
+      FlutterGetItContainerRegister(debugMode: widget.debugMode),
+    );
     getIt.registerSingleton(DebugMode());
     getIt.registerLazySingleton(() => observer);
     getIt.registerLazySingleton(() => FlutterGetItContext());
@@ -80,19 +81,23 @@ class _FlutterGetItState extends State<FlutterGetIt> {
 
           if (moduleRouteName != '/' && moduleRouteName.endsWith('/')) {
             debugPrint(
-                'ERROR:The module ($moduleRouteName) should not end with /');
+              'ERROR:The module ($moduleRouteName) should not end with /',
+            );
             moduleRouteName = moduleRouteName.replaceFirst(RegExp(r'/$'), '');
           }
 
           if (moduleRouteName != '/' && !moduleRouteName.startsWith('/')) {
             debugPrint(
-                'ERROR: The module ($moduleRouteName) should start with /');
+              'ERROR: The module ($moduleRouteName) should start with /',
+            );
             moduleRouteName = '/$moduleRouteName';
           }
 
           var pageRouteName = page.key;
           if (!pageRouteName.startsWith(r'/')) {
-            debugPrint('ERROR: Page ($pageRouteName) should starts with /');
+            debugPrint(
+              'ERROR: Page ($pageRouteName) should starts with /',
+            );
             pageRouteName = '/${page.key}';
           }
 
