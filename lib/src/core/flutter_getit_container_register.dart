@@ -12,7 +12,7 @@ class FlutterGetItContainerRegister {
       final tag = withTag ? id : null;
       _references[id] = (
         register: RegisterModel(bindings: bindings, tag: tag),
-        loaded: false
+        loaded: false,
       );
     }
   }
