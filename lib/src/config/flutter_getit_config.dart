@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+
 import '../core/flutter_getit_container_register.dart';
 import '../core/flutter_getit_context.dart';
 import '../core/navigator/flutter_getit_navigator_observer.dart';

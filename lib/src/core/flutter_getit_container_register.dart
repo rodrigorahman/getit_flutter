@@ -1,4 +1,4 @@
-import '../dependency_injector/binds/bind.dart';
+import '../../flutter_getit.dart';
 import 'model/binding_register.dart';
 
 class FlutterGetItContainerRegister {
@@ -20,7 +20,7 @@ class FlutterGetItContainerRegister {
   void unRegister(String id) {
     if (_references[id] case (:final register, loaded: true)) {
       for (var bind in register.bindings) {
-        bind.unload(register.tag);
+        bind.unload(register.tag, debugMode);
       }
     }
     _references.remove(id);
@@ -35,7 +35,7 @@ class FlutterGetItContainerRegister {
             loaded: false,
           )) {
         for (var bind in register.bindings) {
-          bind.load(register.tag);
+          bind.load(register.tag, debugMode);
         }
         _references[id] = (register: register, loaded: true);
       }
