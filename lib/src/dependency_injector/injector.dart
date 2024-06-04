@@ -12,11 +12,10 @@ class Injector {
   static T get<T extends Object>([String? tag]) {
     try {
       final obj = GetIt.I.get<T>(instanceName: tag);
-      if (DebugMode.isEnable &&
-          !(T == FlutterGetItNavigatorObserver ||
-              T == FlutterGetItContainerRegister ||
-              T == FlutterGetItContext)) {
-        debugPrint('🎣$cyanColor Getting: $T - ${obj.hashCode}');
+      if (!(T == FlutterGetItNavigatorObserver ||
+          T == FlutterGetItContainerRegister ||
+          T == FlutterGetItContext)) {
+        DebugMode.fGetItLog('🎣$cyanColor Getting: $T - ${obj.hashCode}');
       }
       if (hasMixin<FlutterGetItMixin>(obj)) {
         return (obj as dynamic)..onInit();
@@ -31,13 +30,11 @@ class Injector {
 
   static Future<T> getAsync<T extends Object>([String? tag]) async {
     try {
-      if (DebugMode.isEnable) {
-        debugPrint('🎣🥱$yellowColor Getting async: $T');
-      }
+      DebugMode.fGetItLog('🎣🥱$yellowColor Getting async: $T');
+
       return await GetIt.I.getAsync<T>(instanceName: tag).then((obj) {
-        if (DebugMode.isEnable) {
-          debugPrint('🎣😎$greenColor $T ready ${obj.hashCode}');
-        }
+        DebugMode.fGetItLog('🎣😎$greenColor $T ready ${obj.hashCode}');
+
         return obj;
       });
     } on AssertionError catch (e) {
@@ -48,14 +45,12 @@ class Injector {
   }
 
   static Future<void> allReady() async {
-    if (DebugMode.isEnable) {
-      debugPrint(
-          '🥱$yellowColor Waiting complete all asynchronously singletons');
-    }
+    DebugMode.fGetItLog(
+        '🥱$yellowColor Waiting complete all asynchronously singletons');
+
     await GetIt.I.allReady().then((value) {
-      if (DebugMode.isEnable) {
-        debugPrint('😎$greenColor All asynchronously singletons complete');
-      }
+      DebugMode.fGetItLog(
+          '😎$greenColor All asynchronously singletons complete');
     });
   }
 

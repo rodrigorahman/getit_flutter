@@ -50,9 +50,8 @@ class _FlutterGetItNavigatorState extends State<FlutterGetItNavigator> {
     );
     switch (module) {
       case null:
-        if (DebugMode.isEnable) {
-          debugPrint('🚨$redColor Route not found: ${settings.name}');
-        }
+        DebugMode.fGetItLog('🚨$redColor Route not found: ${settings.name}');
+
         return null;
       case _:
         try {

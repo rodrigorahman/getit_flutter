@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../flutter_getit.dart';
@@ -59,10 +58,10 @@ final class Bind<T extends Object> {
 
   void load([String? tag, bool debugMode = false]) {
     final getIt = GetIt.I;
-    if (debugMode) {
-      debugPrint(
-          '📠$blueColor Registering: $T$yellowColor as$blueColor ${type.name}');
-    }
+
+    DebugMode.fGetItLog(
+        '📠$blueColor Registering: $T$yellowColor as$blueColor ${type.name}');
+
     switch (type) {
       case RegisterType.singleton:
         getIt.registerSingleton<T>(
@@ -105,10 +104,9 @@ final class Bind<T extends Object> {
     GetIt.I.unregister<T>(
       instanceName: tag,
       disposingFunction: (entity) async {
-        if (debugMode) {
-          debugPrint(
-              '🚮$yellowColor Dispose: ${entity.runtimeType} - ${entity.hashCode}');
-        }
+        DebugMode.fGetItLog(
+            '🚮$yellowColor Dispose: ${entity.runtimeType} - ${entity.hashCode}');
+
         if (hasMixin<FlutterGetItMixin>(entity)) {
           (entity as FlutterGetItMixin).dispose();
         }

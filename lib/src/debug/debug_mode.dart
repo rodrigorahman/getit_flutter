@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 
@@ -27,7 +28,11 @@ class DebugMode {
     });
   }
   void printRegister() {
-    debugPrint(const JsonEncoder.withIndent('  ').convert(readyReferences()));
+    DebugMode.fGetItLog(
+      const JsonEncoder.withIndent('  ').convert(
+        readyReferences(),
+      ),
+    );
   }
 
   Map<String, dynamic> readyReferences() {
@@ -43,5 +48,15 @@ class DebugMode {
       return MapEntry(key, bindingsMap);
     });
     return referencesData;
+  }
+
+  static fGetItLog(String data) {
+    if (isEnable) {
+      if (Platform.isIOS) {
+        log(data);
+      } else {
+        debugPrint(data);
+      }
+    }
   }
 }
