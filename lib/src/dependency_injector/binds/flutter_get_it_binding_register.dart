@@ -1,5 +1,4 @@
 import '../../../flutter_getit.dart';
-import '../../core/flutter_getit_container_register.dart';
 
 final class FlutterGetItBindingRegister {
   FlutterGetItBindingRegister._();

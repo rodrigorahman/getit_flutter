@@ -7,6 +7,9 @@ class NavBarModule extends FlutterGetItModule {
   String get moduleRouteName => '/RootNavBar';
 
   @override
+  List<Bind<Object>> get bindings => [];
+
+  @override
   Map<String, WidgetBuilder> get pages => {
         '/Root': (context) => const MyNavBar(),
       };

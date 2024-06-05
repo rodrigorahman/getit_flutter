@@ -1,7 +1,8 @@
 import 'package:flutter_getit/flutter_getit.dart';
 
 class LoginController with FlutterGetItMixin {
-  LoginController();
+  final String name;
+  LoginController({required this.name});
   @override
   void dispose() {}
 

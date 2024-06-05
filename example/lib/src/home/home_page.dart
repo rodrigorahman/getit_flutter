@@ -1,5 +1,6 @@
 import 'package:example/application/session/model/user_model.dart';
 import 'package:example/application/session/user_session.dart';
+import 'package:example/src/auth/login_controller.dart';
 import 'package:example/src/auth/login_page.dart';
 import 'package:example/src/home/home_controller.dart';
 import 'package:flutter/material.dart';
@@ -39,9 +40,18 @@ class HomePage extends StatelessWidget {
               onPressed: () async {
                 await showModalBottomSheet(
                   routeSettings: const RouteSettings(name: '/Auth/Login'),
+                  useRootNavigator: true,
                   context: context,
-                  builder: (context) => LoginPage(
-                    controller: context.get(),
+                  builder: (context) => FlutterGetItPageBuilder(
+                    path: '/Auth/Login',
+                    binding: () => Bind.lazySingleton(
+                      (i) => LoginController(
+                        name: 'By HomePage showModalBottomSheet Bindings',
+                      ),
+                    ),
+                    page: (context) => LoginPage(
+                      controller: context.get(),
+                    ),
                   ),
                 );
               },
@@ -58,6 +68,28 @@ class HomePage extends StatelessWidget {
               },
               child: const Text(
                 'Ir a uma rota errada.',
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pushNamed('/Auth/Login');
+              },
+              child: const Text(
+                'Ir a uma rota correta.',
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pushNamed('/Normal/Page');
+              },
+              child: const Text(
+                'Ir a uma rota "normal".',
               ),
             ),
           ],

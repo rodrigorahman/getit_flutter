@@ -8,7 +8,7 @@ class HomeModule extends FlutterGetItModule {
   String get moduleRouteName => '/Home';
   @override
   List<Bind<Object>> get bindings => [
-        Bind.lazySingleton(
+        Bind.permanentSingleton(
           (i) => HomeController(),
         ),
       ];

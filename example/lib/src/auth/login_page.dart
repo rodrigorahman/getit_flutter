@@ -20,7 +20,7 @@ class LoginPage extends StatelessWidget {
         },
       ),
       appBar: AppBar(
-        title: const Text('loginPage'),
+        title: Text(controller.name),
       ),
       body: Center(
         child: StreamBuilder<UserModel?>(
