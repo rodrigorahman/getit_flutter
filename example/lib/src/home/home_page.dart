@@ -1,6 +1,5 @@
 import 'package:example/application/session/model/user_model.dart';
 import 'package:example/application/session/user_session.dart';
-import 'package:example/src/auth/login_controller.dart';
 import 'package:example/src/auth/login_page.dart';
 import 'package:example/src/home/home_controller.dart';
 import 'package:flutter/material.dart';
@@ -41,14 +40,8 @@ class HomePage extends StatelessWidget {
                 await showModalBottomSheet(
                   routeSettings: const RouteSettings(name: '/Auth/Login'),
                   context: context,
-                  builder: (context) => FlutterGetItPageBuilder(
-                    path: '/Auth/Login',
-                    binding: () => Bind.singleton(
-                      (i) => LoginController(),
-                    ),
-                    page: (context) => LoginPage(
-                      controller: context.get(),
-                    ),
+                  builder: (context) => LoginPage(
+                    controller: context.get(),
                   ),
                 );
               },

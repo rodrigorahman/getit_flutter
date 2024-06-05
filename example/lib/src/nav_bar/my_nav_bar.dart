@@ -1,4 +1,5 @@
 import 'package:example/src/auth/auth_module.dart';
+import 'package:example/src/auth/login_controller.dart';
 import 'package:example/src/home/home_module.dart';
 import 'package:example/src/products/products_module.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,11 @@ class MyNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FlutterGetItNavigator(
+        bindings: [
+          Bind.singleton(
+            (i) => LoginController(),
+          )
+        ],
         modules: [
           HomeModule(),
           ProductsModule(),

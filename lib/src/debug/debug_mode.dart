@@ -7,12 +7,12 @@ import 'package:flutter/material.dart';
 import '../core/flutter_getit_container_register.dart';
 import '../dependency_injector/injector.dart';
 
-const cyanColor = '\x1B[36m';
-const redColor = '\x1B[31m';
-const greenColor = '\x1B[32m';
-const whiteColor = '\x1B[37m';
-const yellowColor = '\x1B[33m';
-const blueColor = '\x1B[34m';
+const cyanColor = '\x1b[36m';
+const redColor = '\x1b[31m';
+const greenColor = '\x1b[32m';
+const whiteColor = '\x1b[37m';
+const yellowColor = '\x1b[33m';
+const blueColor = '\x1b[34m';
 
 class DebugMode {
   late final FlutterGetItContainerRegister _register;
