@@ -16,77 +16,89 @@ enum RegisterType {
   factoryAsync,
 }
 
+const permanentTag = 'APPLICATION_PERMANENT';
+
 final class Bind<T extends Object> {
-  late BindRegister<T> bindRegister;
-  late BindAsyncRegister<T> bindAsyncRegister;
-  RegisterType type;
+  late final BindRegister<T> bindRegister;
+  late final BindAsyncRegister<T> bindAsyncRegister;
+  final RegisterType type;
+  final bool keepAlive;
 
-  Bind._(
-    this.bindRegister,
-    this.type,
-  );
+  Bind._(this.bindRegister, this.type, this.keepAlive);
 
-  Bind._async(
-    this.bindAsyncRegister,
-    this.type,
-  );
+  Bind._async(this.bindAsyncRegister, this.type, this.keepAlive);
 
   String get bindingClassName => T.toString();
 
   static Bind singleton<T extends Object>(
-    BindRegister<T> bindRegister,
-  ) =>
-      Bind<T>._(bindRegister, RegisterType.singleton);
-
-  static Bind permanentSingleton<T extends Object>(
-    BindRegister<T> bindRegister,
-  ) =>
-      Bind<T>._(bindRegister, RegisterType.permanentSingleton);
+    BindRegister<T> bindRegister, {
+    bool keepAlive = false,
+  }) =>
+      Bind<T>._(
+        bindRegister,
+        RegisterType.singleton,
+        keepAlive,
+      );
 
   static Bind lazySingleton<T extends Object>(
-    BindRegister<T> bindRegister,
-  ) =>
-      Bind<T>._(bindRegister, RegisterType.lazySingleton);
-
-  static Bind permanentLazySingleton<T extends Object>(
-    BindRegister<T> bindRegister,
-  ) =>
-      Bind<T>._(bindRegister, RegisterType.permanentLazySingleton);
+    BindRegister<T> bindRegister, {
+    bool keepAlive = false,
+  }) =>
+      Bind<T>._(
+        bindRegister,
+        RegisterType.lazySingleton,
+        keepAlive,
+      );
 
   static Bind factory<T extends Object>(
     BindRegister<T> bindRegister,
   ) =>
-      Bind<T>._(bindRegister, RegisterType.factory);
+      Bind<T>._(
+        bindRegister,
+        RegisterType.factory,
+        false,
+      );
 
   static Bind singletonAsync<T extends Object>(
-          BindAsyncRegister<T> bindAsyncRegister) =>
-      Bind<T>._async(bindAsyncRegister, RegisterType.singletonAsync);
-
-  static Bind permanentSingletonAsync<T extends Object>(
-          BindAsyncRegister<T> bindAsyncRegister) =>
-      Bind<T>._async(bindAsyncRegister, RegisterType.permanentSingletonAsync);
-
-  static Bind lazySingletonAsync<T extends Object>(
-          BindAsyncRegister<T> bindAsyncRegister) =>
-      Bind<T>._async(bindAsyncRegister, RegisterType.lazySingletonAsync);
-
-  static Bind permanentLazySingletonAsync<T extends Object>(
-          BindAsyncRegister<T> bindAsyncRegister) =>
+    BindAsyncRegister<T> bindAsyncRegister, {
+    bool keepAlive = false,
+  }) =>
       Bind<T>._async(
         bindAsyncRegister,
-        RegisterType.permanentLazySingletonAsync,
+        RegisterType.singletonAsync,
+        keepAlive,
+      );
+
+  static Bind lazySingletonAsync<T extends Object>(
+    BindAsyncRegister<T> bindAsyncRegister, {
+    bool keepAlive = false,
+  }) =>
+      Bind<T>._async(
+        bindAsyncRegister,
+        RegisterType.lazySingletonAsync,
+        keepAlive,
       );
 
   static Bind factoryAsync<T extends Object>(
           BindAsyncRegister<T> bindAsyncRegister) =>
-      Bind<T>._async(bindAsyncRegister, RegisterType.factoryAsync);
+      Bind<T>._async(
+        bindAsyncRegister,
+        RegisterType.factoryAsync,
+        false,
+      );
 
   void load([String? tag, bool debugMode = false]) {
     final getIt = GetIt.I;
+    final isRegistered = getIt.isRegistered<T>(instanceName: tag);
 
+    if ((type != RegisterType.factoryAsync ||
+            type != RegisterType.factoryAsync) &&
+        isRegistered) {
+      _warnThatIsAlreadyRegistered();
+      return;
+    }
     DebugMode.fGetItLog(
         '📠$blueColor Registering: $T$yellowColor as$blueColor ${type.name}');
-
     switch (type) {
       case RegisterType.singleton:
         getIt.registerSingleton<T>(
@@ -95,13 +107,11 @@ final class Bind<T extends Object> {
           dispose: (entity) => null,
         );
       case RegisterType.permanentSingleton:
-        if (!getIt.isRegistered<T>()) {
-          getIt.registerSingleton<T>(
-            bindRegister(Injector()),
-            instanceName: tag,
-            dispose: (entity) => null,
-          );
-        }
+        getIt.registerSingleton<T>(
+          bindRegister(Injector()),
+          instanceName: tag,
+          dispose: (entity) => null,
+        );
       case RegisterType.lazySingleton:
         getIt.registerLazySingleton<T>(
           () => bindRegister(Injector()),
@@ -110,13 +120,11 @@ final class Bind<T extends Object> {
         );
 
       case RegisterType.permanentLazySingleton:
-        if (!getIt.isRegistered<T>()) {
-          getIt.registerLazySingleton<T>(
-            () => bindRegister(Injector()),
-            instanceName: tag,
-            dispose: (entity) => null,
-          );
-        }
+        getIt.registerLazySingleton<T>(
+          () => bindRegister(Injector()),
+          instanceName: tag,
+          dispose: (entity) => null,
+        );
 
       case RegisterType.singletonAsync:
         getIt.registerSingletonAsync<T>(
@@ -125,13 +133,11 @@ final class Bind<T extends Object> {
           dispose: (entity) => null,
         );
       case RegisterType.permanentSingletonAsync:
-        if (!getIt.isRegistered<T>()) {
-          getIt.registerSingletonAsync<T>(
-            () async => await bindAsyncRegister(Injector()),
-            instanceName: tag,
-            dispose: (entity) => null,
-          );
-        }
+        getIt.registerSingletonAsync<T>(
+          () async => await bindAsyncRegister(Injector()),
+          instanceName: tag,
+          dispose: (entity) => null,
+        );
       case RegisterType.lazySingletonAsync:
         getIt.registerLazySingletonAsync<T>(
           () async => await bindAsyncRegister(Injector()),
@@ -140,13 +146,11 @@ final class Bind<T extends Object> {
         );
 
       case RegisterType.permanentLazySingletonAsync:
-        if (!getIt.isRegistered<T>()) {
-          getIt.registerLazySingletonAsync<T>(
-            () async => await bindAsyncRegister(Injector()),
-            instanceName: tag,
-            dispose: (entity) => null,
-          );
-        }
+        getIt.registerLazySingletonAsync<T>(
+          () async => await bindAsyncRegister(Injector()),
+          instanceName: tag,
+          dispose: (entity) => null,
+        );
       case RegisterType.factory:
         getIt.registerFactory<T>(
           () => bindRegister(Injector()),
@@ -160,13 +164,15 @@ final class Bind<T extends Object> {
     }
   }
 
+  void _warnThatIsAlreadyRegistered() {
+    DebugMode.fGetItLog(
+        '🚧$redColor Warning:$whiteColor $T - ${T.hashCode}$yellowColor is already registered as$blueColor ${type.name}.');
+  }
+
   void unload([String? tag, bool debugMode = false]) {
-    if (type == RegisterType.permanentSingleton ||
-        type == RegisterType.permanentLazySingleton ||
-        type == RegisterType.permanentSingletonAsync ||
-        type == RegisterType.permanentLazySingletonAsync) {
+    if (keepAlive) {
       DebugMode.fGetItLog(
-          '🚧$yellowColor Info:$whiteColor $T - ${T.hashCode}$yellowColor is$blueColor $whiteColor${type.name},$yellowColor and can\'t be disposed.');
+          '🚧$yellowColor Info:$whiteColor $T - ${T.hashCode}$yellowColor is$whiteColor permanent,$yellowColor and can\'t be disposed.');
       return;
     }
     GetIt.I.unregister<T>(

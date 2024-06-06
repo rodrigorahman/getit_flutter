@@ -8,8 +8,9 @@ class HomeModule extends FlutterGetItModule {
   String get moduleRouteName => '/Home';
   @override
   List<Bind<Object>> get bindings => [
-        Bind.permanentSingleton(
+        Bind.singleton(
           (i) => HomeController(),
+          keepAlive: true,
         ),
       ];
 
