@@ -10,10 +10,8 @@ class LandingModule extends FlutterGetItModule {
 
   @override
   List<Bind<Object>> get bindings => [
-        Bind.lazySingleton(
-          (i) => InitializeController(
-              // spByConstructor: i(),
-              ),
+        Bind.lazySingleton<InitializeController>(
+          (i) => InitializeController(),
         ),
       ];
 

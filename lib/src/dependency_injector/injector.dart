@@ -5,21 +5,26 @@ import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
 import '../core/flutter_getit_context.dart';
+import 'flutter_get_it_binding_opened.dart';
 
 /// Classe responsável pelo encapsulamento da busca das instancias do GetIt
 class Injector {
   /// Get para recupera a instancia do GetIt
   static T get<T extends Object>([String? tag]) {
     try {
-      final obj = GetIt.I.get<T>(instanceName: tag);
+      final getIt = GetIt.I;
+      final obj = getIt.get<T>(instanceName: tag);
       if (!(T == FlutterGetItNavigatorObserver ||
           T == FlutterGetItContainerRegister ||
           T == FlutterGetItContext)) {
         DebugMode.fGetItLog('🎣$cyanColor Getting: $T - ${obj.hashCode}');
       }
-      if (hasMixin<FlutterGetItMixin>(obj)) {
+
+      if (hasMixin<FlutterGetItMixin>(obj) &&
+          !FlutterGetItBindingOpened.contains(obj.hashCode)) {
         return (obj as dynamic)..onInit();
       }
+      FlutterGetItBindingOpened.registerHashCodeOpened(obj.hashCode);
       return obj;
     } on AssertionError catch (e) {
       log('⛔️$redColor Error on get: $T\n$yellowColor${e.message.toString()}');

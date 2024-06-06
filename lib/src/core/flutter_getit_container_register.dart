@@ -8,12 +8,31 @@ class FlutterGetItContainerRegister {
   final bool debugMode;
 
   void register(String id, List<Bind> bindings, {bool withTag = false}) {
+    final normalBinds = bindings.where((bind) => !bind.keepAlive).toList();
+    final keepAliveBinds = bindings.where((bind) => bind.keepAlive).toList();
     if (!_references.containsKey(id)) {
       final tag = withTag ? id : null;
       _references[id] = (
-        register: RegisterModel(bindings: bindings, tag: tag),
+        register: RegisterModel(bindings: normalBinds, tag: tag),
         loaded: false
       );
+    }
+    if (keepAliveBinds.isNotEmpty) {
+      if (_references.containsKey('APPLICATION_PERMANENT')) {
+        final ref = _references.remove('APPLICATION_PERMANENT')!;
+        _references['APPLICATION_PERMANENT'] = (
+          register: RegisterModel(
+            bindings: [...ref.register.bindings, ...keepAliveBinds],
+          ),
+          loaded: false,
+        );
+      } else {
+        _references['APPLICATION_PERMANENT'] = (
+          register: RegisterModel(bindings: keepAliveBinds),
+          loaded: false,
+        );
+      }
+      load('APPLICATION_PERMANENT');
     }
   }
 

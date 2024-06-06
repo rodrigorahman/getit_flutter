@@ -1,83 +1,112 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
 import '../core/navigator/flutter_getit_navigator_observer_internal.dart';
 import '../routers/flutter_getit_module.dart';
+import '../routers/flutter_getit_page_router_interface.dart';
+import '../types/flutter_getit_typedefs.dart';
 
 class FlutterGetItNavigator extends StatefulWidget {
-  final Widget Function(
-    BuildContext context,
-    Widget? Function(RouteSettings routeSettings) onGenerateRoute,
-    FlutterGetItNavigatorObserverInternal observer,
-  ) builder;
-
   const FlutterGetItNavigator({
     super.key,
     required this.builder,
-    this.routes = const <String, WidgetBuilder>{},
-    this.modules = const <FlutterGetItModule>[],
+    this.bindingsBuilder,
+    this.modules,
+    this.pages,
   });
 
-  /// Getter for declaring bindings that will be initialized
-  /// and discarded upon view initialization and disposal
-  final Map<String, WidgetBuilder> routes;
-  final List<FlutterGetItModule> modules;
+  final ApplicationBuilder builder;
+  final ApplicationBindingsBuilder? bindingsBuilder;
+
+  /// [modules] Specifies the list of modules in your system.
+  final List<FlutterGetItModule>? modules;
+
+  /// [pages] Define the pages that will serve as named routes based on [FlutterGetItPageRoute].
+  final List<FlutterGetItPageRouterInterface>? pages;
 
   @override
   State<FlutterGetItNavigator> createState() => _FlutterGetItNavigatorState();
 }
 
 class _FlutterGetItNavigatorState extends State<FlutterGetItNavigator> {
-  final id = 'FGETITNAVIGATOR';
-  late FlutterGetItContainerRegister containerRegister;
-  late final FlutterGetItNavigatorObserverInternal observer;
+  late FlutterGetItNavigatorObserverInternal observerInternal;
 
   @override
   void initState() {
-    containerRegister = Injector.get<FlutterGetItContainerRegister>();
-    observer = FlutterGetItNavigatorObserverInternal()..init();
+    final getIt = GetIt.I;
+    observerInternal = FlutterGetItNavigatorObserverInternal()..init();
+    final containerRegister = Injector.get<FlutterGetItContainerRegister>();
+    getIt.registerLazySingleton(() => observerInternal);
+    _registerAndLoadDependencies(containerRegister);
     super.initState();
   }
 
-  Widget? onGenerateRoute(RouteSettings settings) {
-    final nameSplinted = settings.name?.split('/')?..removeAt(0);
-    final possibleModuleName = nameSplinted?.first;
-    final possibleModulePath = nameSplinted?.last;
-
-    final module = widget.modules.cast<FlutterGetItModule?>().firstWhere(
-      (element) {
-        return (element?.moduleRouteName == '/$possibleModuleName') &&
-            (element?.pages.containsKey('/$possibleModulePath') ?? false);
-      },
-      orElse: () => null,
-    );
-    switch (module) {
-      case null:
-        switch (widget.routes.containsKey(settings.name)) {
-          case true:
-            return widget.routes[settings.name]!(context);
-          case false:
-            DebugMode.fGetItLog(
-                '🚨$redColor Route not found: ${settings.name}');
-            return null;
-        }
-
-      case _:
-        return FlutterGetItPageModule(
-          module: module,
-          page: module.pages['/$possibleModulePath']!,
-        );
+  void _registerAndLoadDependencies(FlutterGetItContainerRegister register) {
+    switch (widget) {
+      case FlutterGetItNavigator(:final bindingsBuilder?):
+        final binds = bindingsBuilder();
+        register
+          ..register('NAVIGATOR', binds)
+          ..load('NAVIGATOR');
     }
   }
 
-  @override
-  void dispose() {
-    containerRegister.unRegister(id);
-    super.dispose();
+  Map<String, WidgetBuilder> _routes() {
+    final routesMap = <String, WidgetBuilder>{};
+    final FlutterGetItNavigator(:modules, :pages) = widget;
+
+    if (modules != null) {
+      for (var module in modules) {
+        for (var page in module.pages.entries) {
+          var moduleRouteName = module.moduleRouteName;
+
+          if (moduleRouteName != '/' && moduleRouteName.endsWith('/')) {
+            DebugMode.fGetItLog(
+                '🚨 - ${redColor}ERROR:$whiteColor The module $yellowColor($moduleRouteName)$whiteColor should not end with /');
+            moduleRouteName = moduleRouteName.replaceFirst(RegExp(r'/$'), '');
+          }
+
+          if (moduleRouteName != '/' && !moduleRouteName.startsWith('/')) {
+            DebugMode.fGetItLog(
+                '🚨 - ${redColor}ERROR:$whiteColor The module $yellowColor($moduleRouteName)$whiteColor should start with /');
+            moduleRouteName = '/$moduleRouteName';
+          }
+
+          var pageRouteName = page.key;
+          if (!pageRouteName.startsWith(r'/')) {
+            DebugMode.fGetItLog(
+                '🚨 - ${redColor}ERROR:$whiteColor Page $yellowColor($pageRouteName)$whiteColor should starts with /');
+            pageRouteName = '/${page.key}';
+          }
+
+          var finalRoute = '$moduleRouteName$pageRouteName';
+
+          if (finalRoute == '$moduleRouteName/') {
+            finalRoute = moduleRouteName;
+          }
+
+          routesMap[finalRoute.replaceAll(r'//', r'/')] = (_) {
+            return FlutterGetItPageModule(
+              module: module,
+              page: page.value,
+            );
+          };
+        }
+      }
+    }
+
+    if (pages != null) {
+      for (final page in pages) {
+        routesMap[page.routeName] = (_) => page as StatefulWidget;
+      }
+    }
+
+    return routesMap;
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(context, onGenerateRoute, observer);
+    return widget.builder(context, _routes(), observerInternal);
   }
 }

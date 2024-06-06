@@ -1,7 +1,9 @@
 import 'package:example/src/auth/auth_module.dart';
 import 'package:example/src/home/home_controller.dart';
 import 'package:example/src/home/home_module.dart';
+import 'package:example/src/nav_bar/my_nav_bar_helper_controller.dart';
 import 'package:example/src/products/products_module.dart';
+import 'package:example/src/random/random_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
@@ -14,30 +16,32 @@ class MyNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FlutterGetItNavigator(
-        routes: {
-          '/Normal/Page': (context) => Scaffold(
-                appBar: AppBar(
-                  title:
-                      Text(Injector.get<HomeController>().hashCode.toString()),
-                ),
-              ),
-        },
+        bindingsBuilder: () => [
+          Bind.singleton(
+            (i) => HomeController(),
+            keepAlive: true,
+          ),
+          Bind.lazySingleton<MyNavBarHelperController>(
+            (i) => MyNavBarHelperController(),
+          ),
+        ],
+        pages: const [
+          RandomPage(),
+        ],
         modules: [
           HomeModule(),
           ProductsModule(),
           AuthModule(),
         ],
-        builder: (context, onGenerateRoute, obs) => Navigator(
+        builder: (context, routes, observer) => Navigator(
           key: internalNav,
           initialRoute: '/Home/Page',
-          observers: [obs],
+          observers: [observer],
           onGenerateRoute: (settings) {
-            final page = onGenerateRoute(settings);
-
             return PageRouteBuilder(
               settings: settings,
               pageBuilder: (context, animation, secondaryAnimation) =>
-                  page ?? const Placeholder(),
+                  routes[settings.name]?.call(context) ?? const Placeholder(),
             );
           },
         ),

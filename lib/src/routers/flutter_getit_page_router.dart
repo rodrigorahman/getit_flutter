@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
-import '../core/flutter_getit_container_register.dart';
 import '../core/flutter_getit_context.dart';
 import 'flutter_getit_page_router_interface.dart';
 
@@ -21,7 +20,10 @@ class _FlutterGetItPageRouterState extends State<FlutterGetItPageRouter> {
   void initState() {
     routeId = widget.routeName;
     containerRegister = Injector.get<FlutterGetItContainerRegister>()
-      ..register(routeId, widget.bindings)
+      ..register(
+        routeId,
+        widget.bindings,
+      )
       ..load(routeId);
 
     final flutterGetItContext = Injector.get<FlutterGetItContext>();

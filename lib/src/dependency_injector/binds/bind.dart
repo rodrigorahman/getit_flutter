@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../../flutter_getit.dart';
 import '../../types/flutter_getit_typedefs.dart';
+import '../flutter_get_it_binding_opened.dart';
 
 enum RegisterType {
   singleton,
@@ -15,8 +16,6 @@ enum RegisterType {
   permanentLazySingletonAsync,
   factoryAsync,
 }
-
-const permanentTag = 'APPLICATION_PERMANENT';
 
 final class Bind<T extends Object> {
   late final BindRegister<T> bindRegister;
@@ -94,11 +93,13 @@ final class Bind<T extends Object> {
     if ((type != RegisterType.factoryAsync ||
             type != RegisterType.factoryAsync) &&
         isRegistered) {
-      _warnThatIsAlreadyRegistered();
+      if (!keepAlive) {
+        _warnThatIsAlreadyRegistered();
+      }
       return;
     }
     DebugMode.fGetItLog(
-        '📠$blueColor Registering: $T$yellowColor as$blueColor ${type.name}');
+        '📠$blueColor Registering: $T$yellowColor as$blueColor ${type.name}${keepAlive ? '$yellowColor with$blueColor keepAlive' : ''}');
     switch (type) {
       case RegisterType.singleton:
         getIt.registerSingleton<T>(
@@ -175,6 +176,7 @@ final class Bind<T extends Object> {
           '🚧$yellowColor Info:$whiteColor $T - ${T.hashCode}$yellowColor is$whiteColor permanent,$yellowColor and can\'t be disposed.');
       return;
     }
+    FlutterGetItBindingOpened.registerHashCodeOpened(T.hashCode);
     GetIt.I.unregister<T>(
       instanceName: tag,
       disposingFunction: (entity) async {

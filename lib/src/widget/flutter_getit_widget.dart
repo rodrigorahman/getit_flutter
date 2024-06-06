@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../core/flutter_getit_container_register.dart';
-import '../dependency_injector/binds/bind.dart';
-import '../dependency_injector/injector.dart';
+import '../../flutter_getit.dart';
 
 abstract class FlutterGetItWidget extends StatefulWidget {
   const FlutterGetItWidget(ValueKey<String> key) : super(key: key);
@@ -26,7 +24,11 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
   void initState() {
     id = widget.key.toString();
     containerRegister = Injector.get<FlutterGetItContainerRegister>()
-      ..register(id, widget.bindings, withTag: true)
+      ..register(
+        id,
+        widget.bindings,
+        withTag: true,
+      )
       ..load(id);
 
     super.initState();

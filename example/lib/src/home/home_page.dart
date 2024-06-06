@@ -86,7 +86,7 @@ class HomePage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                Navigator.of(context).pushNamed('/Normal/Page');
+                Navigator.of(context).pushNamed('/RandomPage');
               },
               child: const Text(
                 'Ir a uma rota "normal".',
