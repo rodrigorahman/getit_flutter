@@ -22,7 +22,7 @@ class Injector {
 
       if (hasMixin<FlutterGetItMixin>(obj) &&
           !FlutterGetItBindingOpened.contains(obj.hashCode)) {
-        return (obj as dynamic)..onInit();
+        (obj as dynamic).onInit();
       }
       FlutterGetItBindingOpened.registerHashCodeOpened(obj.hashCode);
       return obj;

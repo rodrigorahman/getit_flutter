@@ -5,10 +5,10 @@ final class FlutterGetItBindingOpened {
   static bool contains(int hashCode) => _hashCodes.contains(hashCode);
 
   static void registerHashCodeOpened(int hashCode) {
-    _hashCodes.add(hashCode);
+    if (!_hashCodes.contains(hashCode)) _hashCodes.add(hashCode);
   }
 
   static void unRegisterHashCodeOpened(int hashCode) {
-    _hashCodes.remove(hashCode);
+    if (_hashCodes.contains(hashCode)) _hashCodes.remove(hashCode);
   }
 }
