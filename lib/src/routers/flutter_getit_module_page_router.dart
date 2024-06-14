@@ -35,8 +35,8 @@ class _FlutterGetItModulePageRouterState
   }
 
   @override
-  void dispose() {
-    containerRegister.unRegister(routeId);
+  void dispose() async {
+    await containerRegister.unRegister(routeId);
     super.dispose();
   }
 }

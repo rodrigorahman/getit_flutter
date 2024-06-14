@@ -39,8 +39,8 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
   }
 
   @override
-  void dispose() {
-    containerRegister.unRegister(id);
+  void dispose() async {
+    await containerRegister.unRegister(id);
     super.dispose();
   }
 }

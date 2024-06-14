@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get_it/get_it.dart';
 
 import '../../../flutter_getit.dart';
@@ -6,12 +8,9 @@ import '../flutter_get_it_binding_opened.dart';
 
 enum RegisterType {
   singleton,
-  permanentSingleton,
   lazySingleton,
-  permanentLazySingleton,
   factory,
   singletonAsync,
-  permanentSingletonAsync,
   lazySingletonAsync,
   permanentLazySingletonAsync,
   factoryAsync,
@@ -107,33 +106,13 @@ final class Bind<T extends Object> {
           instanceName: tag,
           dispose: (entity) => null,
         );
-      case RegisterType.permanentSingleton:
-        getIt.registerSingleton<T>(
-          bindRegister(Injector()),
-          instanceName: tag,
-          dispose: (entity) => null,
-        );
       case RegisterType.lazySingleton:
         getIt.registerLazySingleton<T>(
           () => bindRegister(Injector()),
           instanceName: tag,
           dispose: (entity) => null,
         );
-
-      case RegisterType.permanentLazySingleton:
-        getIt.registerLazySingleton<T>(
-          () => bindRegister(Injector()),
-          instanceName: tag,
-          dispose: (entity) => null,
-        );
-
       case RegisterType.singletonAsync:
-        getIt.registerSingletonAsync<T>(
-          () async => await bindAsyncRegister(Injector()),
-          instanceName: tag,
-          dispose: (entity) => null,
-        );
-      case RegisterType.permanentSingletonAsync:
         getIt.registerSingletonAsync<T>(
           () async => await bindAsyncRegister(Injector()),
           instanceName: tag,
@@ -145,7 +124,6 @@ final class Bind<T extends Object> {
           instanceName: tag,
           dispose: (entity) => null,
         );
-
       case RegisterType.permanentLazySingletonAsync:
         getIt.registerLazySingletonAsync<T>(
           () async => await bindAsyncRegister(Injector()),
@@ -157,7 +135,6 @@ final class Bind<T extends Object> {
           () => bindRegister(Injector()),
           instanceName: tag,
         );
-
       case RegisterType.factoryAsync:
         getIt.registerFactoryAsync<T>(
           () async => await bindAsyncRegister(Injector()),
@@ -171,14 +148,14 @@ final class Bind<T extends Object> {
         '🚧$redColor Warning:$whiteColor $T - ${T.hashCode}$yellowColor is already registered as$blueColor ${type.name}.');
   }
 
-  void unload([String? tag, bool debugMode = false]) {
+  FutureOr<void> unload([String? tag, bool debugMode = false]) async {
     if (keepAlive) {
       DebugMode.fGetItLog(
           '🚧$yellowColor Info:$whiteColor $T - ${T.hashCode}$yellowColor is$whiteColor permanent,$yellowColor and can\'t be disposed.');
       return;
     }
     FlutterGetItBindingOpened.registerHashCodeOpened(T.hashCode);
-    GetIt.I.unregister<T>(
+    await GetIt.I.unregister<T>(
       instanceName: tag,
       disposingFunction: (entity) async {
         DebugMode.fGetItLog(

@@ -50,10 +50,10 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     final flutterGetItContext = Injector.get<FlutterGetItContext>();
     if (!flutterGetItContext.isSameIdLoad(id)) {
-      containerRegister.unRegister('$id-module');
+      await containerRegister.unRegister('$id-module');
     }
     super.dispose();
   }

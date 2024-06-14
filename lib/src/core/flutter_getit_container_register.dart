@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../flutter_getit.dart';
 import 'model/binding_register.dart';
 
@@ -36,10 +38,10 @@ final class FlutterGetItContainerRegister {
     }
   }
 
-  void unRegister(String id) {
+  FutureOr<void> unRegister(String id) async {
     if (_references[id] case (:final register, loaded: true)) {
       for (var bind in register.bindings) {
-        bind.unload(register.tag, debugMode);
+        await bind.unload(register.tag, debugMode);
       }
     }
     _references.remove(id);

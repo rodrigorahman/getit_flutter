@@ -36,8 +36,8 @@ class _FlutterGetItPageRouterState extends State<FlutterGetItPageRouter> {
   }
 
   @override
-  void dispose() {
-    containerRegister.unRegister(routeId);
+  void dispose() async {
+    await containerRegister.unRegister(routeId);
     super.dispose();
   }
 }
