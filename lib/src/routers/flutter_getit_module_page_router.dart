@@ -18,28 +18,27 @@ abstract class FlutterGetItModulePageRouter extends StatefulWidget {
 class _FlutterGetItModulePageRouterState
     extends State<FlutterGetItModulePageRouter> {
   late final String routeId;
-  late FlutterGetItContainerRegister containerRegister;
+  late final FlutterGetItContainerRegister containerRegister;
 
   @override
   void initState() {
+    super.initState();
     final navObserver = Injector.get<FlutterGetItNavigatorObserver>();
     routeId = navObserver.currentRoute ?? hashCode.toString();
 
     containerRegister = Injector.get<FlutterGetItContainerRegister>()
       ..register(routeId, widget.bindings)
       ..load(routeId);
+  }
 
-    super.initState();
+  @override
+  Widget build(BuildContext context) {
+    return widget.view(context);
   }
 
   @override
   void dispose() {
     containerRegister.unRegister(routeId);
     super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.view(context);
   }
 }
