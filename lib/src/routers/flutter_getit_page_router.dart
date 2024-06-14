@@ -15,29 +15,27 @@ abstract class FlutterGetItPageRouter extends StatefulWidget
 
 class _FlutterGetItPageRouterState extends State<FlutterGetItPageRouter> {
   late final String routeId;
-  late FlutterGetItContainerRegister containerRegister;
+  late final FlutterGetItContainerRegister containerRegister;
 
   @override
   void initState() {
+    super.initState();
     routeId = widget.routeName;
     containerRegister = Injector.get<FlutterGetItContainerRegister>()
       ..register(routeId, widget.bindings)
       ..load(routeId);
 
-    final flutterGetItContext = Injector.get<FlutterGetItContext>();
-    flutterGetItContext.registerId(routeId);
+    Injector.get<FlutterGetItContext>().registerId(routeId);
+  }
 
-    super.initState();
+  @override
+  Widget build(BuildContext context) {
+    return widget.view(context);
   }
 
   @override
   void dispose() {
     containerRegister.unRegister(routeId);
     super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.view(context);
   }
 }
