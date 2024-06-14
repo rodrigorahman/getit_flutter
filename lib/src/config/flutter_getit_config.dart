@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import '../core/flutter_getit_container_register.dart';
+
+import '../../flutter_getit.dart';
 import '../core/flutter_getit_context.dart';
-import '../core/navigator/flutter_getit_navigator_observer.dart';
-import '../debug/debug_mode.dart';
-import '../dependency_injector/binds/application_bindings.dart';
 import '../routers/flutter_getit_module.dart';
 import '../routers/flutter_getit_page_router_interface.dart';
 import '../types/flutter_getit_typedefs.dart';
@@ -67,7 +65,10 @@ class _FlutterGetItState extends State<FlutterGetIt> {
 
       case FlutterGetIt(:final bindingsBuilder?):
         register
-          ..register('APPLICATION', bindingsBuilder())
+          ..register(
+            'APPLICATION',
+            bindingsBuilder(),
+          )
           ..load('APPLICATION');
     }
   }
@@ -82,24 +83,24 @@ class _FlutterGetItState extends State<FlutterGetIt> {
           var moduleRouteName = module.moduleRouteName;
 
           if (moduleRouteName != '/' && moduleRouteName.endsWith('/')) {
-            debugPrint(
-              'ERROR:The module ($moduleRouteName) should not end with /',
-            );
+
+            DebugMode.fGetItLog(
+                '🚨 - ${redColor}ERROR:$whiteColor The module $yellowColor($moduleRouteName)$whiteColor should not end with /');
             moduleRouteName = moduleRouteName.replaceFirst(RegExp(r'/$'), '');
           }
 
           if (moduleRouteName != '/' && !moduleRouteName.startsWith('/')) {
-            debugPrint(
-              'ERROR: The module ($moduleRouteName) should start with /',
-            );
+            DebugMode.fGetItLog(
+                '🚨 - ${redColor}ERROR:$whiteColor The module $yellowColor($moduleRouteName)$whiteColor should start with /');
+
             moduleRouteName = '/$moduleRouteName';
           }
 
           var pageRouteName = page.key;
           if (!pageRouteName.startsWith(r'/')) {
-            debugPrint(
-              'ERROR: Page ($pageRouteName) should starts with /',
-            );
+            DebugMode.fGetItLog(
+                '🚨 - ${redColor}ERROR:$whiteColor Page $yellowColor($pageRouteName)$whiteColor should starts with /');
+
             pageRouteName = '/${page.key}';
           }
 

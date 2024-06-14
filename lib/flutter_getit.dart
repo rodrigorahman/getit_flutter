@@ -1,11 +1,15 @@
 export 'src/config/flutter_getit_config.dart' show FlutterGetIt;
+export 'src/core/flutter_getit_container_register.dart';
+export 'src/core/navigator/flutter_getit_navigator_observer.dart';
 export 'src/debug/debug_mode.dart';
 export 'src/dependency_injector/binds/application_bindings.dart';
 export 'src/dependency_injector/binds/bind.dart';
 export 'src/dependency_injector/binds/flutter_get_it_binding_register.dart';
 export 'src/dependency_injector/injector.dart';
+export 'src/mixin//flutter_get_it_mixin.dart';
 export 'src/routers/flutter_getit_module.dart' show FlutterGetItModule;
 export 'src/routers/flutter_getit_module_page_router.dart';
 export 'src/routers/flutter_getit_page_builder.dart';
 export 'src/routers/flutter_getit_page_router.dart';
+export 'src/widget/flutter_getit_navigator.dart';
 export 'src/widget/flutter_getit_widget.dart';

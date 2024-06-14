@@ -1,5 +1,4 @@
 import '../../../flutter_getit.dart';
-import '../../core/flutter_getit_container_register.dart';
 
 final class FlutterGetItBindingRegister {
   FlutterGetItBindingRegister._();
@@ -8,9 +7,11 @@ final class FlutterGetItBindingRegister {
   /// need to incorporate them into the ApplicationBinding class. It ensures a
   /// constant application binding that remains active throughout the entire
   /// lifecycle of the application under a specific key.
-  static void registerPermanentBinding(String key, List<Bind> bindings) {
-    Injector.get<FlutterGetItContainerRegister>()
-      ..register(key, bindings)
-      ..load(key);
+
+  static void registerPermanentBinding(
+      FlutterGetItContainerRegister container, List<Bind> bindings) {
+    container
+      ..register('APPLICATION_PERMANENT', bindings)
+      ..load('APPLICATION_PERMANENT');
   }
 }

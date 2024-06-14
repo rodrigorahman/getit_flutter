@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
-import '../core/flutter_getit_container_register.dart';
 import '../core/flutter_getit_context.dart';
 
 abstract class FlutterGetItModule {

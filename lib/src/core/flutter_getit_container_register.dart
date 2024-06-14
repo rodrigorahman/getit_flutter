@@ -1,4 +1,4 @@
-import '../dependency_injector/binds/bind.dart';
+import '../../flutter_getit.dart';
 import 'model/binding_register.dart';
 
 final class FlutterGetItContainerRegister {
@@ -8,19 +8,38 @@ final class FlutterGetItContainerRegister {
   final bool debugMode;
 
   void register(String id, List<Bind> bindings, {bool withTag = false}) {
+    final normalBinds = bindings.where((bind) => !bind.keepAlive).toList();
+    final keepAliveBinds = bindings.where((bind) => bind.keepAlive).toList();
     if (!_references.containsKey(id)) {
       final tag = withTag ? id : null;
       _references[id] = (
-        register: RegisterModel(bindings: bindings, tag: tag),
-        loaded: false,
+        register: RegisterModel(bindings: normalBinds, tag: tag),
+        loaded: false
       );
+    }
+    if (keepAliveBinds.isNotEmpty) {
+      if (_references.containsKey('APPLICATION_PERMANENT')) {
+        final ref = _references.remove('APPLICATION_PERMANENT')!;
+        _references['APPLICATION_PERMANENT'] = (
+          register: RegisterModel(
+            bindings: [...ref.register.bindings, ...keepAliveBinds],
+          ),
+          loaded: false,
+        );
+      } else {
+        _references['APPLICATION_PERMANENT'] = (
+          register: RegisterModel(bindings: keepAliveBinds),
+          loaded: false,
+        );
+      }
+      load('APPLICATION_PERMANENT');
     }
   }
 
   void unRegister(String id) {
     if (_references[id] case (:final register, loaded: true)) {
-      for (final bind in register.bindings) {
-        bind.unload(register.tag);
+      for (var bind in register.bindings) {
+        bind.unload(register.tag, debugMode);
       }
     }
     _references.remove(id);
@@ -34,8 +53,9 @@ final class FlutterGetItContainerRegister {
             :final register,
             loaded: false,
           )) {
-        for (final bind in register.bindings) {
-          bind.load(register.tag);
+
+        for (var bind in register.bindings) {
+          bind.load(register.tag, debugMode);
         }
         _references[id] = (register: register, loaded: true);
       }
