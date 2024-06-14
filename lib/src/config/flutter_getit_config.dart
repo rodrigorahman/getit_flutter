@@ -83,7 +83,6 @@ class _FlutterGetItState extends State<FlutterGetIt> {
           var moduleRouteName = module.moduleRouteName;
 
           if (moduleRouteName != '/' && moduleRouteName.endsWith('/')) {
-
             DebugMode.fGetItLog(
                 '🚨 - ${redColor}ERROR:$whiteColor The module $yellowColor($moduleRouteName)$whiteColor should not end with /');
             moduleRouteName = moduleRouteName.replaceFirst(RegExp(r'/$'), '');

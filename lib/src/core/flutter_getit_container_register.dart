@@ -53,7 +53,6 @@ final class FlutterGetItContainerRegister {
             :final register,
             loaded: false,
           )) {
-
         for (var bind in register.bindings) {
           bind.load(register.tag, debugMode);
         }

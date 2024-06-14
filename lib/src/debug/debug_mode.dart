@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import '../core/flutter_getit_container_register.dart';
 import '../dependency_injector/injector.dart';
 
-
 const cyanColor = '\x1b[36m';
 const redColor = '\x1b[31m';
 const greenColor = '\x1b[32m';

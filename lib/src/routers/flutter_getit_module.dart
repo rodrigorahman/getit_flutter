@@ -35,7 +35,10 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
     ) = widget;
     id = moduleRouteName;
     containerRegister = Injector.get<FlutterGetItContainerRegister>()
-      ..register('$id-module', bindings,)
+      ..register(
+        '$id-module',
+        bindings,
+      )
       ..load('$id-module');
 
     Injector.get<FlutterGetItContext>().registerId(moduleRouteName);

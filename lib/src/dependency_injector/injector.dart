@@ -12,7 +12,6 @@ class Injector {
   /// Get para recupera a instancia do GetIt
   static T get<T extends Object>([String? tag]) {
     try {
-
       final getIt = GetIt.I;
       final obj = getIt.get<T>(instanceName: tag);
       if (!(T == FlutterGetItNavigatorObserver ||

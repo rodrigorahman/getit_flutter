@@ -112,7 +112,6 @@ final class Bind<T extends Object> {
           bindRegister(Injector()),
           instanceName: tag,
           dispose: (entity) => null,
-
         );
       case RegisterType.lazySingleton:
         getIt.registerLazySingleton<T>(
