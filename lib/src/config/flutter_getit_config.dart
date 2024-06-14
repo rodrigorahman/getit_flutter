@@ -96,8 +96,10 @@ class _FlutterGetItState extends State<FlutterGetIt> {
           }
 
           var pageRouteName = page.key;
-          if (!pageRouteName.startsWith('/')) {
-            debugPrint('ERROR: Page ($pageRouteName) should starts with /');
+          if (!pageRouteName.startsWith(r'/')) {
+            debugPrint(
+              'ERROR: Page ($pageRouteName) should starts with /',
+            );
             pageRouteName = '/${page.key}';
           }
 

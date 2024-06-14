@@ -38,7 +38,10 @@ final class Bind<T extends Object> {
     final getIt = GetIt.I;
     switch (type) {
       case RegisterType.singleton:
-        getIt.registerSingleton<T>(bindRegister(Injector()), instanceName: tag);
+        getIt.registerSingleton<T>(
+          bindRegister(Injector()),
+          instanceName: tag,
+        );
       case RegisterType.lazySingleton:
         getIt.registerLazySingleton<T>(
           () => bindRegister(Injector()),

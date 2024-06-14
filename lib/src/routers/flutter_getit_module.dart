@@ -12,9 +12,9 @@ abstract class FlutterGetItModule {
 
 class FlutterGetItPageModule extends StatefulWidget {
   const FlutterGetItPageModule({
+    super.key,
     required this.module,
     required this.page,
-    super.key,
   });
 
   final FlutterGetItModule module;
@@ -36,7 +36,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
     ) = widget;
     id = moduleRouteName;
     containerRegister = Injector.get<FlutterGetItContainerRegister>()
-      ..register('$id-module', bindings)
+      ..register('$id-module', bindings,)
       ..load('$id-module');
 
     Injector.get<FlutterGetItContext>().registerId(moduleRouteName);

@@ -21,7 +21,9 @@ final class DebugMode {
     );
   }
   void printRegister() {
-    debugPrint(const JsonEncoder.withIndent('  ').convert(readyReferences()));
+    debugPrint(
+      const JsonEncoder.withIndent('  ').convert(readyReferences()),
+    );
   }
 
   Map<String, dynamic> readyReferences() {
