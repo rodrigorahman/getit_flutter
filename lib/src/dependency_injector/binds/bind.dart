@@ -112,6 +112,7 @@ final class Bind<T extends Object> {
           bindRegister(Injector()),
           instanceName: tag,
           dispose: (entity) => null,
+
         );
       case RegisterType.lazySingleton:
         getIt.registerLazySingleton<T>(
@@ -157,6 +158,7 @@ final class Bind<T extends Object> {
           () => bindRegister(Injector()),
           instanceName: tag,
         );
+
       case RegisterType.factoryAsync:
         getIt.registerFactoryAsync<T>(
           () async => await bindAsyncRegister(Injector()),

@@ -10,8 +10,11 @@ abstract class FlutterGetItModule {
 }
 
 class FlutterGetItPageModule extends StatefulWidget {
-  const FlutterGetItPageModule(
-      {super.key, required this.module, required this.page});
+  const FlutterGetItPageModule({
+    super.key,
+    required this.module,
+    required this.page,
+  });
 
   final FlutterGetItModule module;
   final WidgetBuilder page;
@@ -22,22 +25,25 @@ class FlutterGetItPageModule extends StatefulWidget {
 
 class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
   late final String id;
-  late FlutterGetItContainerRegister containerRegister;
+  late final FlutterGetItContainerRegister containerRegister;
 
   @override
   void initState() {
+    super.initState();
     final FlutterGetItPageModule(
       module: (FlutterGetItModule(:moduleRouteName, :bindings)),
     ) = widget;
     id = moduleRouteName;
     containerRegister = Injector.get<FlutterGetItContainerRegister>()
-      ..register('$id-module', bindings)
+      ..register('$id-module', bindings,)
       ..load('$id-module');
 
-    final flutterGetItContext = Injector.get<FlutterGetItContext>();
-    flutterGetItContext.registerId(moduleRouteName);
+    Injector.get<FlutterGetItContext>().registerId(moduleRouteName);
+  }
 
-    super.initState();
+  @override
+  Widget build(BuildContext context) {
+    return widget.page(context);
   }
 
   @override
@@ -47,10 +53,5 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
       containerRegister.unRegister('$id-module');
     }
     super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.page(context);
   }
 }

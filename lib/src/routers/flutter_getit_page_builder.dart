@@ -25,14 +25,19 @@ class FlutterGetItPageBuilder extends StatefulWidget
     if (binding != null) {
       bindings.add(binding!());
     }
+
     return bindings;
   }
 
   @override
   WidgetBuilder get view => page;
 
-  const FlutterGetItPageBuilder(
-      {super.key, required this.page, this.binding, required this.path});
+  const FlutterGetItPageBuilder({
+    required this.page,
+    required this.path,
+    super.key,
+    this.binding,
+  });
 
   @override
   State<FlutterGetItPageBuilder> createState() =>
@@ -41,10 +46,11 @@ class FlutterGetItPageBuilder extends StatefulWidget
 
 class _FlutterGetItPageBuilderState extends State<FlutterGetItPageBuilder> {
   late final String routeId;
-  late FlutterGetItContainerRegister containerRegister;
+  late final FlutterGetItContainerRegister containerRegister;
 
   @override
   void initState() {
+    super.initState();
     routeId = widget.routeName;
     containerRegister = Injector.get<FlutterGetItContainerRegister>()
       ..register(
@@ -53,20 +59,17 @@ class _FlutterGetItPageBuilderState extends State<FlutterGetItPageBuilder> {
       )
       ..load(routeId);
 
-    final flutterGetItContext = Injector.get<FlutterGetItContext>();
-    flutterGetItContext.registerId(routeId);
+    Injector.get<FlutterGetItContext>().registerId(routeId);
+  }
 
-    super.initState();
+  @override
+  Widget build(BuildContext context) {
+    return widget.view(context);
   }
 
   @override
   void dispose() {
     containerRegister.unRegister(routeId);
     super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.view(context);
   }
 }

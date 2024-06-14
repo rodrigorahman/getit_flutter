@@ -7,6 +7,7 @@ final class FlutterGetItBindingRegister {
   /// need to incorporate them into the ApplicationBinding class. It ensures a
   /// constant application binding that remains active throughout the entire
   /// lifecycle of the application under a specific key.
+
   static void registerPermanentBinding(
       FlutterGetItContainerRegister container, List<Bind> bindings) {
     container

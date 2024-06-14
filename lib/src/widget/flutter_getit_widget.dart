@@ -18,10 +18,11 @@ abstract class FlutterGetItWidget extends StatefulWidget {
 
 class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
   late final String id;
-  late FlutterGetItContainerRegister containerRegister;
+  late final FlutterGetItContainerRegister containerRegister;
 
   @override
   void initState() {
+    super.initState();
     id = widget.key.toString();
     containerRegister = Injector.get<FlutterGetItContainerRegister>()
       ..register(
@@ -30,18 +31,16 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
         withTag: true,
       )
       ..load(id);
+  }
 
-    super.initState();
+  @override
+  Widget build(BuildContext context) {
+    return widget.widget(context);
   }
 
   @override
   void dispose() {
     containerRegister.unRegister(id);
     super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.widget(context);
   }
 }

@@ -1,7 +1,7 @@
 import '../../flutter_getit.dart';
 import 'model/binding_register.dart';
 
-class FlutterGetItContainerRegister {
+final class FlutterGetItContainerRegister {
   FlutterGetItContainerRegister({this.debugMode = false});
 
   final Map<String, ({RegisterModel register, bool loaded})> _references = {};
@@ -53,6 +53,7 @@ class FlutterGetItContainerRegister {
             :final register,
             loaded: false,
           )) {
+
         for (var bind in register.bindings) {
           bind.load(register.tag, debugMode);
         }

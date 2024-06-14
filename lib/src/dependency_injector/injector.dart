@@ -12,6 +12,7 @@ class Injector {
   /// Get para recupera a instancia do GetIt
   static T get<T extends Object>([String? tag]) {
     try {
+
       final getIt = GetIt.I;
       final obj = getIt.get<T>(instanceName: tag);
       if (!(T == FlutterGetItNavigatorObserver ||
@@ -60,7 +61,7 @@ class Injector {
   }
 
   /// Callable classe para facilitar a recuperação pela instancia e não pelo atributo de classe, podendo ser passado como parâmetro
-  T call<T extends Object>([String? tag]) => get<T>();
+  T call<T extends Object>([String? tag]) => get<T>(tag);
 }
 
 /// Extension para adicionar o recurso do injection dentro do BuildContext

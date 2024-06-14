@@ -9,18 +9,19 @@ import '../types/flutter_getit_typedefs.dart';
 
 class FlutterGetIt extends StatefulWidget {
   const FlutterGetIt({
-    super.key,
     required this.builder,
+    super.key,
     this.bindingsBuilder,
     this.bindings,
     this.modules,
     this.pages,
     this.debugMode = false,
   }) : assert(
-            (bindingsBuilder != null && bindings == null ||
-                bindingsBuilder == null && bindings != null ||
-                bindingsBuilder == null && bindings == null),
-            'You must send only one of the attributes (bindingBuilder or bindings)');
+          bindingsBuilder != null && bindings == null ||
+              bindingsBuilder == null && bindings != null ||
+              bindingsBuilder == null && bindings == null,
+          'You must send only one of the attributes (bindingBuilder or bindings)',
+        );
 
   final ApplicationBuilder builder;
   final ApplicationBindingsBuilder? bindingsBuilder;
@@ -38,7 +39,7 @@ class FlutterGetIt extends StatefulWidget {
 }
 
 class _FlutterGetItState extends State<FlutterGetIt> {
-  late FlutterGetItNavigatorObserver observer;
+  late final FlutterGetItNavigatorObserver observer;
 
   @override
   void initState() {
@@ -46,10 +47,12 @@ class _FlutterGetItState extends State<FlutterGetIt> {
     observer = FlutterGetItNavigatorObserver();
     final getIt = GetIt.I;
     final containerRegister = getIt.registerSingleton(
-        FlutterGetItContainerRegister(debugMode: widget.debugMode));
-    getIt.registerSingleton(DebugMode());
-    getIt.registerLazySingleton(() => observer);
-    getIt.registerLazySingleton(() => FlutterGetItContext());
+      FlutterGetItContainerRegister(debugMode: widget.debugMode),
+    );
+    getIt
+      ..registerSingleton(DebugMode())
+      ..registerLazySingleton(() => observer)
+      ..registerLazySingleton(FlutterGetItContext.new);
     _registerAndLoadDependencies(containerRegister);
   }
 
@@ -75,11 +78,12 @@ class _FlutterGetItState extends State<FlutterGetIt> {
     final FlutterGetIt(:modules, :pages) = widget;
 
     if (modules != null) {
-      for (var module in modules) {
-        for (var page in module.pages.entries) {
+      for (final module in modules) {
+        for (final page in module.pages.entries) {
           var moduleRouteName = module.moduleRouteName;
 
           if (moduleRouteName != '/' && moduleRouteName.endsWith('/')) {
+
             DebugMode.fGetItLog(
                 '🚨 - ${redColor}ERROR:$whiteColor The module $yellowColor($moduleRouteName)$whiteColor should not end with /');
             moduleRouteName = moduleRouteName.replaceFirst(RegExp(r'/$'), '');
@@ -88,6 +92,7 @@ class _FlutterGetItState extends State<FlutterGetIt> {
           if (moduleRouteName != '/' && !moduleRouteName.startsWith('/')) {
             DebugMode.fGetItLog(
                 '🚨 - ${redColor}ERROR:$whiteColor The module $yellowColor($moduleRouteName)$whiteColor should start with /');
+
             moduleRouteName = '/$moduleRouteName';
           }
 
@@ -95,6 +100,7 @@ class _FlutterGetItState extends State<FlutterGetIt> {
           if (!pageRouteName.startsWith(r'/')) {
             DebugMode.fGetItLog(
                 '🚨 - ${redColor}ERROR:$whiteColor Page $yellowColor($pageRouteName)$whiteColor should starts with /');
+
             pageRouteName = '/${page.key}';
           }
 
@@ -104,7 +110,7 @@ class _FlutterGetItState extends State<FlutterGetIt> {
             finalRoute = moduleRouteName;
           }
 
-          routesMap[finalRoute.replaceAll(r'//', r'/')] = (_) {
+          routesMap[finalRoute.replaceAll('//', '/')] = (_) {
             return FlutterGetItPageModule(
               module: module,
               page: page.value,
