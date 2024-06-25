@@ -1,42 +1,49 @@
+import 'package:example/application/bindings/navigator_bindings.dart';
 import 'package:example/src/auth/auth_module.dart';
-import 'package:example/src/home/home_controller.dart';
+import 'package:example/src/detail/detail_module.dart';
 import 'package:example/src/home/home_module.dart';
-import 'package:example/src/nav_bar/my_nav_bar_helper_controller.dart';
-import 'package:example/src/products/products_module.dart';
+import 'package:example/src/random/random_controller.dart';
 import 'package:example/src/random/random_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
 final internalNav = GlobalKey<NavigatorState>();
 
-class MyNavBar extends StatelessWidget {
+class MyNavBar extends StatefulWidget {
   const MyNavBar({super.key});
 
   @override
+  State<MyNavBar> createState() => _MyNavBarState();
+}
+
+class _MyNavBarState extends State<MyNavBar> {
+  var _currentIndex = 0;
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FlutterGetItNavigator(
-        bindingsBuilder: () => [
-          Bind.singleton(
-            (i) => HomeController(),
-            keepAlive: true,
+      body: FlutterGetIt.navigator(
+        navigatorName: 'NAVbarProducts',
+        bindings: MyNavigatorBindings(),
+        pages: [
+          FlutterGetItPageRouter(
+            name: '/RandomPage',
+            page: (context) => const RandomPage(),
+            bindings: [
+              Bind.lazySingleton<RandomController>(
+                (i) => RandomController('Random by FlutterGetItPageRouter'),
+              ),
+            ],
           ),
-          Bind.lazySingleton<MyNavBarHelperController>(
-            (i) => MyNavBarHelperController(),
-          ),
-        ],
-        pages: const [
-          RandomPage(),
         ],
         modules: [
           HomeModule(),
-          ProductsModule(),
+          DetailModule(),
           AuthModule(),
         ],
-        builder: (context, routes, observer) => Navigator(
+        builder: (context, routes) => Navigator(
           key: internalNav,
           initialRoute: '/Home/Page',
-          observers: [observer],
+          observers: const [],
           onGenerateRoute: (settings) {
             return PageRouteBuilder(
               settings: settings,
@@ -47,20 +54,26 @@ class MyNavBar extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
         onTap: (value) {
-          switch (value) {
-            case 0:
-              internalNav.currentState
-                  ?.pushNamedAndRemoveUntil('/Home/Page', (_) => false);
-            case 1:
-              internalNav.currentState
-                  ?.pushNamedAndRemoveUntil('/Products/Page', (_) => false);
-            case 2:
-              internalNav.currentState
-                  ?.pushNamedAndRemoveUntil('/Home/Page', (_) => false);
-            case 3:
-              internalNav.currentState
-                  ?.pushNamedAndRemoveUntil('/Products/Page', (_) => false);
+          if (_currentIndex != value) {
+            switch (value) {
+              case 0:
+                internalNav.currentState
+                    ?.pushNamedAndRemoveUntil('/Home/Page', (_) => false);
+              case 1:
+                internalNav.currentState
+                    ?.pushNamedAndRemoveUntil('/Products/Page', (_) => false);
+              case 2:
+                internalNav.currentState
+                    ?.pushNamedAndRemoveUntil('/Home/Page', (_) => false);
+              case 3:
+                internalNav.currentState
+                    ?.pushNamedAndRemoveUntil('/Products/Page', (_) => false);
+            }
+            setState(() {
+              _currentIndex = value;
+            });
           }
         },
         items: const [

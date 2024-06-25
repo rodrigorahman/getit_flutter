@@ -7,7 +7,5 @@ class LoginController with FlutterGetItMixin {
   void dispose() {}
 
   @override
-  void onInit() {
-    print('onInit $hashCode');
-  }
+  void onInit() {}
 }

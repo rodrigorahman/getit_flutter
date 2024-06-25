@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:get_it/get_it.dart';
 
 import '../../../flutter_getit.dart';
@@ -21,78 +19,67 @@ final class Bind<T extends Object> {
   late final BindAsyncRegister<T> bindAsyncRegister;
   final RegisterType type;
   final bool keepAlive;
+  bool isTheFactoryDad;
+  final String? tag;
 
-  Bind._(this.bindRegister, this.type, this.keepAlive);
+  Bind._(this.bindRegister, this.type, this.keepAlive, this.tag,
+      this.isTheFactoryDad);
 
-  Bind._async(this.bindAsyncRegister, this.type, this.keepAlive);
+  Bind._async(this.bindAsyncRegister, this.type, this.keepAlive, this.tag,
+      this.isTheFactoryDad);
 
   String get bindingClassName => T.toString();
 
   static Bind singleton<T extends Object>(
     BindRegister<T> bindRegister, {
     bool keepAlive = false,
+    String? tag,
   }) =>
-      Bind<T>._(
-        bindRegister,
-        RegisterType.singleton,
-        keepAlive,
-      );
+      Bind<T>._(bindRegister, RegisterType.singleton, keepAlive, tag, false);
 
   static Bind lazySingleton<T extends Object>(
     BindRegister<T> bindRegister, {
     bool keepAlive = false,
+    String? tag,
   }) =>
       Bind<T>._(
-        bindRegister,
-        RegisterType.lazySingleton,
-        keepAlive,
-      );
+          bindRegister, RegisterType.lazySingleton, keepAlive, tag, false);
 
   static Bind factory<T extends Object>(
-    BindRegister<T> bindRegister,
-  ) =>
-      Bind<T>._(
-        bindRegister,
-        RegisterType.factory,
-        false,
-      );
+    BindRegister<T> bindRegister, {
+    String? tag,
+  }) =>
+      Bind<T>._(bindRegister, RegisterType.factory, false, tag, false);
 
   static Bind singletonAsync<T extends Object>(
     BindAsyncRegister<T> bindAsyncRegister, {
     bool keepAlive = false,
+    String? tag,
   }) =>
-      Bind<T>._async(
-        bindAsyncRegister,
-        RegisterType.singletonAsync,
-        keepAlive,
-      );
+      Bind<T>._async(bindAsyncRegister, RegisterType.singletonAsync, keepAlive,
+          tag, false);
 
   static Bind lazySingletonAsync<T extends Object>(
     BindAsyncRegister<T> bindAsyncRegister, {
     bool keepAlive = false,
+    String? tag,
   }) =>
-      Bind<T>._async(
-        bindAsyncRegister,
-        RegisterType.lazySingletonAsync,
-        keepAlive,
-      );
+      Bind<T>._async(bindAsyncRegister, RegisterType.lazySingletonAsync,
+          keepAlive, tag, false);
 
   static Bind factoryAsync<T extends Object>(
-          BindAsyncRegister<T> bindAsyncRegister) =>
+    BindAsyncRegister<T> bindAsyncRegister, {
+    String? tag,
+  }) =>
       Bind<T>._async(
-        bindAsyncRegister,
-        RegisterType.factoryAsync,
-        false,
-      );
+          bindAsyncRegister, RegisterType.factoryAsync, false, tag, false);
 
   void load([String? tag, bool debugMode = false]) {
     final getIt = GetIt.I;
     final isRegistered = getIt.isRegistered<T>(instanceName: tag);
 
-    if ((type != RegisterType.factoryAsync ||
-            type != RegisterType.factoryAsync) &&
-        isRegistered) {
-      if (!keepAlive) {
+    if (isRegistered) {
+      if (type != RegisterType.factory && type != RegisterType.factoryAsync) {
         _warnThatIsAlreadyRegistered();
       }
       return;
@@ -131,11 +118,15 @@ final class Bind<T extends Object> {
           dispose: (entity) => null,
         );
       case RegisterType.factory:
+        FlutterGetItBindingOpened.registerFactoryDad<T>();
+        isTheFactoryDad = true;
         getIt.registerFactory<T>(
           () => bindRegister(Injector()),
           instanceName: tag,
         );
       case RegisterType.factoryAsync:
+        FlutterGetItBindingOpened.registerFactoryDad<T>();
+        isTheFactoryDad = true;
         getIt.registerFactoryAsync<T>(
           () async => await bindAsyncRegister(Injector()),
           instanceName: tag,
@@ -148,25 +139,59 @@ final class Bind<T extends Object> {
         '🚧$redColor Warning:$whiteColor $T - ${T.hashCode}$yellowColor is already registered as$blueColor ${type.name}.');
   }
 
-  FutureOr<void> unload([String? tag, bool debugMode = false]) async {
+  void unload([String? tag, bool debugMode = false]) {
     if (keepAlive) {
       DebugMode.fGetItLog(
           '🚧$yellowColor Info:$whiteColor $T - ${T.hashCode}$yellowColor is$whiteColor permanent,$yellowColor and can\'t be disposed.');
       return;
     }
-    FlutterGetItBindingOpened.registerHashCodeOpened(T.hashCode);
-    await GetIt.I.unregister<T>(
-      instanceName: tag,
-      disposingFunction: (entity) async {
-        DebugMode.fGetItLog(
-            '🚮$yellowColor Dispose: ${entity.runtimeType} - ${entity.hashCode}');
+    FlutterGetItBindingOpened.unRegisterHashCodeOpened(T.hashCode);
 
-        if (hasMixin<FlutterGetItMixin>(entity)) {
-          (entity as FlutterGetItMixin).dispose();
-        }
+    final isRegistered = GetIt.I.isRegistered<T>(instanceName: tag);
+    final isFactory =
+        type == RegisterType.factory || type == RegisterType.factoryAsync;
+
+    if (isRegistered) {
+      if (isFactory && !isTheFactoryDad) {
         return;
-      },
-    );
+      } else if ((isFactory && isTheFactoryDad)) {
+        FlutterGetItBindingOpened.unRegisterFactories<T>();
+      }
+      GetIt.I.unregister<T>(
+        instanceName: tag,
+        disposingFunction: (entity) async {
+          if (hasMixin<FlutterGetItMixin>(entity)) {
+            (entity as FlutterGetItMixin).dispose();
+          }
+
+          return;
+        },
+      );
+      DebugMode.fGetItLog(
+          '🚮$yellowColor Dispose: $T (${type.name}) - ${T.hashCode}');
+      return;
+      /* if (isFactory) {
+        FlutterGetItBindingOpened.unRegisterFactoryOpened(T);
+      }
+      if (isTheFactoryDad || !isFactory) {
+        FlutterGetItBindingOpened.unRegisterFactoryDad(T);
+        GetIt.I.unregister<T>(
+          instanceName: tag,
+          disposingFunction: (entity) async {
+            if (hasMixin<FlutterGetItMixin>(entity)) {
+              (entity as FlutterGetItMixin).dispose();
+            }
+            DebugMode.fGetItLog('🚮$yellowColor Dispose: $T - ${T.hashCode}');
+            return;
+          },
+        );
+      } */
+    }
+    /* if (type == RegisterType.factory || type == RegisterType.factoryAsync) {
+      DebugMode.fGetItLog(
+          '🚮$yellowColor Dispose: ${T.runtimeType} - ${T.hashCode}');
+      (T as dynamic)?.dispose();
+    } */
   }
 
   @override

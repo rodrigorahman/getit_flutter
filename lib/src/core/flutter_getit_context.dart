@@ -1,22 +1,24 @@
 class FlutterGetItContext {
-  String _lastIdLoaded = '';
-  String _currentIdLoaded = '';
+  // Salva o modulo e sua hash quando aberto pela primeira vez
+  final _modulesFirstRouteHash = <String, int>{};
 
-  void registerId(String id) {
-    _lastIdLoaded = _currentIdLoaded;
-    _currentIdLoaded = id;
+  //Só adiciona se não existir, para garantir que registamos apenas a root.
+  void registerId(String id, int hashCode) {
+    if (!_modulesFirstRouteHash.containsKey(id)) {
+      _modulesFirstRouteHash[id] = hashCode;
+    }
   }
 
-  void returnToLastId() {
-    final currentIdBK = _currentIdLoaded;
-    _currentIdLoaded = _lastIdLoaded;
-    _lastIdLoaded = currentIdBK;
+  bool isRegistered(String id) {
+    return _modulesFirstRouteHash.containsKey(id);
   }
 
-  bool isSameIdLoad(String id) {
-    return id == _currentIdLoaded;
+  //Verifica se é a root page e remove, retornando true para autorizar o unregister
+  bool canUnregister(String id, int hash) {
+    final isTheRootPage = _modulesFirstRouteHash[id] == hash;
+    if (isTheRootPage) {
+      _modulesFirstRouteHash.remove(id);
+    }
+    return isTheRootPage;
   }
-
-  String get lastIdLoaded => _lastIdLoaded;
-  String get currentIdLoaded => _currentIdLoaded;
 }

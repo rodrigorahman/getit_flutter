@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import '../../flutter_getit.dart';
 import 'model/binding_register.dart';
 
@@ -38,10 +36,10 @@ final class FlutterGetItContainerRegister {
     }
   }
 
-  FutureOr<void> unRegister(String id) async {
+  void unRegister(String id) {
     if (_references[id] case (:final register, loaded: true)) {
       for (var bind in register.bindings) {
-        await bind.unload(register.tag, debugMode);
+        bind.unload(register.tag, debugMode);
       }
     }
     _references.remove(id);
@@ -70,5 +68,9 @@ final class FlutterGetItContainerRegister {
       return _references;
     }
     throw Exception('Debug mode not enabled');
+  }
+
+  bool isRegistered(String id) {
+    return _references.containsKey(id);
   }
 }

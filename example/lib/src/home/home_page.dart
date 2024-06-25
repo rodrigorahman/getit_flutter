@@ -1,7 +1,5 @@
 import 'package:example/application/session/model/user_model.dart';
 import 'package:example/application/session/user_session.dart';
-import 'package:example/src/auth/login_controller.dart';
-import 'package:example/src/auth/login_page.dart';
 import 'package:example/src/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_getit/flutter_getit.dart';
@@ -36,7 +34,7 @@ class HomePage extends StatelessWidget {
                 return Text(user.data?.name ?? 'No User');
               },
             ),
-            ElevatedButton(
+            /*  ElevatedButton(
               onPressed: () async {
                 await showModalBottomSheet(
                   routeSettings: const RouteSettings(name: '/Auth/Login'),
@@ -72,16 +70,16 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(
               height: 16,
-            ),
+            ), */
             ElevatedButton(
               onPressed: () async {
                 Navigator.of(context).pushNamed('/Auth/Login');
               },
               child: const Text(
-                'Ir a uma rota correta.',
+                'Abrir Auth Module',
               ),
             ),
-            const SizedBox(
+            /*   const SizedBox(
               height: 16,
             ),
             ElevatedButton(
@@ -90,6 +88,18 @@ class HomePage extends StatelessWidget {
               },
               child: const Text(
                 'Ir a uma rota "normal".',
+              ),
+            ),
+             */
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pushNamed('/Detail/Detail');
+              },
+              child: const Text(
+                'Detail Page',
               ),
             ),
           ],

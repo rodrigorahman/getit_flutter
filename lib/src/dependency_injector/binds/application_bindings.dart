@@ -1,5 +1,18 @@
+import 'package:flutter/material.dart';
+
 import '../../../flutter_getit.dart';
 
-abstract class ApplicationBindings {
+@protected
+abstract class FlutterGetItBindings {
+  List<Bind> bindings();
+}
+
+abstract class ApplicationBindings extends FlutterGetItBindings {
+  @override
+  List<Bind> bindings();
+}
+
+abstract class NavigatorBindings extends FlutterGetItBindings {
+  @override
   List<Bind> bindings();
 }

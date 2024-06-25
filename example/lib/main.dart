@@ -20,10 +20,9 @@ class MyApp extends StatelessWidget {
         LandingModule(),
         NavBarModule(),
       ],
-      builder: (context, routes, flutterGetItNavObserver) {
+      builder: (context, routes) {
         return MaterialApp(
           title: 'Flutter Demo',
-          navigatorObservers: [flutterGetItNavObserver],
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,

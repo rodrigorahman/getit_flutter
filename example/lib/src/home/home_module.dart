@@ -1,5 +1,4 @@
 import 'package:example/src/home/home_page.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
 class HomeModule extends FlutterGetItModule {
@@ -9,7 +8,17 @@ class HomeModule extends FlutterGetItModule {
   List<Bind<Object>> get bindings => [];
 
   @override
-  Map<String, WidgetBuilder> get pages => {
-        '/Page': (context) => HomePage(),
-      };
+  List<FlutterGetItPageRouter> get pages => [
+        FlutterGetItPageRouter(
+          name: '/Page',
+          page: (context) => HomePage(),
+          bindings: [],
+        ),
+      ];
+
+  @override
+  void onClose(Injector i) {}
+
+  @override
+  void onInit(Injector i) {}
 }
