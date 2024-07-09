@@ -264,6 +264,8 @@ class HomePage extends StatelessWidget {
 }
 ```
 
+* Você também poderá usar o **[Injector.getAsync]** para Binds assíncronas, veja mais sobre elas a seguir.
+
 ## Tipos de Binds
 
 O flutter_getit suporta todos os outros bindings suportados pelo motor get_it:
@@ -314,6 +316,25 @@ class MyApplicationBindings extends ApplicationBindings {
 }
 ```
 
+## Importante sobre **[Binds Async]**
+* Através do aatalho do **[Injector.]** você pode aguardas suas Binds assíncronas ficarem prontas antes de iniciar qualquer ação. Normalmente usado durante a transição da SplashPage, para carregar dependências assíncronas.
+
+Exemplo:
+
+```dart
+class InitializeController with FlutterGetItMixin {
+  InitializeController();
+  @override
+  void dispose() {}
+
+  @override
+  void onInit() async {
+    await Injector.allReady();
+    //Do something
+  }
+}
+```
+
 ## Importante sobre **[Bind.factory]** e **[Bind.factoryAsync]**
 * A cada solicitação ao FlutterGetIt a factory retornará uma nova instancia do objeto solicitado, mas você pode definir uma **[factoryTag]** no momento de intanciar, assim o FlutterGetIt atribuirá essa tag ao Objeto tornando-o unico na arvore, podendo assim evitar duplicações e podendo ser chamdado em outros locais com a precisão da tag.
 * Você também pode remover uma Bind baseada na sua **[factoryTag]**.
@@ -331,6 +352,9 @@ final factoryCriadoNaHomePage = context.get<FormItemController>(factoryTag: 'Uni
 Exemplo de remoção:
 ```dart
 Injector.unRegisterFactory<FormItemController>(UniqueKeyString);
+
+// Aqui vamos remover todas os Objetos dos tipo T
+Injector.unRegisterAllFactories<FormItemController>();
 ```
 
 ### UI e Widgets
