@@ -5,10 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MyApplicationBindings extends ApplicationBindings {
   @override
   List<Bind<Object>> bindings() => [
-        Bind.singleton(
-          (i) => MyDeepLink(),
-          keepAlive: true,
-        ),
         Bind.singletonAsync(
           (i) async => SharedPreferences.getInstance(),
         ),
@@ -17,6 +13,10 @@ class MyApplicationBindings extends ApplicationBindings {
             const Duration(seconds: 4),
             () => AsyncTest(),
           ),
+        ),
+        Bind.singleton(
+          (i) => MyDeepLink(),
+          keepAlive: true,
         ),
       ];
 }

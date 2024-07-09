@@ -12,8 +12,3 @@ class FlutterGetItView<T extends Object> extends StatelessWidget {
     return const Placeholder();
   }
 }
-
-mixin FGetItInjectorMixin<T extends Object> {
-  final T _controller = Injector.get<T>();
-  T get fGetIt => _controller;
-}
