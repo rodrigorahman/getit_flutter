@@ -423,6 +423,64 @@ class ActiveAccountController with FlutterGetItMixin {
   void onInit() {}
 }
 ```
+
+# FlutterGetIt.navigator - Navigator 2.0
+
+* O FlutterGetIt possui suporte ao novigator 2.0, permitindo que instancie modulos e rotas exclusiva para o contexto interno. Para isto basta envolver o "Navigator" com o **[FlutterGetIt.navigator]**.
+
+| Atributo | Descrição
+|------|----------
+| navigatorName | Nome do navigator para identificação na arvore e extensão.
+| bindings | Mesma regra utilizada nas bindings da "main", mas deve estender **[NavigatorBindings]** invés de **[ApplicationBindings]**
+| pages | Atribuição de rotas como na "main".
+| modules | Atribuição de modulos como na "main".
+| builder | Retorna o context e rotas como na "main".
+
+Exemplo:
+
+```dart
+return Scaffold(
+      body: FlutterGetIt.navigator(
+        navigatorName: 'NAVbarProducts',
+        bindings: MyNavigatorBindings(),
+        pages: [
+          FlutterGetItPageRouter(
+            name: '/RandomPage',
+            page: (context) => const RandomPage(),
+            bindings: [
+              Bind.lazySingleton<RandomController>(
+                (i) => RandomController('Random by FlutterGetItPageRouter'),
+              ),
+            ],
+          ),
+        ],
+        modules: [
+          HomeModule(),
+          DetailModule(),
+          AuthModule(),
+        ],
+        builder: (context, routes) => Navigator(
+          key: internalNav,
+          initialRoute: '/Home/Page',
+          observers: const [],
+          onGenerateRoute: (settings) {
+            return PageRouteBuilder(
+              settings: settings,
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  routes[settings.name]?.call(context) ?? const Placeholder(),
+            );
+          },
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar...
+      ...
+      ...
+```
+
+
+
+
+ 
 ## Projeto com exemplo
 
 [Projeto exemplo](https://github.com/rodrigorahman/flutter_getit_2_example)
