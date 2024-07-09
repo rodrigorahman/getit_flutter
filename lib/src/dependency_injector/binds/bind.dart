@@ -79,9 +79,9 @@ final class Bind<T extends Object> {
     final isRegistered = getIt.isRegistered<T>(instanceName: tag);
 
     if (isRegistered) {
-      if (type != RegisterType.factory && type != RegisterType.factoryAsync) {
+      /*  if (type != RegisterType.factory && type != RegisterType.factoryAsync) {
         _warnThatIsAlreadyRegistered();
-      }
+      } */
       return;
     }
     DebugMode.fGetItLog(
