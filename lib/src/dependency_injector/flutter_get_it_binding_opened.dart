@@ -59,7 +59,7 @@ final class FlutterGetItBindingOpened {
       for (var factory in childFactory) {
         if (hasMixin<FlutterGetItMixin>(factory.obj)) {
           DebugMode.fGetItLog(
-              '🚮$yellowColor Dispose: ${factory.obj.runtimeType} - (factoryChild) - ${factory.obj.hashCode} - Tag: ${factory.factoryTag ?? 'No Tag'}');
+              '🚮$yellowColor Dispose: ${factory.obj.runtimeType} -$blueColor as (Factory child)$yellowColor - ${factory.obj.hashCode} - FactoryTag: ${factory.factoryTag ?? 'No Tag'}');
           (factory.obj as FlutterGetItMixin).dispose();
         }
       }
@@ -75,7 +75,7 @@ final class FlutterGetItBindingOpened {
       if (childFactory != null) {
         if (hasMixin<FlutterGetItMixin>(childFactory.obj)) {
           DebugMode.fGetItLog(
-              '🚮$yellowColor Dispose: ${childFactory.obj.runtimeType} - (factoryChild) - ${childFactory.obj.hashCode} - Tag: ${childFactory.factoryTag ?? 'No Tag'}');
+              '🚮$yellowColor Dispose: ${childFactory.obj.runtimeType} -$blueColor as (Factory child)$yellowColor - ${childFactory.obj.hashCode} - FactoryTag: ${childFactory.factoryTag ?? 'No Tag'}');
           (childFactory.obj as FlutterGetItMixin).dispose();
         }
         _factory[T]!.remove(childFactory);

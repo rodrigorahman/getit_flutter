@@ -17,7 +17,7 @@ class ProductsPage extends StatelessWidget {
         itemBuilder: (context, index) => ListTile(
           title: Text('Product ${ProductModel.getFake[index].name}'),
           onTap: () => Navigator.of(context).pushNamed(
-            '/Products/Detail',
+            '/Products/Page/Detail',
             arguments: ProductModel.getFake[index],
           ),
         ),

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../core/flutter_getit_container_register.dart';
 import '../dependency_injector/injector.dart';
@@ -55,7 +55,7 @@ final class DebugMode {
   }
 
   static fGetItLog(String data) {
-    if (isEnable) {
+    if (isEnable && !kReleaseMode) {
       if (Platform.isIOS) {
         log(data);
       } else {

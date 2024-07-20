@@ -2,7 +2,6 @@ import 'package:example/src/detail/detail_controller.dart';
 import 'package:example/src/detail/detail_page.dart';
 import 'package:example/src/detail/detail_super_controller.dart';
 import 'package:example/src/detail/detail_super_page.dart';
-import 'package:example/src/detail/widget/form_item_controller.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
 class DetailModule extends FlutterGetItModule {
@@ -16,13 +15,7 @@ class DetailModule extends FlutterGetItModule {
   String get moduleRouteName => '/Detail';
 
   @override
-  List<Bind<Object>> get bindings => [
-        Bind.factory(
-          (i) => FormItemController(
-            name: 'FormItemController',
-          ),
-        ),
-      ];
+  List<Bind<Object>> get bindings => [];
 
   @override
   List<FlutterGetItPageRouter> get pages => [

@@ -76,7 +76,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
 
     if (flutterGetItContext.canUnregister(moduleName, hashCode)) {
       DebugMode.fGetItLog(
-          '🛣️$yellowColor Exiting Module: ${widget.module.moduleRouteName} - $blueColor calling $yellowColor"onClose()"');
+          '🛣️$yellowColor Exiting Module: ${widget.module.moduleRouteName} - calling $yellowColor"onClose()"');
       widget.module.onClose(Injector());
       containerRegister.unRegister('$moduleName-module');
     }
