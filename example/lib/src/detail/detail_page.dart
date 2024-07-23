@@ -28,12 +28,28 @@ class DetailPage extends StatelessWidget {
             const FormItem(
               id: 'FormItem3',
             ),
+            const Divider(),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context)
-                    .pushReplacementNamed('/Detail/DetailSuper');
+                    .pushReplacementNamed('/Detail/Factories/Two');
               },
-              child: const Text('Detail Super'),
+              child: const Text('Detail Two - pushReplacementNamed'),
+            ),
+            const Divider(),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/Detail/Factories/Two');
+              },
+              child: const Text('Detail Two'),
+            ),
+            const Divider(),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .pushNamed('/Detail/Factories/One/Internal/Page');
+              },
+              child: const Text('Detail Internal'),
             ),
           ],
         ),

@@ -96,10 +96,45 @@ class HomePage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                Navigator.of(context).pushNamed('/Detail/Detail');
+                Navigator.of(context).pushNamed('/Detail/Factories/One');
               },
               child: const Text(
-                'Detail Page',
+                'Detail One Page',
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context)
+                    .pushNamed('/Detail/Factories/One/Internal/Page');
+              },
+              child: const Text(
+                'Detail One Internal',
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context)
+                    .pushNamed('/Detail/Factories/One/Internal/Page/Child');
+              },
+              child: const Text(
+                'Detail One Internal Child',
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pushNamed('/Detail/Factories/Two');
+              },
+              child: const Text(
+                'Detail Two Page',
               ),
             ),
           ],

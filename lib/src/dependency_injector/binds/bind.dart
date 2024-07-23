@@ -74,7 +74,7 @@ final class Bind<T extends Object> {
       Bind<T>._async(
           bindAsyncRegister, RegisterType.factoryAsync, false, tag, false);
 
-  void load([String? tag, bool debugMode = false]) {
+  bool load([String? tag, bool debugMode = false]) {
     final getIt = GetIt.I;
     final isRegistered = getIt.isRegistered<T>(instanceName: tag);
 
@@ -82,7 +82,7 @@ final class Bind<T extends Object> {
       /*  if (type != RegisterType.factory && type != RegisterType.factoryAsync) {
         _warnThatIsAlreadyRegistered();
       } */
-      return;
+      return false;
     }
     DebugMode.fGetItLog(
         '📠$blueColor Registering: $T$yellowColor as$blueColor ${type.name}${keepAlive ? '$yellowColor with$blueColor keepAlive' : ''}');
@@ -132,6 +132,7 @@ final class Bind<T extends Object> {
           instanceName: tag,
         );
     }
+    return true;
   }
 
   void _warnThatIsAlreadyRegistered() {

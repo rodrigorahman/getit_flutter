@@ -1,8 +1,6 @@
 import 'package:example/application/bindings/navigator_bindings.dart';
-import 'package:example/src/auth/auth_module.dart';
 import 'package:example/src/detail/detail_module.dart';
 import 'package:example/src/home/home_module.dart';
-import 'package:example/src/products/products_module.dart';
 import 'package:example/src/random/random_controller.dart';
 import 'package:example/src/random/random_page.dart';
 import 'package:flutter/material.dart';
@@ -39,8 +37,8 @@ class _MyNavBarState extends State<MyNavBar> {
         modules: [
           HomeModule(),
           DetailModule(),
-          AuthModule(),
-          ProductsModule(),
+          /* AuthModule(),
+          ProductsModule(), */
         ],
         builder: (context, routes) => Navigator(
           key: internalNav,

@@ -118,6 +118,10 @@ class _FlutterGetItState extends State<FlutterGetIt> {
               module: module,
               page: page,
               lastModuleName: module.moduleRouteName,
+              moduleRouter: switch (page) {
+                FlutterGetItModuleRouter() => [page],
+                _ => [],
+              },
             ),
           );
         }
@@ -137,6 +141,7 @@ class _FlutterGetItState extends State<FlutterGetIt> {
     String lastModuleName = '',
     required FlutterGetItModule module,
     required FlutterGetItPageRouter page,
+    List<FlutterGetItModuleRouter> moduleRouter = const [],
   }) {
     final routesMap = <String, WidgetBuilder>{};
     if (lastModuleName != '/' && lastModuleName.endsWith('/')) {
@@ -160,24 +165,33 @@ class _FlutterGetItState extends State<FlutterGetIt> {
 
     var finalRoute = '$lastModuleName$pageRouteName';
 
+    final isModuleRouter = page is FlutterGetItModuleRouter;
+
     if (page.pages.isNotEmpty) {
-      for (final page in page.pages) {
+      for (final pageInternal in page.pages) {
         routesMap.addAll(
           recursivePage(
             lastModuleName: finalRoute,
             module: module,
-            page: page,
+            page: pageInternal,
+            moduleRouter: switch (pageInternal) {
+              FlutterGetItModuleRouter() => [...moduleRouter, pageInternal],
+              _ => moduleRouter,
+            },
           ),
         );
       }
     }
 
-    routesMap[finalRoute.replaceAll(r'//', r'/')] = (_) {
-      return FlutterGetItPageModule(
-        module: module,
-        page: page,
-      );
-    };
+    if (!isModuleRouter) {
+      routesMap[finalRoute.replaceAll(r'//', r'/')] = (_) {
+        return FlutterGetItPageModule(
+          module: module,
+          page: page,
+          moduleRouter: moduleRouter,
+        );
+      };
+    }
     return routesMap;
   }
 

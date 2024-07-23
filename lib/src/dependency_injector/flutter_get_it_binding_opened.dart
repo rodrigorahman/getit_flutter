@@ -23,6 +23,7 @@ final class FlutterGetItBindingOpened {
   }
 
   static T? containsFactoryOpenedByTag<T>(String factoryTag) {
+    if (!_factory.containsKey(T)) return null;
     return _factory[T]!
         .cast<FactoryRegister?>()
         .firstWhere(
