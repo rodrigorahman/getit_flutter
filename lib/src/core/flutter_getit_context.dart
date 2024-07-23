@@ -3,22 +3,34 @@ class FlutterGetItContext {
   final _modulesFirstRouteHash = <String, int>{};
 
   //Só adiciona se não existir, para garantir que registamos apenas a root.
-  void registerId(String id, int hashCode) {
+  void registerId(String id) {
     if (!_modulesFirstRouteHash.containsKey(id)) {
-      _modulesFirstRouteHash[id] = hashCode;
+      _modulesFirstRouteHash[id] = 1;
+    } else {
+      _modulesFirstRouteHash[id] = _modulesFirstRouteHash[id]! + 1;
     }
   }
 
-  bool isRegistered(String id) {
-    return _modulesFirstRouteHash.containsKey(id);
+  void removeId(String id) {
+    if (_modulesFirstRouteHash.containsKey(id)) {
+      if (_modulesFirstRouteHash[id]! > 1) {
+        _modulesFirstRouteHash[id] = _modulesFirstRouteHash[id]! - 1;
+      } else {
+        _modulesFirstRouteHash.remove(id);
+      }
+    }
   }
 
   //Verifica se é a root page e remove, retornando true para autorizar o unregister
-  bool canUnregister(String id, int hash) {
-    final isTheRootPage = _modulesFirstRouteHash[id] == hash;
-    if (isTheRootPage) {
-      _modulesFirstRouteHash.remove(id);
-    }
-    return isTheRootPage;
+  bool canUnregisterCoreModule(String id) {
+    var qntOfModuleId = 0;
+    _modulesFirstRouteHash.map((key, value) {
+      if (key.contains(id)) {
+        qntOfModuleId++;
+      }
+
+      return MapEntry(key, value);
+    });
+    return qntOfModuleId <= 1;
   }
 }

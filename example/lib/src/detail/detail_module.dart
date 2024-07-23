@@ -1,7 +1,9 @@
 import 'package:example/src/detail/detail_controller.dart';
 import 'package:example/src/detail/detail_page.dart';
+import 'package:example/src/detail/detail_repository.dart';
 import 'package:example/src/detail/detail_super_controller.dart';
 import 'package:example/src/detail/detail_super_page.dart';
+import 'package:example/src/detail/widget/form_item_controller.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
 class DetailModule extends FlutterGetItModule {
@@ -9,13 +11,23 @@ class DetailModule extends FlutterGetItModule {
   void onClose(Injector i) {}
 
   @override
-  void onInit(Injector i) {}
+  void onInit(Injector i) {
+    Bind.lazySingleton(
+      (i) => DetailRepository(),
+    );
+  }
 
   @override
   String get moduleRouteName => '/Detail';
 
   @override
-  List<Bind<Object>> get bindings => [];
+  List<Bind<Object>> get bindings => [
+        Bind.factory(
+          (i) => FormItemController(
+            name: 'FormItemController',
+          ),
+        ),
+      ];
 
   @override
   List<FlutterGetItPageRouter> get pages => [
@@ -43,67 +55,3 @@ class DetailModule extends FlutterGetItModule {
         ),
       ];
 }
-
-/* class AuthModule extends FlutterGetItModuleV2 {
-  @override
-  void onClose(Injector i) {}
-
-  @override
-  void onInit(Injector i) {}
-
-  @override
-  String get moduleRouteName => '/Auth';
-
-  @override
-  List<Bind<Object>> get bindings => [
-        Bind.lazySingleton<AuthRepository>(
-          (i) => AuthRepository(
-            restClient: i(),
-            api: i(),
-          ),
-        ),
-      ];
-
-  @override
-  List<FlutterGetItPage> get pages => [
-        FlutterGetItPage(
-          name: '/Login',
-          page: (context) => LoginPage(
-            controller: context.get(),
-          ),
-          bindings: [
-            Bind.lazySingleton<LoginController>(
-              (i) => LoginController(),
-            ),
-          ],
-        ),
-        FlutterGetItPage(
-          name: '/Register',
-          page: (context) => RegisterPage(
-            controller: context.get(),
-          ),
-          bindings: [
-            Bind.lazySingleton<RegisterController>(
-              (i) => RegisterController(),
-            ),
-          ],
-        ),
-        FlutterGetItPage(
-          name: '/ActiveAccount',
-          page: (context) => ActiveAccountPage(
-            controller: context.get(),
-          ),
-          bindings: [
-            Bind.lazySingleton<AuthCodeRepository>(
-              (i) => AuthCodeRepository(),
-            ),
-            Bind.lazySingleton<ActiveAccountController>(
-              (i) => ActiveAccountController(
-                codeRepository: i(),
-              ),
-            ),
-          ],
-        ),
-      ];
-}
- */

@@ -15,3 +15,13 @@ class FlutterGetItPageRouter {
     this.pages = const [],
   });
 }
+
+class FlutterGetItModuleRouter extends FlutterGetItPageRouter {
+  FlutterGetItModuleRouter({
+    required super.name,
+    super.bindings = const [],
+    super.pages = const [],
+  }) : super(
+          page: (context) => const SizedBox.shrink(),
+        );
+}

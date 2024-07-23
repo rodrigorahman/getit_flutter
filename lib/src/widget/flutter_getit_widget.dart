@@ -36,20 +36,16 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
     containerRegister = Injector.get<FlutterGetItContainerRegister>();
     //Utilizado a hashCode para garantir que o id seja único, podendo ser utilizado em mais de um lugar
     id = '/WIDGET-$name-$hashCode';
-    final moduleAlreadyRegistered = flutterGetItContext.isRegistered(id);
 
-    if (!moduleAlreadyRegistered) {
-      containerRegister
-        ..register(
-          id,
-          binds,
-        )
-        ..load(id);
-      flutterGetItContext.registerId(
+    containerRegister
+      ..register(
         id,
-        hashCode,
-      );
-    }
+        binds,
+      )
+      ..load(id);
+    flutterGetItContext.registerId(
+      id,
+    );
   }
 
   @override
@@ -59,8 +55,6 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
 
   @override
   void dispose() {
-    final flutterGetItContext = Injector.get<FlutterGetItContext>();
-    flutterGetItContext.canUnregister(id, hashCode);
     containerRegister.unRegister(id);
     widget.onDispose?.call();
     super.dispose();

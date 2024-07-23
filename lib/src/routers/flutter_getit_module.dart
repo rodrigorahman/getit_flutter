@@ -32,37 +32,38 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
 
   @override
   void initState() {
-    super.initState();
     final FlutterGetItPageModule(
       module: (FlutterGetItModule(:moduleRouteName, bindings: bindingsModule)),
       :page,
     ) = widget;
     final flutterGetItContext = Injector.get<FlutterGetItContext>();
     containerRegister = Injector.get<FlutterGetItContainerRegister>();
-    moduleName = moduleRouteName;
+    moduleName = '$moduleRouteName-module';
     id = '$moduleRouteName-module${page.name}';
-    final moduleAlreadyRegistered =
-        flutterGetItContext.isRegistered(moduleRouteName);
+    /*  final moduleAlreadyRegistered =
+        flutterGetItContext.isRegistered(moduleRouteName); */
 
-    if (!moduleAlreadyRegistered) {
-      containerRegister
-        ..register(
-          '$moduleRouteName-module',
-          bindingsModule,
-        )
-        ..load('$moduleRouteName-module');
-      flutterGetItContext.registerId(
-        moduleRouteName,
-        hashCode,
-      );
-    }
+    //Module Binds
+    containerRegister
+      ..register(
+        moduleName,
+        bindingsModule,
+      )
+      ..load(moduleName);
 
+    //Register Module
+    flutterGetItContext.registerId(
+      id,
+    );
+
+    //Route Binds
     containerRegister
       ..register(
         id,
         page.bindings,
       )
       ..load(id);
+    super.initState();
   }
 
   @override
@@ -73,14 +74,21 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
   @override
   void dispose() {
     final flutterGetItContext = Injector.get<FlutterGetItContext>();
+    final canRemoveModule =
+        flutterGetItContext.canUnregisterCoreModule(moduleName);
 
-    if (flutterGetItContext.canUnregister(moduleName, hashCode)) {
+    if (canRemoveModule) {
+      containerRegister.unRegister(moduleName);
+      flutterGetItContext.removeId(moduleName);
+    }
+    containerRegister.unRegister(id);
+    flutterGetItContext.removeId(id);
+
+    if (canRemoveModule) {
       DebugMode.fGetItLog(
           '🛣️$yellowColor Exiting Module: ${widget.module.moduleRouteName} - calling $yellowColor"onClose()"');
       widget.module.onClose(Injector());
-      containerRegister.unRegister('$moduleName-module');
     }
-    containerRegister.unRegister(id);
     super.dispose();
   }
 }

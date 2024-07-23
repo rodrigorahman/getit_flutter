@@ -10,13 +10,7 @@ class FormItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlutterGetItWidget(
       name: id,
-      binds: [
-        Bind.factory(
-          (i) => FormItemController(
-            name: 'FormItemController',
-          ),
-        ),
-      ],
+      binds: const [],
       onDispose: () {
         Injector.unRegisterFactory<FormItemController>(id);
       },

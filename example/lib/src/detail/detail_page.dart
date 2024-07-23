@@ -30,7 +30,8 @@ class DetailPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pushNamed('/Detail/DetailSuper');
+                Navigator.of(context)
+                    .pushReplacementNamed('/Detail/DetailSuper');
               },
               child: const Text('Detail Super'),
             ),
