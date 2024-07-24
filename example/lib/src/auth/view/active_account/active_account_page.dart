@@ -18,18 +18,15 @@ class ActiveAccountPage
       appBar: AppBar(
         title: Text(fGetIt.controller.name),
       ),
-      body: FutureBuilder<void>(
-        future: Future.delayed(const Duration(seconds: 4)),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).popUntil(
+              (route) => route.settings.name == '/Home/Page',
             );
-          }
-          return Center(
-            child: Text(fGetIt.validateEmailController.email),
-          );
-        },
+          },
+          child: const Text('PopUntil - Home - Page'),
+        ),
       ),
     );
   }

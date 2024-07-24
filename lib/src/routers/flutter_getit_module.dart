@@ -11,6 +11,41 @@ abstract class FlutterGetItModule {
   void onInit(Injector i);
 }
 
+final class FlutterGetItModuleInternalForPage extends FlutterGetItModule {
+  final List<Bind<Object>> _binds;
+  final String _moduleRouteName;
+  final void Function(Injector i) _onClose;
+  final void Function(Injector i) _onInit;
+  final List<FlutterGetItPageRouter> _pages;
+
+  FlutterGetItModuleInternalForPage({
+    required List<Bind<Object>> binds,
+    required String moduleRouteName,
+    required void Function(Injector i) onClose,
+    required void Function(Injector i) onInit,
+    required List<FlutterGetItPageRouter> pages,
+  })  : _binds = binds,
+        _moduleRouteName = moduleRouteName,
+        _onClose = onClose,
+        _onInit = onInit,
+        _pages = pages;
+
+  @override
+  List<Bind<Object>> get bindings => _binds;
+
+  @override
+  String get moduleRouteName => _moduleRouteName;
+
+  @override
+  void onClose(Injector i) => _onClose(i);
+
+  @override
+  void onInit(Injector i) => _onInit(i);
+
+  @override
+  List<FlutterGetItPageRouter> get pages => _pages;
+}
+
 class FlutterGetItPageModule extends StatefulWidget {
   const FlutterGetItPageModule({
     super.key,

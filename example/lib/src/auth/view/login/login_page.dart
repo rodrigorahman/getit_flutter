@@ -27,27 +27,20 @@ class LoginPage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pushNamed('/Auth/Register');
+                Navigator.of(context)
+                    .pushReplacementNamed('/Auth/Register/Page');
               },
-              child: const Text('Register'),
+              child: const Text('PushReplacementNamed - Register - Page'),
             ),
             const SizedBox(
               height: 16,
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pushNamed('/Auth/ActiveAccount');
+                Navigator.of(context)
+                    .pushReplacementNamed('/Auth/Register/ActiveAccount/Page');
               },
-              child: const Text('Activer Account'),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed('/Auth/Register/StepTwo');
-              },
-              child: const Text('Register Step two'),
+              child: const Text('PushReplacementNamed - ActiveAccount'),
             ),
           ],
         ),

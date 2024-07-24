@@ -12,7 +12,7 @@ class FormItem extends StatelessWidget {
       name: id,
       binds: const [],
       onDispose: () {
-        Injector.unRegisterFactory<FormItemController>(id);
+        Injector.unRegisterFactoryByTag<FormItemController>(id);
       },
       builder: (context) {
         final fGetIt = context.get<FormItemController>(factoryTag: id);

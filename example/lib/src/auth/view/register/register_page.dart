@@ -14,9 +14,12 @@ class RegisterPage extends StatelessWidget {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            Navigator.of(context).pushNamed('/Auth/Register/StepTwo');
+            Navigator.of(context)
+                .pushReplacementNamed('/Auth/Register/ActiveAccount/Page');
           },
-          child: const Text('Register Step two'),
+          child: const Text(
+            'PushReplacementNamed - ActiveAccount - Page',
+          ),
         ),
       ),
     );

@@ -1,4 +1,12 @@
 import 'package:example/application/bindings/navigator_bindings.dart';
+import 'package:example/src/auth/repository/auth_repository.dart';
+import 'package:example/src/auth/view/active_account/active_account_controller.dart';
+import 'package:example/src/auth/view/active_account/active_account_page.dart';
+import 'package:example/src/auth/view/active_account/validate_email_controller.dart';
+import 'package:example/src/auth/view/login/login_controller.dart';
+import 'package:example/src/auth/view/login/login_page.dart';
+import 'package:example/src/auth/view/register/register_controller.dart';
+import 'package:example/src/auth/view/register/register_page.dart';
 import 'package:example/src/detail/detail_module.dart';
 import 'package:example/src/home/home_module.dart';
 import 'package:example/src/random/random_controller.dart';
@@ -24,12 +32,83 @@ class _MyNavBarState extends State<MyNavBar> {
         navigatorName: 'NAVbarProducts',
         bindings: MyNavigatorBindings(),
         pages: [
-          FlutterGetItPageRouter(
-            name: '/RandomPage',
-            page: (context) => const RandomPage(),
+          FlutterGetItModuleRouter(
+            name: '/Random',
             bindings: [
               Bind.lazySingleton<RandomController>(
                 (i) => RandomController('Random by FlutterGetItPageRouter'),
+              ),
+            ],
+            pages: [
+              FlutterGetItPageRouter(
+                name: '/Page',
+                page: (context) => const RandomPage(),
+                bindings: [
+                  Bind.lazySingleton<RandomController>(
+                    (i) => RandomController('Random by FlutterGetItPageRouter'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          FlutterGetItModuleRouter(
+            name: '/Auth',
+            bindings: [
+              Bind.lazySingleton<AuthRepository>(
+                (i) => AuthRepository(),
+              ),
+            ],
+            pages: [
+              FlutterGetItPageRouter(
+                name: '/Login',
+                page: (context) => LoginPage(
+                  controller: context.get(),
+                ),
+                bindings: [
+                  Bind.lazySingleton<LoginController>(
+                    (i) => LoginController(name: 'Login'),
+                  ),
+                ],
+              ),
+              FlutterGetItModuleRouter(
+                name: '/Register',
+                bindings: [
+                  Bind.lazySingleton<RegisterController>(
+                    (i) => RegisterController(),
+                  ),
+                ],
+                pages: [
+                  FlutterGetItPageRouter(
+                    name: '/Page',
+                    page: (context) => RegisterPage(
+                      controller: context.get(),
+                    ),
+                    bindings: [
+                      Bind.lazySingleton<RegisterController>(
+                        (i) => RegisterController(),
+                      ),
+                    ],
+                  ),
+                  FlutterGetItModuleRouter(
+                    name: '/ActiveAccount',
+                    bindings: [
+                      Bind.lazySingleton<ActiveAccountPageDependencies>(
+                        (i) => (
+                          controller: ActiveAccountController(name: 'MyName'),
+                          validateEmailController:
+                              ValidateEmailController(email: 'fgetit@injector'),
+                        ),
+                      ),
+                    ],
+                    pages: [
+                      FlutterGetItPageRouter(
+                        name: '/Page',
+                        page: (context) => const ActiveAccountPage(),
+                        bindings: [],
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),

@@ -34,66 +34,59 @@ class HomePage extends StatelessWidget {
                 return Text(user.data?.name ?? 'No User');
               },
             ),
-            /*  ElevatedButton(
-              onPressed: () async {
-                await showModalBottomSheet(
-                  routeSettings: const RouteSettings(name: '/Auth/Login'),
-                  useRootNavigator: true,
-                  context: context,
-                  builder: (context) => FlutterGetItPageBuilder(
-                    path: '/Auth/Login',
-                    binding: () => Bind.lazySingleton(
-                      (i) => LoginController(
-                        name: 'By HomePage showModalBottomSheet Bindings',
-                      ),
-                    ),
-                    page: (context) => LoginPage(
-                      controller: context.get(),
-                    ),
-                  ),
-                );
-              },
-              child: const Text(
-                'Chamar bottom sheet',
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pushNamed('/Auth/LoginERROR');
-              },
-              child: const Text(
-                'Ir a uma rota errada.',
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            ), */
+            const Divider(),
             ElevatedButton(
               onPressed: () async {
                 Navigator.of(context).pushNamed('/Auth/Login');
               },
               child: const Text(
-                'Abrir Auth Module',
+                'PushNamed - Login',
               ),
             ),
-            /*   const SizedBox(
+            const SizedBox(
               height: 16,
             ),
             ElevatedButton(
               onPressed: () async {
-                Navigator.of(context).pushNamed('/RandomPage');
+                Navigator.of(context).pushNamed('/Auth/Register/Page');
               },
               child: const Text(
-                'Ir a uma rota "normal".',
+                'PushNamed - Register - Page',
               ),
             ),
-             */
             const SizedBox(
               height: 16,
             ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context)
+                    .pushNamed('/Auth/Register/ActiveAccount/Page');
+              },
+              child: const Text(
+                'PushNamed - ActiveAccount - Page',
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pushNamed('/Auth/Register/ActiveAccount');
+              },
+              child: const Text(
+                'PushNamed - Wrong page',
+              ),
+            ),
+            const Divider(),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pushNamed('/Random/Page');
+              },
+              child: const Text(
+                'PushNamed - RandomPage',
+              ),
+            ),
+            const Divider(),
             ElevatedButton(
               onPressed: () async {
                 Navigator.of(context).pushNamed('/Detail/Factories/One');

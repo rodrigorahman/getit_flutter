@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
-import '../core/flutter_getit_context.dart';
 
 class FlutterGetItWidget extends StatefulWidget {
   const FlutterGetItWidget({
@@ -32,7 +31,6 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
       :name,
       :binds,
     ) = widget;
-    final flutterGetItContext = Injector.get<FlutterGetItContext>();
     containerRegister = Injector.get<FlutterGetItContainerRegister>();
     //Utilizado a hashCode para garantir que o id seja único, podendo ser utilizado em mais de um lugar
     id = '/WIDGET-$name-$hashCode';
@@ -43,9 +41,6 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
         binds,
       )
       ..load(id);
-    flutterGetItContext.registerId(
-      id,
-    );
   }
 
   @override

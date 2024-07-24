@@ -48,7 +48,7 @@ class FlutterGetIt extends StatefulWidget {
   final List<FlutterGetItModule>? modules;
 
   /// [pages] Define the pages that will serve as named routes based on [FlutterGetItPageRoute].
-  final List<FlutterGetItPageRouter>? pages;
+  final List<FlutterGetItModuleRouter>? pages;
 
   final FlutterGetItContextType contextType;
 
@@ -129,8 +129,22 @@ class _FlutterGetItState extends State<FlutterGetIt> {
     }
 
     if (pages != null) {
-      for (final pageRoute in pages) {
-        routesMap[pageRoute.name] = pageRoute.page;
+      for (var page in pages) {
+        final module = FlutterGetItModuleInternalForPage(
+          binds: page.bindings,
+          moduleRouteName: page.name,
+          onClose: (i) {},
+          onInit: (i) {},
+          pages: page.pages,
+        );
+        routesMap.addAll(
+          recursivePage(
+            module: module,
+            page: page,
+            lastModuleName: '/', //module.moduleRouteName,
+            moduleRouter: [page],
+          ),
+        );
       }
     }
 

@@ -9,7 +9,7 @@ import 'flutter_get_it_binding_opened.dart';
 
 /// Classe responsável pelo encapsulamento da busca das instancias do GetIt
 class Injector {
-  static void unRegisterFactory<T>(String factoryTag) {
+  static void unRegisterFactoryByTag<T>(String factoryTag) {
     FlutterGetItBindingOpened.unRegisterFactoryByTag<T>(factoryTag);
   }
 

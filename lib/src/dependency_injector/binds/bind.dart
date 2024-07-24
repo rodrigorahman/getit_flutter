@@ -155,7 +155,7 @@ final class Bind<T extends Object> {
     if (isRegistered) {
       if (isFactory && !isTheFactoryDad) {
         return;
-      } else if ((isFactory && isTheFactoryDad)) {
+      } else if (isFactory && isTheFactoryDad) {
         FlutterGetItBindingOpened.unRegisterFactories<T>();
       }
       GetIt.I.unregister<T>(
@@ -164,12 +164,16 @@ final class Bind<T extends Object> {
           if (hasMixin<FlutterGetItMixin>(entity)) {
             (entity as FlutterGetItMixin).dispose();
           }
-
+          DebugMode.fGetItLog(
+              '🚮$yellowColor Dispose: $T (${type.name}) - ${entity.hashCode}');
           return;
         },
       );
-      DebugMode.fGetItLog(
-          '🚮$yellowColor Dispose: $T (${type.name}) - ${T.hashCode}');
+      if (isFactory && isTheFactoryDad) {
+        DebugMode.fGetItLog(
+            '🚮$yellowColor Dispose: $T (${type.name}) - ${T.hashCode}');
+      }
+
       return;
       /* if (isFactory) {
         FlutterGetItBindingOpened.unRegisterFactoryOpened(T);
