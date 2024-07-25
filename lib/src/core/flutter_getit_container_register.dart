@@ -37,7 +37,7 @@ final class FlutterGetItContainerRegister {
   }
 
   void unRegister(String id) {
-    if (_references[id] case (:final register, loaded: true)) {
+    if (_references[id] case (:final register, loaded: final _)) {
       for (var bind in register.bindings) {
         bind.unload(register.tag, debugMode);
       }

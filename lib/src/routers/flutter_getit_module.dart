@@ -78,8 +78,13 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
     containerRegister = Injector.get<FlutterGetItContainerRegister>();
     moduleName = '$moduleRouteName-module';
     id = '$moduleRouteName-module${page.name}';
-    /*  final moduleAlreadyRegistered =
-        flutterGetItContext.isRegistered(moduleRouteName); */
+    final moduleAlreadyRegistered =
+        flutterGetItContext.isRegistered(moduleName);
+
+    if (!moduleAlreadyRegistered) {
+      DebugMode.fGetItLog(
+          '🛣️$yellowColor Entering Module: $moduleName - calling $yellowColor"onInit()"');
+    }
 
     //Module Binds
     containerRegister
@@ -88,6 +93,10 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
         bindingsModule,
       )
       ..load(moduleName);
+
+    if (!moduleAlreadyRegistered) {
+      widget.module.onInit(Injector());
+    }
 
     if (widget.moduleRouter.isNotEmpty) {
       for (var moduleRouter in widget.moduleRouter) {
@@ -151,14 +160,12 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
     final canRemoveModuleCore =
         flutterGetItContext.canUnregisterCoreModule(moduleName);
 
-    if (canRemoveModuleCore) {
-      containerRegister.unRegister(moduleName);
-      flutterGetItContext.deleteId(moduleName);
-    }
     containerRegister.unRegister(id);
     flutterGetItContext.deleteId(id);
 
     if (canRemoveModuleCore) {
+      containerRegister.unRegister(moduleName);
+      flutterGetItContext.deleteId(moduleName);
       DebugMode.fGetItLog(
           '🛣️$yellowColor Exiting Module: ${widget.module.moduleRouteName} - calling $yellowColor"onClose()"');
       widget.module.onClose(Injector());

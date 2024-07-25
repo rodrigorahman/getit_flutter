@@ -11,6 +11,16 @@ class FlutterGetItContext {
     }
   }
 
+  bool isRegistered(String id) {
+    var qntOfModuleId = 0;
+    _modulesFirstRouteHash.forEach((key, value) {
+      if (key.contains(id)) {
+        qntOfModuleId++;
+      }
+    });
+    return qntOfModuleId > 0;
+  }
+
   void reduceId(String id) {
     if (_modulesFirstRouteHash.containsKey(id)) {
       _modulesFirstRouteHash[id] = _modulesFirstRouteHash[id]! - 1;
@@ -24,12 +34,10 @@ class FlutterGetItContext {
   //Verifica se é a root page e remove, retornando true para autorizar o unregister
   bool canUnregisterCoreModule(String id) {
     var qntOfModuleId = 0;
-    _modulesFirstRouteHash.map((key, value) {
+    _modulesFirstRouteHash.forEach((key, value) {
       if (key.contains(id) && value > 0) {
         qntOfModuleId++;
       }
-
-      return MapEntry(key, value);
     });
     return qntOfModuleId < 1;
   }

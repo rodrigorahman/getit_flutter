@@ -66,7 +66,10 @@ class _MyNavBarState extends State<MyNavBar> {
                 ),
                 bindings: [
                   Bind.lazySingleton<LoginController>(
-                    (i) => LoginController(name: 'Login'),
+                    (i) => LoginController(
+                      name: 'Login',
+                      authRepository: i(),
+                    ),
                   ),
                 ],
               ),

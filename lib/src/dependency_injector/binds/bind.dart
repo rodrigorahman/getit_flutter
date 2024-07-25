@@ -6,11 +6,10 @@ import '../flutter_get_it_binding_opened.dart';
 
 enum RegisterType {
   singleton,
-  lazySingleton,
-  factory,
   singletonAsync,
+  lazySingleton,
   lazySingletonAsync,
-  permanentLazySingletonAsync,
+  factory,
   factoryAsync,
 }
 
@@ -80,7 +79,8 @@ final class Bind<T extends Object> {
 
     if (isRegistered) {
       /*  if (type != RegisterType.factory && type != RegisterType.factoryAsync) {
-        _warnThatIsAlreadyRegistered();
+      _warnThatIsAlreadyRegistered();
+        
       } */
       return false;
     }
@@ -111,12 +111,7 @@ final class Bind<T extends Object> {
           instanceName: tag,
           dispose: (entity) => null,
         );
-      case RegisterType.permanentLazySingletonAsync:
-        getIt.registerLazySingletonAsync<T>(
-          () async => await bindAsyncRegister(Injector()),
-          instanceName: tag,
-          dispose: (entity) => null,
-        );
+
       case RegisterType.factory:
         FlutterGetItBindingOpened.registerFactoryDad<T>();
         isTheFactoryDad = true;
@@ -158,6 +153,8 @@ final class Bind<T extends Object> {
       } else if (isFactory && isTheFactoryDad) {
         FlutterGetItBindingOpened.unRegisterFactories<T>();
       }
+      bool runOnDisposingFunction = false;
+
       GetIt.I.unregister<T>(
         instanceName: tag,
         disposingFunction: (entity) async {
@@ -166,37 +163,19 @@ final class Bind<T extends Object> {
           }
           DebugMode.fGetItLog(
               '🚮$yellowColor Dispose: $T (${type.name}) - ${entity.hashCode}');
+
+          runOnDisposingFunction = true;
           return;
         },
       );
-      if (isFactory && isTheFactoryDad) {
+
+      if (isFactory && isTheFactoryDad || !runOnDisposingFunction) {
         DebugMode.fGetItLog(
             '🚮$yellowColor Dispose: $T (${type.name}) - ${T.hashCode}');
       }
 
       return;
-      /* if (isFactory) {
-        FlutterGetItBindingOpened.unRegisterFactoryOpened(T);
-      }
-      if (isTheFactoryDad || !isFactory) {
-        FlutterGetItBindingOpened.unRegisterFactoryDad(T);
-        GetIt.I.unregister<T>(
-          instanceName: tag,
-          disposingFunction: (entity) async {
-            if (hasMixin<FlutterGetItMixin>(entity)) {
-              (entity as FlutterGetItMixin).dispose();
-            }
-            DebugMode.fGetItLog('🚮$yellowColor Dispose: $T - ${T.hashCode}');
-            return;
-          },
-        );
-      } */
     }
-    /* if (type == RegisterType.factory || type == RegisterType.factoryAsync) {
-      DebugMode.fGetItLog(
-          '🚮$yellowColor Dispose: ${T.runtimeType} - ${T.hashCode}');
-      (T as dynamic)?.dispose();
-    } */
   }
 
   @override
