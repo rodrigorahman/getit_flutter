@@ -27,6 +27,15 @@ class LoginPage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
+                Navigator.of(context).pushNamed('/Auth/Register/Page');
+              },
+              child: const Text('PushNamed - Register - Page'),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () {
                 Navigator.of(context)
                     .pushReplacementNamed('/Auth/Register/Page');
               },

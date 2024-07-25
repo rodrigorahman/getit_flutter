@@ -100,20 +100,32 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
 
     if (widget.moduleRouter.isNotEmpty) {
       for (var moduleRouter in widget.moduleRouter) {
-        final routeM = '$moduleName${moduleRouter.name}';
-        routerModule.add(routeM);
+        if (moduleRouter.name != moduleRouteName) {
+          final routeM = '$moduleName${moduleRouter.name}';
+          routerModule.add(routeM);
 
-        containerRegister
-          ..register(
-            routeM,
-            moduleRouter.bindings,
-          )
-          ..load(
+          final moduleAlreadyRegisteredInternal =
+              flutterGetItContext.isRegistered(routeM);
+          if (!moduleAlreadyRegisteredInternal) {
+            DebugMode.fGetItLog(
+                '🛣️$yellowColor Entering Sub-Module: $routeM - calling $yellowColor"onInit()"');
+          }
+
+          containerRegister
+            ..register(
+              routeM,
+              moduleRouter.bindings,
+            )
+            ..load(
+              routeM,
+            );
+          if (!moduleAlreadyRegisteredInternal) {
+            moduleRouter.onInit?.call(Injector());
+          }
+          flutterGetItContext.registerId(
             routeM,
           );
-        flutterGetItContext.registerId(
-          routeM,
-        );
+        }
       }
     }
 
@@ -154,6 +166,19 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
       if (canRemoveModuleInternal) {
         containerRegister.unRegister(route);
         flutterGetItContext.deleteId(route);
+        DebugMode.fGetItLog(
+            '🛣️$yellowColor Exiting Sub-Module: $route - calling "onClose()"');
+        final element =
+            widget.moduleRouter.cast<FlutterGetItModuleRouter?>().firstWhere(
+                  (element) =>
+                      element?.name.endsWith(route.split('/').last) ?? false,
+                  orElse: () => null,
+                );
+        if (element != null) {
+          element.onClose?.call(
+            Injector(),
+          );
+        }
       }
     }
 
@@ -167,7 +192,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
       containerRegister.unRegister(moduleName);
       flutterGetItContext.deleteId(moduleName);
       DebugMode.fGetItLog(
-          '🛣️$yellowColor Exiting Module: ${widget.module.moduleRouteName} - calling $yellowColor"onClose()"');
+          '🛣️$yellowColor Exiting Module: ${widget.module.moduleRouteName} - calling "onClose()"');
       widget.module.onClose(Injector());
     }
     super.dispose();

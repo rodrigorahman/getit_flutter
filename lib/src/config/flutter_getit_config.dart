@@ -133,8 +133,8 @@ class _FlutterGetItState extends State<FlutterGetIt> {
         final module = FlutterGetItModuleInternalForPage(
           binds: page.bindings,
           moduleRouteName: page.name,
-          onClose: (i) {},
-          onInit: (i) {},
+          onClose: page.onClose ?? (i) {},
+          onInit: page.onInit ?? (i) {},
           pages: page.pages,
         );
         routesMap.addAll(

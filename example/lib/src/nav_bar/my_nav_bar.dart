@@ -53,6 +53,8 @@ class _MyNavBarState extends State<MyNavBar> {
           ),
           FlutterGetItModuleRouter(
             name: '/Auth',
+            onInit: (i) => debugPrint('hi by /Auth'),
+            onClose: (i) => debugPrint('bye by /Auth'),
             bindings: [
               Bind.lazySingleton<AuthRepository>(
                 (i) => AuthRepository(),
@@ -80,6 +82,8 @@ class _MyNavBarState extends State<MyNavBar> {
                     (i) => RegisterController(),
                   ),
                 ],
+                onInit: (i) => debugPrint('hi by /Register'),
+                onClose: (i) => debugPrint('bye by /Register'),
                 pages: [
                   FlutterGetItPageRouter(
                     name: '/Page',
