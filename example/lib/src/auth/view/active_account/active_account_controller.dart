@@ -5,7 +5,7 @@ class ActiveAccountController with FlutterGetItMixin {
 
   ActiveAccountController({required this.name});
   @override
-  void dispose() {}
+  void onDispose() {}
 
   @override
   void onInit() {}

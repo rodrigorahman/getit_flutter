@@ -31,14 +31,14 @@ class FlutterGetItPageRouter {
 }
 
 class FlutterGetItModuleRouter extends FlutterGetItPageRouter {
-  final void Function(Injector i)? onClose;
+  final void Function(Injector i)? onDispose;
   final void Function(Injector i)? onInit;
 
   FlutterGetItModuleRouter({
     required super.name,
     super.bindings = const [],
     super.pages = const [],
-    this.onClose,
+    this.onDispose,
     this.onInit,
   }) : super(
           page: (context) => const SizedBox.shrink(),
@@ -50,14 +50,14 @@ class FlutterGetItModuleRouter extends FlutterGetItPageRouter {
     WidgetBuilder? page,
     List<Bind>? bindings,
     List<FlutterGetItPageRouter>? pages,
-    void Function(Injector i)? onClose,
+    void Function(Injector i)? onDispose,
     void Function(Injector i)? onInit,
   }) {
     return FlutterGetItModuleRouter(
       name: name ?? this.name,
       bindings: bindings ?? this.bindings,
       pages: pages ?? this.pages,
-      onClose: onClose ?? this.onClose,
+      onDispose: onDispose ?? this.onDispose,
       onInit: onInit ?? this.onInit,
     );
   }

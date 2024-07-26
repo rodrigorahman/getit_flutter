@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
+import '../core/flutter_getit_context.dart';
 
 class FlutterGetItWidget extends StatefulWidget {
   const FlutterGetItWidget({
@@ -9,12 +10,14 @@ class FlutterGetItWidget extends StatefulWidget {
     required this.builder,
     this.binds = const [],
     this.onDispose,
+    this.onInit,
   });
 
   final String name;
   final WidgetBuilder builder;
   final List<Bind> binds;
   final void Function()? onDispose;
+  final void Function()? onInit;
 
   @override
   State<FlutterGetItWidget> createState() => _FlutterGetItWidgetState();
@@ -23,6 +26,7 @@ class FlutterGetItWidget extends StatefulWidget {
 class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
   late final String id;
   late final FlutterGetItContainerRegister containerRegister;
+  late final FlutterGetItContext fGetItContext;
 
   @override
   void initState() {
@@ -32,8 +36,15 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
       :binds,
     ) = widget;
     containerRegister = Injector.get<FlutterGetItContainerRegister>();
+    fGetItContext = Injector.get<FlutterGetItContext>();
     //Utilizado a hashCode para garantir que o id seja único, podendo ser utilizado em mais de um lugar
-    id = '/WIDGET-$name-$hashCode';
+    id = '/WIDGET-$name';
+
+    final moduleAlreadyRegistered = fGetItContext.isRegistered(id);
+
+    if (moduleAlreadyRegistered) {
+      throw Exception('Widget $id already registered');
+    }
 
     containerRegister
       ..register(
@@ -41,6 +52,15 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
         binds,
       )
       ..load(id);
+
+    if (!moduleAlreadyRegistered) {
+      DebugMode.fGetItLog(
+          '🛣️$yellowColor Initiating Widget: $id - calling "onInit()"');
+      widget.onInit?.call();
+    }
+    fGetItContext.registerId(
+      id,
+    );
   }
 
   @override
@@ -50,8 +70,12 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
 
   @override
   void dispose() {
-    containerRegister.unRegister(id);
+    fGetItContext.reduceId(id);
+    DebugMode.fGetItLog(
+        '🛣️$yellowColor Disposing Widget: $id - calling "onDispose()"');
     widget.onDispose?.call();
+    containerRegister.unRegister(id);
+    fGetItContext.deleteId(id);
     super.dispose();
   }
 }

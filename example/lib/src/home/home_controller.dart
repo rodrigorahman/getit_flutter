@@ -5,7 +5,7 @@ class HomeController with FlutterGetItMixin {
   HomeController();
 
   @override
-  void dispose() {}
+  void onDispose() {}
 
   @override
   void onInit() {

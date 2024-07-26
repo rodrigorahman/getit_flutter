@@ -5,7 +5,7 @@ class ValidateEmailController with FlutterGetItMixin {
 
   ValidateEmailController({required this.email});
   @override
-  void dispose() {}
+  void onDispose() {}
 
   @override
   void onInit() {}

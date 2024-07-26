@@ -18,11 +18,11 @@ class DetailPage extends StatelessWidget {
         child: Column(
           children: [
             const FormItem(
-              id: 'FormItem1',
+              id: '',
             ),
             const Divider(),
             const FormItem(
-              id: 'FormItem2',
+              id: '',
             ),
             const Divider(),
             const FormItem(

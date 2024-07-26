@@ -1,5 +1,32 @@
 # Versions
 
+## 3.0.0
+- **Breaking Change**: For existing users, please review the detailed in the documentation.
+
+### Major Changes
+
+- Complete package rewrite to support modular architecture.
+
+### Core Changes
+- Removed `FlutterGetItNavigatorObserver` on builder.
+- The `pages` now expect the new `FlutterGetItModuleRouter`.
+- New named constructor called `.navigator` to create a new instance of `FlutterGetIt` for navigator 2.0.
+
+### Module Changes
+- The `FlutterGetItModule` now has a new method `onInit` that is called when the module is initialized and a new method `onDispose` that is called when the module is disposed.
+
+### Binds Changes
+- News methods, as `singletonAsync`, `factoryAsync`, `lazySingletonAsync`
+- New system of factory named, able to create and identify the factory by name.
+- New `keepAlive` method to keep the instance alive even after the module is disposed.
+
+### New mixin
+- `FlutterGetItModuleMixin` is a mixin that allows you to use the `onInit` and `onDispose` methods in your class.
+
+### Widgets Changes
+- New `FlutterGetItView` to automatically inject the object into the widget.
+- New `FlutterGetItWidget` to create a widget with lifecycle methods as `onInit` and `onDispose`, and allow to inject the object into the widget.
+
 ## 2.0.0
 Aprimorando a apresentação e a clareza do texto da versão 2.0.0:
 

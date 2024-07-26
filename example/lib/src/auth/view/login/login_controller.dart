@@ -6,7 +6,7 @@ class LoginController with FlutterGetItMixin {
   final AuthRepository authRepository;
   LoginController({required this.name, required this.authRepository});
   @override
-  void dispose() {}
+  void onDispose() {}
 
   @override
   void onInit() {}

@@ -159,7 +159,7 @@ final class Bind<T extends Object> {
         instanceName: tag,
         disposingFunction: (entity) async {
           if (hasMixin<FlutterGetItMixin>(entity)) {
-            (entity as FlutterGetItMixin).dispose();
+            (entity as FlutterGetItMixin).onDispose();
           }
           DebugMode.fGetItLog(
               '🚮$yellowColor Dispose: $T (${type.name}) - ${entity.hashCode}');

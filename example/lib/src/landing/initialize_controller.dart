@@ -7,7 +7,7 @@ import 'initialize_bloc.dart';
 class InitializeController implements InitializeBloc, FlutterGetItMixin {
   InitializeController();
   @override
-  void dispose() {}
+  void onDispose() {}
 
   @override
   void onInit() async {
