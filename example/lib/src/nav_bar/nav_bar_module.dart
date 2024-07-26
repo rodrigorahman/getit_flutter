@@ -17,7 +17,7 @@ class NavBarModule extends FlutterGetItModule {
       ];
 
   @override
-  void onClose(Injector i) {}
+  void onDispose(Injector i) {}
 
   @override
   void onInit(Injector i) {}

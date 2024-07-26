@@ -1,5 +1,5 @@
 mixin FlutterGetItMixin on Object {
-  void dispose();
+  void onDispose();
 
   void onInit();
 }

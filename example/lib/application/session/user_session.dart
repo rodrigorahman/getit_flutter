@@ -14,7 +14,7 @@ final class UserSession with FlutterGetItMixin {
   }
 
   @override
-  void dispose() {
+  void onDispose() {
     _me.close();
   }
 

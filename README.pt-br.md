@@ -53,13 +53,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlutterGetIt(
       pages: [
-        FlutterGetItPageRouter(
-          name: '/Landing/Initialize',
-          page: (context) => const Scaffold(
-            body: Center(
-              child: Text('Initializing...'),
+        FlutterGetItModuleRouter(
+          name: '/Initialize',
+          pages:[
+            FlutterGetItPageRouter(
+              name: '/Landing',
+              page: (context) => const Scaffold(
+                body: Center(
+                  child: Text('Initializing...'),
+                ),
+              ),
             ),
-          ),
+          ]
         ),
       ],
       builder: (context, routes) {
@@ -78,17 +83,89 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-O Flutter GetIt não reescreve as rotas padrão do Flutter; ele cria uma estrutura utilizando o ciclo de vida nativo do Flutter. Essa abordagem evita a reescrita desnecessária da navegação da aplicação, prevenindo bugs e problemas indesejados
+O Flutter GetIt não reescreve as rotas padrão do Flutter; ele cria uma estrutura utilizando o ciclo de vida nativo do Flutter. Essa abordagem evita a reescrita desnecessária da navegação da aplicação, prevenindo bugs e problemas indesejados.
 
 Porém para ele ter o controle das dependências você deve registrar as páginas da sua aplicação nos atributos [pages] conforme o exemplo acima ou [modules] que você verá um pouco mais pra frente.
 
-## FlutterGetItPageRouter
+## FlutterGetItModuleRouter
 
 No exemplo acima, você viu a forma mais simples de implementar uma rota dentro do flutter_getit. Se a sua página for tão simples quanto a nossa página inicial, você pode utilizar a classe de page, adicionando a página e o caminho ao qual ela irá responder.
 
+O primeiro nivel da rota é o **[FlutterGetItModuleRouter]**, ele é responsável por agrupar as rotas de uma determinada área da aplicação, como por exemplo, a área de autenticação, a área de produtos, a área de configurações, etc.
+
+O **[FlutterGetItModuleRouter]** é composto por um **[name]** e um **[pages]**, onde o **[name]** é o nome do módulo e o **[pages]** é uma lista de **[FlutterGetItPageRouter]** ou outros **[FlutterGetItModuleRouter]**.
+
+Você pode olhar o **[FlutterGetItModuleRouter]** como um "Modulo" ou "Sub-Modulo" dentro do sistema de rotas, pondendo criar quantos modulos quiser, e aninhar-los.
+
+Eles serão repassados de forma hierárquica para o modulo ou pagina filho, permitindo que você posso navegar dentro da arvore e se necessario, o FlutterGetIt irá instanciar as Binds.
+
+Vejamos um exemplo de como criar um **[FlutterGetItModuleRouter]**:
+
+```dart
+FlutterGetItModuleRouter(
+                name: '/Register',
+                bindings: [
+                  Bind.lazySingleton<RegisterController>(
+                    (i) => RegisterController(),
+                  ),
+                ],
+                onInit: (i) => debugPrint('hi by /Register'),
+                onDispose: (i) => debugPrint('bye by /Register'),
+                pages: [
+                  FlutterGetItPageRouter(
+                    name: '/Page',
+                    page: (context) => RegisterPage(
+                      controller: context.get(),
+                    ),
+                    bindings: [
+                      Bind.lazySingleton<RegisterController>(
+                        (i) => RegisterController(),
+                      ),
+                    ],
+                  ),
+                  FlutterGetItModuleRouter(
+                    name: '/ActiveAccount',
+                    bindings: [
+                      Bind.lazySingleton<ActiveAccountPageDependencies>(
+                        (i) => (
+                          controller: ActiveAccountController(name: 'MyName'),
+                          validateEmailController:
+                              ValidateEmailController(email: 'fgetit@injector'),
+                        ),
+                      ),
+                    ],
+                    pages: [
+                      FlutterGetItPageRouter(
+                        name: '/Page',
+                        page: (context) => const ActiveAccountPage(),
+                        bindings: [],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+```
+
+Na estrutura acima o **[FlutterGetItModuleRouter]** **[/Register]** possui uma página **[/Page]** e um submodulo **[/ActiveAccount]**, que por sua vez possui uma página **[/Page]**. Se descidir navegar para **[/ActiveAccount/Page]**, o **[FlutterGetIt]** irá instanciar as dependências do **[/ActiveAccount]** e **[/ActiveAccount/Page]** e também do **[/Register]**, pois ele é um **[FlutterGetItModuleRouter]** superior na mesma arvore que **[/ActiveAccount]**.
+
+Um **[FlutterGetItModuleRouter]** pode ter quantas páginas e submodulos quiser, e pode ser aninhado a outros **[FlutterGetItModuleRouter]**. Os atribuitos deste componente são:
+
+| Atributo | Descrição
+|------|----------
+| name | Nome do modulo.
+| bindings | Binds que serão instanciadas e removidas no mesmo tempo de vida do **[module]** que utilizar.
+| onDispose | Aqui pode executar uma ação antes das Binds serem fechadas e removidas.
+| onInit | Aqui pode executar uma ação antes das Binds serem instanciadas.
+| pages | Páginas ou submodulos que serão instanciadas e removidas no mesmo tempo de vida do **[module]** que utilizar.
+
+
+## FlutterGetItPageRouter
+
+O **[FlutterGetItPageRouter]** é o componente responsável por criar uma rota de página dentro do seu aplicativo. Ele é composto por um **[name]**, que é o caminho da rota, e um **[page]**, que é o widget que será exibido na tela e também possui **[Binds]** para inicializar e **[pages]** caso queira criar uma arvore hierárquica de navegação.
+
 ```dart
 FlutterGetItPageRouter(
-          name: '/Landing/Initialize',
+          name: '/Landing',
           page: (context) => const Scaffold(
             body: Center(
               child: Text('Initializing...'),
@@ -97,7 +174,9 @@ FlutterGetItPageRouter(
         ),
 ```
 
-Agora, se você precisa controlar alguma dependência logo no carregamento da sua home_page, você pode utilizar o atributo **[bindings]**. Ao adicionar este atributo, é possível especificar a dependência que será utilizada na sua página
+No exemplo acima, criamos uma rota chamada **[/Landing]** que exibirá um texto "Initializing..." no centro da tela.
+
+O **[FlutterGetItPageRouter]** também possui um atributo **[bindings]**, que é uma lista de **[Bind]** que serão instanciadas e removidas no mesmo tempo de vida do **[page]** que utilizar.
 
 ```dart
 FlutterGetItPageRouter(
@@ -117,7 +196,7 @@ FlutterGetItPageRouter(
 
 Dessa forma, o flutter_getit adicionará, durante o carregamento da sua tela, uma instância de InitializeController ao get_it, possibilitando a utilização da sua página. No entanto, é importante destacar que ao sair dessa tela, o flutter_getit eliminará a instância da memória do seu aplicativo, garantindo uma gestão eficiente dos recursos.
 
-Você também poderá adicionar rotas "filhas" através do atributo **[pages]**, as quais possuirão a mesma estrutura **[FlutterGetItPageRouter]**.
+Você também poderá adicionar rotas "filhas" através do atributo **[pages]**, as quais possuirão a mesma estrutura **[FlutterGetItPageRouter]** ou **[FlutterGetItModuleRouter]**.
 É importante saber que as **[Bindings]** da rota "mãe" se manterão abertas, o **[FlutterGetIt]** sabe diferencias as **[Bindings]** de cada rota, portando se adicionar um controller a uma rota filha, ele apenas será instaciado ao entrar nesta rota, e removido ao sair da mesma. 
 
 ## Dependências de aplicação
@@ -127,7 +206,7 @@ Todo projeto necessita de dependencias que devem ficar ativas pela aplicação t
 ## Exemplo utilizando **[bindings]**
 
 ```dart
-return FlutterGetIt(
+FlutterGetIt(
       bindings: MyApplicationBindings(),
       builder: (context, routes) {
         return MaterialApp(
@@ -154,12 +233,12 @@ class MyApplicationBindings extends ApplicationBindings {
 }
 ```
 
-## Atributo **[modules]
+## Atributo **[modules]**
 
 Em projetos grandes, a lista de dependências de uma aplicação pode ser extensa. Para manter o projeto mais organizado, criamos o FlutterGetItModule que deve ser aplicado ao atributo **"modules"**. Com ele, você pode fornecer uma classe para o carregamento das suas dependências e poderá aplicar regras de inicialização como em rotas.
 
 ```dart
-return FlutterGetIt(
+ FlutterGetIt(
       modules: [
         LandingModule(),
       ],
@@ -177,7 +256,7 @@ return FlutterGetIt(
     );
 ```
 
-Veja como criar um modulo:
+### Veja como criar um modulo:
 ```dart
 class LandingModule extends FlutterGetItModule {
   @override
@@ -187,25 +266,41 @@ class LandingModule extends FlutterGetItModule {
   List<Bind<Object>> get bindings => [];
 
   @override
-  List<FlutterGetItPageRouter> get pages => [
-        FlutterGetItPageRouter(
+  List<FlutterGetItModuleRouter> get pages => [
+    FlutterGetItModuleRouter(
           name: '/Initialize',
-          page: (context) => const InitializePage(),
-          bindings: [
-            Bind.lazySingleton<InitializeController>(
-              (i) => InitializeController(),
-            ),
-          ],
-        ),
-        FlutterGetItPageRouter(
-          name: '/Presentation',
-          page: (context) => const PresentationPage(),
           bindings: [],
+          pages: [
+            FlutterGetItPageRouter(
+              name: '/Page',
+              page: (context) => const InitializePage(),
+              bindings: [
+                Bind.lazySingleton<InitializeController>(
+                      (i) => InitializeController(),
+                ),
+              ],
+            ),
+          ]
+        ),
+    FlutterGetItModuleRouter(
+          name: '/Presentation',
+          bindings: [], 
+            pages: [
+              FlutterGetItPageRouter(
+                name: '/Page',
+                page: (context) => const InitializePage(),
+                bindings: [
+                  Bind.lazySingleton<InitializeController>(
+                        (i) => InitializeController(),
+                  ),
+                ],
+              ),
+            ]
         ),
       ];
 
   @override
-  void onClose(Injector i) {}
+  void onDispose(Injector i) {}
 
   @override
   void onInit(Injector i) {}
@@ -218,9 +313,9 @@ Sobre **[bindings]**:
 * Aqui fica suas bindings "globais" do modulo, ex repositories. Sempre que uma rota do modulo for chamada, está binds serão verificadas e instanciadas se necessário.
 
 Sobre **[pages]**:
-* Aqui fica suas pages internas dos modulo, seguindo as mesma regras mencionada acima sobre **[FlutterGetItPageRouter]**. É importante saber que a ordem da lista não interfere na utilização.
+* Aqui fica suas pages internas dos modulo, seguindo as mesma regras mencionada acima sobre **[FlutterGetItModuleRouter]**. É importante saber que a ordem da lista não interfere na utilização.
 
-Sobre **[onInit]** e **[onClose]**:
+Sobre **[onInit]** e **[onDispose]**:
 * Serão chamados na rota de inicialialização do modulo (entrada e saida), podendo ser qualquer uma dentro de **[pages]**.
 
 ## Recuperando instancia
@@ -368,11 +463,12 @@ Injector.unRegisterAllFactories<FormItemController>();
 | name | O id é utilizado para identificação do elemento internamente e na extensão, exemplo "/HomeWidget" || "WidgetCounter".
 | binds | Binds que serão instanciadas e removidas no mesmo tempo de vida do **[widget || page]** que utilizar. 
 | onDispose | Aqui pode executar uma ação antes das Binds serem fechadas e removidas.
+| onInit | Aqui pode executar uma ação logo após as Binds serem iniciadas.
 | builder | Construção do Widget.
 
 Exemplo:
 ```dart
-return FlutterGetItWidget(
+ FlutterGetItWidget(
       name: id,
       binds: [
         Bind.factory(
@@ -430,7 +526,7 @@ class ActiveAccountPage extends FlutterGetItView<ActiveAccountController> {
 
 | Atributo | Descrição
 |------|----------
-| dispose | Chamado no momento que o Objeto é removido.
+| onDispose | Chamado no momento que o Objeto é removido.
 | onInit | Chamado na primeira vez que o Objeto é instanciado.
 
 Exemplo:
@@ -441,7 +537,7 @@ class ActiveAccountController with FlutterGetItMixin {
 
   ActiveAccountController({required this.name});
   @override
-  void dispose() {}
+  void onDispose() {}
 
   @override
   void onInit() {}
@@ -463,19 +559,24 @@ class ActiveAccountController with FlutterGetItMixin {
 Exemplo:
 
 ```dart
-return Scaffold(
+ Scaffold(
       body: FlutterGetIt.navigator(
         navigatorName: 'NAVbarProducts',
         bindings: MyNavigatorBindings(),
         pages: [
           FlutterGetItPageRouter(
-            name: '/RandomPage',
-            page: (context) => const RandomPage(),
+            name: '/Random',
             bindings: [
               Bind.lazySingleton<RandomController>(
                 (i) => RandomController('Random by FlutterGetItPageRouter'),
               ),
             ],
+          pages: [
+              FlutterGetItPageRouter(
+                name: '/Page',
+                page: (context) => const RandomPage(),
+                ),
+              ]
           ),
         ],
         modules: [

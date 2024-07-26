@@ -5,7 +5,7 @@ class RandomController with FlutterGetItMixin {
 
   RandomController(this.title);
   @override
-  void dispose() {}
+  void onDispose() {}
 
   @override
   void onInit() {}

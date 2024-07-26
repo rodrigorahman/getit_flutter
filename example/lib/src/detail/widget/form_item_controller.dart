@@ -7,7 +7,7 @@ class FormItemController with FlutterGetItMixin {
     required this.name,
   });
   @override
-  void dispose() {}
+  void onDispose() {}
 
   @override
   void onInit() {}
