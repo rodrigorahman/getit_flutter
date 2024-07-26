@@ -1,6 +1,8 @@
 # Versions
 
 ## 3.0.0
+- Um agradecimento mais do que especial ao @lleoserrano, que trabalhou arduamente nas incríveis melhorias do pacote!
+
 - **Breaking Change**: For existing users, please review the detailed in the documentation.
 
 ### Major Changes
