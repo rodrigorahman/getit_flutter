@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-
-import '../flutter_getit_context.dart';
 
 final class FlutterGetItNavigatorObserver extends NavigatorObserver {
   String? currentRoute;
@@ -17,7 +14,7 @@ final class FlutterGetItNavigatorObserver extends NavigatorObserver {
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     this.previousRoute = currentRoute;
     currentRoute = route.settings.name;
-    GetIt.I.get<FlutterGetItContext>().returnToLastId();
+    // GetIt.I.get<FlutterGetItContext>().returnToLastId();
   }
 
   @override

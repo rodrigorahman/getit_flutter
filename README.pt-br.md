@@ -34,11 +34,10 @@ A configuração do Flutter GetIt é realizada adicionando um widget ao redor do
 |-------------------------|-------------
 | context                 | BuildContext
 | routes                  | Um mapa que deve ser adicionando na tag routes do MaterialApp ou CupertinoApp
-| flutterGetItNavObserver | Esse atributo é um NavigatorObserver esse atributo deve ser adicionado no atributo **navigatorObservers** do MaterialApp.
-|
 
 
-Os atributos **[routes]** e **[flutterGetItNavObserver]** devem ser repassados para o MaterialApp, conforme ilustrado no exemplo abaixo:
+
+O atributo **[routes]** deve ser repassado para o MaterialApp, conforme ilustrado no exemplo abaixo:
 
 ```dart
 import 'package:flutter/material.dart';
@@ -53,24 +52,24 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlutterGetIt(
-      // Adiciona aqui as páginas que serão carregadas
       pages: [
-        FlutterGetItPageBuilder(
-          page: (context) => const MyHomePage(title: 'home'),
-          path: '/',
+        FlutterGetItPageRouter(
+          name: '/Landing/Initialize',
+          page: (context) => const Scaffold(
+            body: Center(
+              child: Text('Initializing...'),
+            ),
+          ),
         ),
       ],
-      // Nesse método deve ser retornado o MaterialApp ou Curpertino App
-      builder: (context, routes, flutterGetItNavObserver) {
+      builder: (context, routes) {
         return MaterialApp(
           title: 'Flutter Demo',
-          // Adicione aqui o atributo flutterGetItNavObserver
-          navigatorObservers: [flutterGetItNavObserver],
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
           ),
-          // Adicione o atributo das rotas aqui
+          initialRoute: '/Landing/Initialize',
           routes: routes,
         );
       },
@@ -83,134 +82,146 @@ O Flutter GetIt não reescreve as rotas padrão do Flutter; ele cria uma estrutu
 
 Porém para ele ter o controle das dependências você deve registrar as páginas da sua aplicação nos atributos [pages] conforme o exemplo acima ou [modules] que você verá um pouco mais pra frente.
 
-## FlutterGetItPageBuilder
+## FlutterGetItPageRouter
 
-No exemplo acima, você viu a forma mais simples de implementar uma rota dentro do flutter_getit. Se a sua página for tão simples quanto a nossa página inicial, você pode utilizar a classe de builder, adicionando a página e o caminho ao qual ela irá responder.
-
-```dart
-FlutterGetItPageBuilder(
-  // Define a página que será exibida quando a rota for acessada
-  page: (context) => const MyHomePage(title: 'home'),
-  // Define o caminho da rota
-  path: '/',
-),
-```
-
-Agora, se você precisa controlar alguma dependência logo no carregamento da sua home_page, você pode utilizar o atributo binding. Ao adicionar este atributo, é possível especificar a dependência que será utilizada na sua página
+No exemplo acima, você viu a forma mais simples de implementar uma rota dentro do flutter_getit. Se a sua página for tão simples quanto a nossa página inicial, você pode utilizar a classe de page, adicionando a página e o caminho ao qual ela irá responder.
 
 ```dart
-FlutterGetItPageBuilder(
-  // Adiciona o binding para controlar dependências durante o carregamento da página
-  binding: () => Bind.lazySingleton((i) => PageXController()),
-  // Define a página que será exibida quando a rota for acessada
-  page: (context) => const PageX(),
-  // Define o caminho da rota
-  path: '/pagex',
-),
-
+FlutterGetItPageRouter(
+          name: '/Landing/Initialize',
+          page: (context) => const Scaffold(
+            body: Center(
+              child: Text('Initializing...'),
+            ),
+          ),
+        ),
 ```
 
-Dessa forma, o flutter_getit adicionará, durante o carregamento da sua tela, uma instância de PageXController ao get_it, possibilitando a utilização da sua página. No entanto, é importante destacar que ao sair dessa tela, o flutter_getit eliminará a instância da memória do seu aplicativo, garantindo uma gestão eficiente dos recursos.
+Agora, se você precisa controlar alguma dependência logo no carregamento da sua home_page, você pode utilizar o atributo **[bindings]**. Ao adicionar este atributo, é possível especificar a dependência que será utilizada na sua página
+
+```dart
+FlutterGetItPageRouter(
+          name: '/Landing/Initialize',
+          page: (context) => const Scaffold(
+            body: Center(
+              child: Text('Initializing...'),
+            ),
+          ),
+          bindings: [
+             Bind.lazySingleton(
+              (i) => InitializeController(),
+            )
+          ],
+        ),
+```
+
+Dessa forma, o flutter_getit adicionará, durante o carregamento da sua tela, uma instância de InitializeController ao get_it, possibilitando a utilização da sua página. No entanto, é importante destacar que ao sair dessa tela, o flutter_getit eliminará a instância da memória do seu aplicativo, garantindo uma gestão eficiente dos recursos.
+
+Você também poderá adicionar rotas "filhas" através do atributo **[pages]**, as quais possuirão a mesma estrutura **[FlutterGetItPageRouter]**.
+É importante saber que as **[Bindings]** da rota "mãe" se manterão abertas, o **[FlutterGetIt]** sabe diferencias as **[Bindings]** de cada rota, portando se adicionar um controller a uma rota filha, ele apenas será instaciado ao entrar nesta rota, e removido ao sair da mesma. 
 
 ## Dependências de aplicação
 
-Todo projeto necessita de dependencias que devem ficar ativas pela aplicação toda, ex: RestClient(Dio), Log e muitas outras. Para o FlutterGetIt, você pode facilmente disponibilizar isso. Basta, durante a inicialização [FlutterGetIt], enviar o parâmetro [bindingsBuilder] ou [bindings].
+Todo projeto necessita de dependencias que devem ficar ativas pela aplicação toda, ex: RestClient(Dio), Log e muitas outras. Para o FlutterGetIt, você pode facilmente disponibilizar isso. Basta, durante a inicialização [FlutterGetIt], enviar o parâmetro **[bindings]** dentro do **[FlutterGetIt]** na main.
 
-## Exemplo utilizando **[bindingsBuilder]**
+## Exemplo utilizando **[bindings]**
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:flutter_getit/flutter_getit.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return FlutterGetIt(
-      // Retorne um array com cada um dos bindings que você gostaria de deixar 
-      // disponível pela aplicação inteira
-      bindingsBuilder: () {
-        return [
-          Bind.lazySingleton((i) => ServiceForApplication()),
-        ];
-      },
-      pages: [
-        FlutterGetItPageBuilder(
-          page: (context) => const MyHomePage(title: 'home'),
-          path: '/',
-        ),
-      ],
-      builder: (context, routes, flutterGetItNavObserver) {
+return FlutterGetIt(
+      bindings: MyApplicationBindings(),
+      builder: (context, routes) {
         return MaterialApp(
           title: 'Flutter Demo',
-          navigatorObservers: [flutterGetItNavObserver],
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
           ),
+          initialRoute: '/Landing/Initialize',
           routes: routes,
         );
       },
     );
-  }
-}
 ```
-
-## Atributo [bindings]
-
-Em projetos grandes, a lista de dependências de uma aplicação pode ser extensa. Para manter o projeto mais organizado, sugiro o uso do atributo **"bindings"**. Com ele, você pode fornecer uma classe para o carregamento das suas dependências.
-
-
+A classe **[MyApplicationBindings]** extende a **[ApplicationBindings]**, veja o exemplo abaixo.
 ```dart
-// Crie uma classe extendendo [ApplicationBindings]
-class ExemploApplicationBinding extends ApplicationBindings {
-
-  // retorne em um array todas as dependências de aplicação
+class MyApplicationBindings extends ApplicationBindings {
   @override
   List<Bind<Object>> bindings() => [
-        Bind.lazySingleton((i) => ServiceForApplication()),
+        Bind.singletonAsync(
+          (i) async => SharedPreferences.getInstance(),
+        ),
       ];
 }
+```
 
-import 'package:flutter/material.dart';
-import 'package:flutter_getit/flutter_getit.dart';
+## Atributo **[modules]
 
-void main() {
-  runApp(const MyApp());
-}
+Em projetos grandes, a lista de dependências de uma aplicação pode ser extensa. Para manter o projeto mais organizado, criamos o FlutterGetItModule que deve ser aplicado ao atributo **"modules"**. Com ele, você pode fornecer uma classe para o carregamento das suas dependências e poderá aplicar regras de inicialização como em rotas.
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return FlutterGetIt(
-      // Adicione aqui a classe de binding
-      bindings: ExemploApplicationBinding(),
-      pages: [
-        FlutterGetItPageBuilder(
-          page: (context) => const MyHomePage(title: 'home'),
-          path: '/',
-        ),
+```dart
+return FlutterGetIt(
+      modules: [
+        LandingModule(),
       ],
-      builder: (context, routes, flutterGetItNavObserver) {
+      builder: (context, routes) {
         return MaterialApp(
           title: 'Flutter Demo',
-          navigatorObservers: [flutterGetItNavObserver],
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
           ),
+          initialRoute: '/Landing/Initialize',
           routes: routes,
         );
       },
     );
-  }
+```
+
+Veja como criar um modulo:
+```dart
+class LandingModule extends FlutterGetItModule {
+  @override
+  String get moduleRouteName => '/Landing';
+
+  @override
+  List<Bind<Object>> get bindings => [];
+
+  @override
+  List<FlutterGetItPageRouter> get pages => [
+        FlutterGetItPageRouter(
+          name: '/Initialize',
+          page: (context) => const InitializePage(),
+          bindings: [
+            Bind.lazySingleton<InitializeController>(
+              (i) => InitializeController(),
+            ),
+          ],
+        ),
+        FlutterGetItPageRouter(
+          name: '/Presentation',
+          page: (context) => const PresentationPage(),
+          bindings: [],
+        ),
+      ];
+
+  @override
+  void onClose(Injector i) {}
+
+  @override
+  void onInit(Injector i) {}
 }
 ```
+Sobre **[moduleRouteName]**:
+* Este é nome do seu modulo, suas rotas deve iniciar com está key e terminar com a key de uma rota interna existente em **[pages]**.
+
+Sobre **[bindings]**:
+* Aqui fica suas bindings "globais" do modulo, ex repositories. Sempre que uma rota do modulo for chamada, está binds serão verificadas e instanciadas se necessário.
+
+Sobre **[pages]**:
+* Aqui fica suas pages internas dos modulo, seguindo as mesma regras mencionada acima sobre **[FlutterGetItPageRouter]**. É importante saber que a ordem da lista não interfere na utilização.
+
+Sobre **[onInit]** e **[onClose]**:
+* Serão chamados na rota de inicialialização do modulo (entrada e saida), podendo ser qualquer uma dentro de **[pages]**.
 
 ## Recuperando instancia
 
@@ -226,7 +237,6 @@ context.get<ServiceForApplication>();
 
 ### Exemplo utilizando ***[context.get]***
 
-
 ```dart
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -235,12 +245,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Chamando a extension do BuildContext
     var service = context.get<ServiceForApplication>();
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: Center(child: Text(service.name)),
-    );
+    return ...;
   }
 }
 ```
@@ -249,336 +254,257 @@ class HomePage extends StatelessWidget {
 
 ```dart
 class HomePage extends StatelessWidget {
-  
   final service = Injector.get<ServiceForApplication>();
-  
   HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ...;
+  }
+}
+```
+
+* Você também poderá usar o **[Injector.getAsync]** para Binds assíncronas, veja mais sobre elas a seguir.
+
+## Tipos de Binds
+
+O flutter_getit suporta todos os outros bindings suportados pelo motor get_it:
+
+| Bind | Descrição
+|------|----------
+| Bind.lazySingleton | Esse bind vai inicializar a dependência somente quando o usuário chamá-la pela primeira vez. Após isso, ela se tornará um singleton, retornando a mesma instância toda vez que for requisitada.
+| Bind.lazySingletonAsync | Esse bind funciona como o "Bind.lazySingleton", mas sua primeira chamada será assíncrona.
+| Bind.singleton | Ao contrário do lazySingleton, o singleton fará a inicialização da instância imediatamente quando a página carregar.
+| Bind.singletonAsync | Esse bind funciona como o "Bind.singleton", mas sua primeira chamada será assíncrona.
+| Bind.factory | A factory faz com que toda vez que você solicitar uma instância para o gerenciador de dependências, ele fornecerá uma nova instância.
+| Bind.factoryAsync | Esse bind funciona como o "Bind.factory", mas sua primeira chamada será assíncrona.
+
+# Atributo **[keepAlive]**
+* Este atributo presente nas bindings, determinará que o FlutterGetIt não deixe que outros controllers ou modulos a removam, tornando-a permanente no ciclo de vida da app.
+
+# Exemplo Completo
+
+```dart
+class MyApplicationBindings extends ApplicationBindings {
+  @override
+  List<Bind<Object>> bindings() => [
+        Bind.singleton(
+          (i) async => SharedPreferences.getInstance(),
+        ),
+        Bind.singletonAsync(
+          (i) async => SharedPreferences.getInstance(),
+        ),
+        Bind.lazySingleton(
+          (i) async => AsyncTest(),
+        ),
+        Bind.lazySingletonAsync(
+          (i) async => Future.delayed(
+            const Duration(seconds: 4),
+            () => AsyncTest(),
+          ),
+        ),
+        Bind.factory(
+          (i) => MyDeepLink(),
+        ),
+        Bind.factoryAsync(
+          (i) => Future.delayed(
+            const Duration(seconds: 4),
+            () => MyDeepLink(),
+          ),
+        ),
+      ];
+}
+```
+
+## Importante sobre **[Binds Async]**
+* Através do aatalho do **[Injector.]** você pode aguardas suas Binds assíncronas ficarem prontas antes de iniciar qualquer ação. Normalmente usado durante a transição da SplashPage, para carregar dependências assíncronas.
+
+Exemplo:
+
+```dart
+class InitializeController with FlutterGetItMixin {
+  InitializeController();
+  @override
+  void dispose() {}
+
+  @override
+  void onInit() async {
+    await Injector.allReady();
+    //Do something
+  }
+}
+```
+
+## Importante sobre **[Bind.factory]** e **[Bind.factoryAsync]**
+* A cada solicitação ao FlutterGetIt a factory retornará uma nova instancia do objeto solicitado, mas você pode definir uma **[factoryTag]** no momento de intanciar, assim o FlutterGetIt atribuirá essa tag ao Objeto tornando-o unico na arvore, podendo assim evitar duplicações e podendo ser chamdado em outros locais com a precisão da tag.
+* Você também pode remover uma Bind baseada na sua **[factoryTag]**.
+
+Exemplo de criação:
+```dart
+final fGetIt = context.get<FormItemController>(factoryTag: 'UniqueKeyString');
+
+// Agora este objeto esta atribuido a está tag, e em caso de hotReload ou solicitação em outro local, o FlutterGetIt pode identifica-la e não seja gerado um novo Objeto na factory.
+
+//Exemplo em outro controller.
+final factoryCriadoNaHomePage = context.get<FormItemController>(factoryTag: 'UniqueKeyString');
+```
+
+Exemplo de remoção:
+```dart
+Injector.unRegisterFactory<FormItemController>(UniqueKeyString);
+
+// Aqui vamos remover todas os Objetos dos tipo T
+Injector.unRegisterAllFactories<FormItemController>();
+```
+
+### UI e Widgets
+
+* O FlutterGetIt possui um conjunto de ferramentas para ajudar a utilização dos componentes e regras na UI.
+
+# FlutterGetItWidget
+
+| Atributo | Descrição
+|------|----------
+| name | O id é utilizado para identificação do elemento internamente e na extensão, exemplo "/HomeWidget" || "WidgetCounter".
+| binds | Binds que serão instanciadas e removidas no mesmo tempo de vida do **[widget || page]** que utilizar. 
+| onDispose | Aqui pode executar uma ação antes das Binds serem fechadas e removidas.
+| builder | Construção do Widget.
+
+Exemplo:
+```dart
+return FlutterGetItWidget(
+      name: id,
+      binds: [
+        Bind.factory(
+          (i) => FormItemController(
+            name: 'FormItemController',
+          ),
+        ),
+      ],
+      onDispose: () {
+        Injector.unRegisterFactory<FormItemController>(id);
+      },
+      builder: (context) {
+        final fGetIt = context.get<FormItemController>(factoryTag: id);
+        return Column(
+          children: [
+            Text(fGetIt.name),
+            const SizedBox(height: 10),
+            TextField(
+              decoration: InputDecoration(
+                labelText: fGetIt.name,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+```
+
+# FlutterGetItView
+
+* O **[FlutterGetItView]** é um atralho que extende **[StatelessWidget]** permitindo que você reduza a quantidade de codigo no widget.
+* A utilização proverá uma variavel chamada **[fGetit]** que assumirá o valor repassado <T> no **[FlutterGetItView]**.
+ 
+Exemplo:
+```dart
+class ActiveAccountPage extends FlutterGetItView<ActiveAccountController> {
+  const ActiveAccountPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: Text(fGetIt.name),
       ),
-      body: Center(child: Text(service.name)),
+      body: ...,
     );
   }
 }
 ```
 
-## Não para por ai
+# FlutterGetItMixin - Ciclo de vida do Objeto
 
-Apenas com esses passos, você já pode utilizar o Flutter GetIt, mas há muito mais recursos disponíveis. 
+* O FlutterGetIt possui o mixin **[FlutterGetItMixin]** que lhe permite aplica-lo em sua classe, fazendo com que o Objeto para a ter um ciclo de inicialização e finalização.
 
-Manter seu projeto organizado é sempre a melhor abordagem, proporcionando maior facilidade durante a manutenção e pensando nisso, adicionamos suporte a rotas e módulos no pacote, proporcionando uma experiência ainda mais robusta e estruturada.
-
-# Rotas
-
-Com a classe [FlutterGetItPageBuilder] você já está trabalhando com as rotas gerênciadas porém você pode deixar seu projeto mais organizado utilizando a classe **[FlutterGetItPageRouter]**
-
-## FlutterGetItPageRouter
-
-Essa classe é responsável pela definição de rotas da sua aplicação. Veja um exemplo:
-
-| Método | Descrição
-|--------|-----------
-| bindings | Método onde você vai declarar cada uma das suas dependências
-| routeName | Método onde você deve retornar o path da sua rota
-| view | Método que retorna o widget que representa seu Stateless ou Stateful Widget (sua página).
-
-
-```dart
-class LoginRoute extends FlutterGetItPageRouter {
-  const LoginRoute({super.key});
-
-  @override
-  List<Bind<Object>> get bindings => [
-    Bind.lazySingleton((i) => LoginController(serviceForApplication: i()))
-  ];
-
-  @override
-  String get routeName => '/login';
-
-  @override
-  WidgetBuilder get view => (context) => const LoginPage();
-}
-
-
-
-class LoginPage extends StatelessWidget {
-
-  const LoginPage({ super.key });
-
-   @override
-   Widget build(BuildContext context) {
-    final controller = context.get<LoginController>();
-       return Scaffold(
-           appBar: AppBar(title: const Text('Login Page'),),
-           body: Column(
-             children: [
-               Text(controller.getUserName()),
-               Text(controller.getNameService()),
-             ],
-           ),
-       );
-  }
-}
-```
-No exemplo acima, optamos por não criar uma rota simples usando o builder. Em vez disso, criamos uma classe que representa a nossa rota. Nessa classe, você define as dependências dessa rota [bindings], o nome da rota [routeName], que será acessada pelo Navigator do Flutter, e a [view], que é o método que retorna o widget representando seu StatelessWidget ou StatefulWidget.
-
-# Configurando sua rota
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:flutter_getit/flutter_getit.dart';
-import 'package:flutter_getit_2_example/routes/login/login_route.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return FlutterGetIt(
-      pages: [
-        // Adicione aqui a instancia da sua rota.
-        LoginRoute(),
-      ],
-      builder: (context, routes, flutterGetItNavObserver) {
-        return MaterialApp(
-          title: 'Flutter Demo',
-          navigatorObservers: [flutterGetItNavObserver],
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-          ),
-          routes: routes,
-        );
-      },
-    );
-  }
-}
-```
-
-# Módulos
-
-A partir da versão 2.0, o flutter_getit também oferece suporte a módulos.
-
-Para utilizar o conceito de módulos do flutter_getit, você deve primeiro criar a sua classe que representará o seu módulo, estendendo a classe [FlutterGetItModule].
-
-
-| Metodo      | Descrição
-|-------------|-------------
-| moduleRouteName | Nesse getter, você deve informar a rota base para o seu módulo. Esse valor será concatenado com as rotas das páginas (Lembre-se sempre de começar com /).
-| bindings     | Nesse getter, você deve retornar os bindings que deseja adicionar à página, e o get_it_flutter cuidará do restante.
-| pages        | Nesse getter, você deve retornar um mapa com as rotas desse módulo. No valor do mapa, você deve retornar uma função que, como atributo, receberá o contexto (BuildContext). O retorno dessa função deve ser um widget, que pode ser uma página simples ou [FlutterGetItModulePageRouter].
-
-```dart
-class AuthModule extends FlutterGetItModule {
-
-  // Bindings do módulo como um todo
-  @override
-  List<Bind> get bindings => [
-    Bind.lazySingleton((i) => LoginRepository())
-  ];
-
-  // Caminho base do seu módulo
-  @override
-  String get moduleRouteName => '/auth';
-
-
-  // Páginas do seu módulo
-  @override
-  Map<String, WidgetBuilder> get pages => {
-        '/login': (context) => const LoginPage(),
-        '/register': (context) => const RegisterPage()
-      };
-}
-```
-
-Vamos começar pelos bindings. Esse getter funciona exatamente como os outros, a diferença está no ciclo de vida. Um binding dentro de um módulo só será eliminado quando o usuário sair do módulo como um todo. Por exemplo:
-
-Se o usuário entrar na tela ***/auth/login***, significa que ele entrou no módulo ***/auth*** na página ***/login***. Se o usuário clicar em um link que vá para a tela ***/auth/register***, o flutter_getit entenderá que o usuário está indo para o mesmo módulo e não eliminará as dependências do módulo ***/auth***. Ele só eliminará as dependências do módulo ***/auth*** quando o usuário sair do módulo e for para outro, como por exemplo, ***/products/***.
-
-## Configurando um módulo
-
-Para configurar um módulo, basta adicionar no [FlutterGetIt] o atributo modules:
-
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:flutter_getit/flutter_getit.dart';
-import 'package:flutter_getit_2_example/modules/auth/auth_module.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return FlutterGetIt(
-      modules: [AuthModule()]
-      builder: (context, routes, flutterGetItNavObserver) {
-        return MaterialApp(
-          title: 'Flutter Demo',
-          navigatorObservers: [flutterGetItNavObserver],
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-          ),
-          routes: routes,
-        );
-      },
-    );
-  }
-}
-```
-
-E automaticamente, o flutter_getit criará as rotas ***/auth/login*** e ***/auth/register***
-
-## Diferencial do modulo em conjunto com [FlutterGetItModulePageRouter]
-
-Trabalhar com módulos pode ocasionalmente exigir a declaração de controllers ou dependências específicas que serão usadas exclusivamente em uma das páginas do módulo. Um exemplo disso são as controllers, muitas vezes associadas a uma única página. No entanto, alguns pacotes geralmente exigem que você declare a instância da controller dentro do módulo, como exemplificado abaixo:
-
-```dart
-class AuthModule extends FlutterGetItModule {
-
-  // Bindings do módulo como um todo
-  @override
-  List<Bind> get bindings => [
-    Bind.lazySingleton((i) => LoginRepository())
-    // Controller do login
-    Bind.lazySingleton((i) => LoginController())
-    // Controller do register
-    Bind.lazySingleton((i) => RegisterController())
-  ];
-
-  // Caminho base do seu módulo
-  @override
-  String get moduleRouteName => '/auth';
-
-
-  // Páginas do seu módulo
-  @override
-  Map<String, WidgetBuilder> get pages => {
-        '/login': (context) => const LoginPage(),
-        '/register': (context) => const RegisterPage()
-      };
-}
-```
-
-Diferentemente de outras abordagens, o flutter_getit permite que as controllers do login e do registro permaneçam ativas somente quando necessárias.
-
-## FlutterGetItModulePageRouter
-
-A classe [FlutterGetItModulePageRouter] te ajuda com isso. Veja o exemplo:
-
-Abaixo, criamos uma classe LoginPageRoute onde declaramos os bindings e qual a view que será apresentada.
-
-```dart
-class LoginPageRoute extends FlutterGetItModulePageRouter{
-  const LoginPageRoute({super.key});
-
-  @override
-  List<Bind<Object>> get bindings => [
-    Bind.lazySingleton((i) => LoginController(repository: i()))
-  ];
-
-  @override
-  WidgetBuilder get view => (context) => const LoginPage();  
-}
-```
-
-Agora, no nosso AuthModule, na rota de login, não apontamos mais diretamente para a página LoginPage, mas sim para a rota [LoginPageRoute].
-
-```dart 
-class AuthModule extends FlutterGetItModule {
-
-  @override
-  List<Bind> get bindings => [
-    Bind.lazySingleton((i) => LoginRepository())
-  ];
-
-  @override
-  String get moduleRouteName => '/auth';
-
-  @override
-  Map<String, WidgetBuilder> get pages => {
-        '/login': (context) => const LoginPageRoute(),
-        '/register': (context) => const RegisterPage()
-      };
-}
-
-```
-
-Essa abordagem permite que o mecanismo do flutter_getit reconheça essas dependências como entidades distintas, carregando a LoginController apenas quando a tela correspondente estiver ativa e eliminando-a quando a tela for descarregada. Isso evita a criação de instâncias desnecessárias em sua aplicação, contribuindo para uma gestão mais eficiente de recursos
-
-## Tipos de Binds
-
-Até agora, você viu apenas um tipo de binding, **Bind.lazySingleton**. No entanto, o flutter_getit suporta todos os outros bindings suportados pelo motor get_it:
-
-Essas possibilidades são três:
-
-| Bind | Descrição
+| Atributo | Descrição
 |------|----------
-| Bind.lazySingleton| Esse bind vai inicializar a dependência somente quando o usuário chamá-la pela primeira vez. Após isso, ela se tornará um singleton, retornando a mesma instância toda vez que for requisitada.
-| Bind.singleton | Ao contrário do lazySingleton, o singleton fará a inicialização da instância imediatamente quando a página carregar.
-| Bind.factory | A factory faz com que toda vez que você solicitar uma instância para o gerenciador de dependências, ele fornecerá uma nova instância.
+| dispose | Chamado no momento que o Objeto é removido.
+| onInit | Chamado na primeira vez que o Objeto é instanciado.
 
-### Exemplo Completo
+Exemplo:
 
 ```dart
-class LoginRoute extends FlutterGetItModulePageRouter {
-  
-  const LoginRoute({super.key});
-  
+class ActiveAccountController with FlutterGetItMixin {
+  final String name;
+
+  ActiveAccountController({required this.name});
   @override
-  List<Bind> get bindings => [
-    Bind.singleton((i) => HomeRepository())
-    Bind.lazySingleton((i) => HomeRepository())
-    Bind.factory((i) => HomeController())
-  ];  
-  
+  void dispose() {}
+
   @override
-  WidgetBuilder get view => (context) => LoginPage();
+  void onInit() {}
 }
 ```
 
-## Diferentes formas de registros
+# FlutterGetIt.navigator - Navigator 2.0
 
-### Lazy Singleton (Bind.lazySingleton)
+* O FlutterGetIt possui suporte ao novigator 2.0, permitindo que instancie modulos e rotas exclusiva para o contexto interno. Para isto basta envolver o "Navigator" com o **[FlutterGetIt.navigator]**.
 
-```dart
-    Bind.lazySingleton((i) => HomeController())
-```
+| Atributo | Descrição
+|------|----------
+| navigatorName | Nome do navigator para identificação na arvore e extensão.
+| bindings | Mesma regra utilizada nas bindings da "main", mas deve estender **[NavigatorBindings]** invés de **[ApplicationBindings]**
+| pages | Atribuição de rotas como na "main".
+| modules | Atribuição de modulos como na "main".
+| builder | Retorna o context e rotas como na "main".
 
-O Lazy Singleton faz com que, toda vez que for solicitada uma nova instância ao gerenciador de dependências, ele fornecerá a mesma instância. No entanto, ao contrário do singleton, esse Bind não inicializa a instância imediatamente no carregamento da página; ela será criada somente quando solicitada pela primeira vez.
-
-#### Singleton (Bind.singleton)
-
-```dart
-    Bind.singleton((i) => HomeController())
-```
-
-O singleton faz com que toda vez que for solicitada uma nova instância ao gerenciador de dependências, ele fornecerá a mesma instância.
-
->**Obs:** O Bind.singleton tem a característica de iniciar a classe logo no carregamento da página.
-
-
-### Factory (Bind.factory)
+Exemplo:
 
 ```dart
-    Bind.factory((i) => HomeController())
+return Scaffold(
+      body: FlutterGetIt.navigator(
+        navigatorName: 'NAVbarProducts',
+        bindings: MyNavigatorBindings(),
+        pages: [
+          FlutterGetItPageRouter(
+            name: '/RandomPage',
+            page: (context) => const RandomPage(),
+            bindings: [
+              Bind.lazySingleton<RandomController>(
+                (i) => RandomController('Random by FlutterGetItPageRouter'),
+              ),
+            ],
+          ),
+        ],
+        modules: [
+          HomeModule(),
+          DetailModule(),
+          AuthModule(),
+        ],
+        builder: (context, routes) => Navigator(
+          key: internalNav,
+          initialRoute: '/Home/Page',
+          observers: const [],
+          onGenerateRoute: (settings) {
+            return PageRouteBuilder(
+              settings: settings,
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  routes[settings.name]?.call(context) ?? const Placeholder(),
+            );
+          },
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar...
+      ...
+      ...
 ```
 
-A factory faz com que toda vez que você solicitar uma instância ao gerenciador de dependências, ele fornecerá uma nova instância.
 
 
 
+ 
 ## Projeto com exemplo
 
 [Projeto exemplo](https://github.com/rodrigorahman/flutter_getit_2_example)

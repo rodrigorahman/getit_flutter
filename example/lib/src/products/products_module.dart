@@ -1,7 +1,6 @@
 import 'package:example/src/products/product_controller.dart';
 import 'package:example/src/products/products_detail.dart';
 import 'package:example/src/products/products_page.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
 class ProductsModule extends FlutterGetItModule {
@@ -9,17 +8,33 @@ class ProductsModule extends FlutterGetItModule {
   String get moduleRouteName => '/Products';
 
   @override
-  List<Bind<Object>> get bindings => [
-        Bind.lazySingleton(
-          (i) => ProductController(),
-        )
+  List<Bind<Object>> get bindings => [];
+
+  @override
+  List<FlutterGetItPageRouter> get pages => [
+        FlutterGetItPageRouter(
+          name: '/Page',
+          page: (context) => ProductsPage(
+            ctrl: context.get(),
+          ),
+          bindings: [
+            Bind.lazySingleton(
+              (i) => ProductController(),
+            )
+          ],
+          pages: [
+            FlutterGetItPageRouter(
+              name: '/Detail',
+              page: (context) => const ProductsDetail(),
+              bindings: [],
+            ),
+          ],
+        ),
       ];
 
   @override
-  Map<String, WidgetBuilder> get pages => {
-        '/Page': (context) => ProductsPage(
-              ctrl: context.get(),
-            ),
-        '/Detail': (context) => const ProductsDetail(),
-      };
+  void onClose(Injector i) {}
+
+  @override
+  void onInit(Injector i) {}
 }

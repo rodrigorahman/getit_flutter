@@ -37,7 +37,7 @@ final class FlutterGetItContainerRegister {
   }
 
   void unRegister(String id) {
-    if (_references[id] case (:final register, loaded: true)) {
+    if (_references[id] case (:final register, loaded: final _)) {
       for (var bind in register.bindings) {
         bind.unload(register.tag, debugMode);
       }
@@ -53,10 +53,19 @@ final class FlutterGetItContainerRegister {
             :final register,
             loaded: false,
           )) {
+        var unRegistered = [];
         for (var bind in register.bindings) {
-          bind.load(register.tag, debugMode);
+          final wasRegistered = bind.load(register.tag, debugMode);
+          if (!wasRegistered) {
+            unRegistered.add(bind);
+          }
         }
-        _references[id] = (register: register, loaded: true);
+        register.bindings.removeWhere((bind) => unRegistered.contains(bind));
+
+        _references[id] = (
+          register: register,
+          loaded: true,
+        );
       }
     } else {
       throw Exception('Register($id) not found');
@@ -68,5 +77,9 @@ final class FlutterGetItContainerRegister {
       return _references;
     }
     throw Exception('Debug mode not enabled');
+  }
+
+  bool isRegistered(String id) {
+    return _references.containsKey(id);
   }
 }

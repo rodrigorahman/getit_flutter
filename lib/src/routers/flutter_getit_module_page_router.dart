@@ -2,41 +2,63 @@ import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
 
-abstract class FlutterGetItModulePageRouter extends StatefulWidget {
-  List<Bind> get bindings => [];
-  WidgetBuilder get view;
+class FlutterGetItPageRouter {
+  final String name;
+  final WidgetBuilder page;
+  final List<Bind> bindings;
+  final List<FlutterGetItPageRouter> pages;
 
-  const FlutterGetItModulePageRouter({super.key});
+  FlutterGetItPageRouter({
+    required this.name,
+    required this.page,
+    this.bindings = const [],
+    this.pages = const [],
+  });
 
-  @override
-  State<FlutterGetItModulePageRouter> createState() =>
-      _FlutterGetItModulePageRouterState();
+  FlutterGetItPageRouter copyWith({
+    String? name,
+    WidgetBuilder? page,
+    List<Bind>? bindings,
+    List<FlutterGetItPageRouter>? pages,
+  }) {
+    return FlutterGetItPageRouter(
+      name: name ?? this.name,
+      page: page ?? this.page,
+      bindings: bindings ?? this.bindings,
+      pages: pages ?? this.pages,
+    );
+  }
 }
 
-class _FlutterGetItModulePageRouterState
-    extends State<FlutterGetItModulePageRouter> {
-  late final String routeId;
-  late final FlutterGetItContainerRegister containerRegister;
+class FlutterGetItModuleRouter extends FlutterGetItPageRouter {
+  final void Function(Injector i)? onClose;
+  final void Function(Injector i)? onInit;
+
+  FlutterGetItModuleRouter({
+    required super.name,
+    super.bindings = const [],
+    super.pages = const [],
+    this.onClose,
+    this.onInit,
+  }) : super(
+          page: (context) => const SizedBox.shrink(),
+        );
 
   @override
-  void initState() {
-    super.initState();
-    final navObserver = Injector.get<FlutterGetItNavigatorObserver>();
-    routeId = navObserver.currentRoute ?? hashCode.toString();
-
-    containerRegister = Injector.get<FlutterGetItContainerRegister>()
-      ..register(routeId, widget.bindings)
-      ..load(routeId);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.view(context);
-  }
-
-  @override
-  void dispose() {
-    containerRegister.unRegister(routeId);
-    super.dispose();
+  FlutterGetItModuleRouter copyWith({
+    String? name,
+    WidgetBuilder? page,
+    List<Bind>? bindings,
+    List<FlutterGetItPageRouter>? pages,
+    void Function(Injector i)? onClose,
+    void Function(Injector i)? onInit,
+  }) {
+    return FlutterGetItModuleRouter(
+      name: name ?? this.name,
+      bindings: bindings ?? this.bindings,
+      pages: pages ?? this.pages,
+      onClose: onClose ?? this.onClose,
+      onInit: onInit ?? this.onInit,
+    );
   }
 }

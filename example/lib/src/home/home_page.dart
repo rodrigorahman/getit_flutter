@@ -1,7 +1,5 @@
 import 'package:example/application/session/model/user_model.dart';
 import 'package:example/application/session/user_session.dart';
-import 'package:example/src/auth/login_controller.dart';
-import 'package:example/src/auth/login_page.dart';
 import 'package:example/src/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_getit/flutter_getit.dart';
@@ -36,49 +34,13 @@ class HomePage extends StatelessWidget {
                 return Text(user.data?.name ?? 'No User');
               },
             ),
-            ElevatedButton(
-              onPressed: () async {
-                await showModalBottomSheet(
-                  routeSettings: const RouteSettings(name: '/Auth/Login'),
-                  useRootNavigator: true,
-                  context: context,
-                  builder: (context) => FlutterGetItPageBuilder(
-                    path: '/Auth/Login',
-                    binding: () => Bind.lazySingleton(
-                      (i) => LoginController(
-                        name: 'By HomePage showModalBottomSheet Bindings',
-                      ),
-                    ),
-                    page: (context) => LoginPage(
-                      controller: context.get(),
-                    ),
-                  ),
-                );
-              },
-              child: const Text(
-                'Chamar bottom sheet',
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pushNamed('/Auth/LoginERROR');
-              },
-              child: const Text(
-                'Ir a uma rota errada.',
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
+            const Divider(),
             ElevatedButton(
               onPressed: () async {
                 Navigator.of(context).pushNamed('/Auth/Login');
               },
               child: const Text(
-                'Ir a uma rota correta.',
+                'PushNamed - Login',
               ),
             ),
             const SizedBox(
@@ -86,10 +48,86 @@ class HomePage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                Navigator.of(context).pushNamed('/RandomPage');
+                Navigator.of(context).pushNamed('/Auth/Register/Page');
               },
               child: const Text(
-                'Ir a uma rota "normal".',
+                'PushNamed - Register - Page',
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context)
+                    .pushNamed('/Auth/Register/ActiveAccount/Page');
+              },
+              child: const Text(
+                'PushNamed - ActiveAccount - Page',
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pushNamed('/Auth/Register/ActiveAccount');
+              },
+              child: const Text(
+                'PushNamed - Wrong page',
+              ),
+            ),
+            const Divider(),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pushNamed('/Random/Page');
+              },
+              child: const Text(
+                'PushNamed - RandomPage',
+              ),
+            ),
+            const Divider(),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pushNamed('/Detail/Factories/One');
+              },
+              child: const Text(
+                'Detail One Page',
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context)
+                    .pushNamed('/Detail/Factories/One/Internal/Page');
+              },
+              child: const Text(
+                'Detail One Internal',
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context)
+                    .pushNamed('/Detail/Factories/One/Internal/Page/Child');
+              },
+              child: const Text(
+                'Detail One Internal Child',
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pushNamed('/Detail/Factories/Two');
+              },
+              child: const Text(
+                'Detail Two Page',
               ),
             ),
           ],

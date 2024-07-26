@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
 
-abstract class FlutterGetItWidget extends StatefulWidget {
-  const FlutterGetItWidget(ValueKey<String> key) : super(key: key);
+class FlutterGetItWidget extends StatefulWidget {
+  const FlutterGetItWidget({
+    super.key,
+    required this.name,
+    required this.builder,
+    this.binds = const [],
+    this.onDispose,
+  });
 
-  /// Getter for declaring bindings that will be initialized
-  /// and discarded upon view initialization and disposal
-  List<Bind> get bindings => [];
-
-  /// Getter to inform which Page should be re-rendered upon loading
-  WidgetBuilder get widget;
+  final String name;
+  final WidgetBuilder builder;
+  final List<Bind> binds;
+  final void Function()? onDispose;
 
   @override
   State<FlutterGetItWidget> createState() => _FlutterGetItWidgetState();
@@ -23,24 +27,31 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
   @override
   void initState() {
     super.initState();
-    id = widget.key.toString();
-    containerRegister = Injector.get<FlutterGetItContainerRegister>()
+    final FlutterGetItWidget(
+      :name,
+      :binds,
+    ) = widget;
+    containerRegister = Injector.get<FlutterGetItContainerRegister>();
+    //Utilizado a hashCode para garantir que o id seja único, podendo ser utilizado em mais de um lugar
+    id = '/WIDGET-$name-$hashCode';
+
+    containerRegister
       ..register(
         id,
-        widget.bindings,
-        withTag: true,
+        binds,
       )
       ..load(id);
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.widget(context);
+    return widget.builder(context);
   }
 
   @override
   void dispose() {
     containerRegister.unRegister(id);
+    widget.onDispose?.call();
     super.dispose();
   }
 }

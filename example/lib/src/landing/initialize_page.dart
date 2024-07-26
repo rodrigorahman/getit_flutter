@@ -18,7 +18,8 @@ class InitializePage extends StatelessWidget {
             const FlutterLogo(),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pushNamed('/Landing/Presentation');
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/Landing/Presentation', (route) => false);
               },
               child: const Text('Ir a Presentation'),
             ),
