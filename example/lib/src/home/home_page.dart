@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:example/application/session/model/user_model.dart';
 import 'package:example/application/session/user_session.dart';
 import 'package:example/src/home/home_controller.dart';
@@ -11,6 +13,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log(_home.toString());
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
