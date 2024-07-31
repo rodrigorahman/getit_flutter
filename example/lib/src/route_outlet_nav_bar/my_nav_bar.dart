@@ -16,7 +16,7 @@ class _RouteOutletMyNavBarState extends State<RouteOutletMyNavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FlutterGetItRouteOutlet(
+      body: FlutterGetItRouterOutlet(
         initialRoute: '/Auth/Login',
         navKey: internalNav,
         transitionsBuilder: (context, animation, secondaryAnimation, child) => ScaleTransition(
