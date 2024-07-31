@@ -148,6 +148,9 @@ class _FlutterGetItState extends State<FlutterGetIt> {
       }
     }
 
+    // register routes for use in FlutterGetIt.navigator
+    GetIt.I.registerSingleton(routesMap, instanceName: 'RoutesMap');
+
     return routesMap;
   }
 
