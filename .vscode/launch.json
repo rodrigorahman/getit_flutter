@@ -7,7 +7,8 @@
         {
             "name": "flutter_getit",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            // "program": "example/lib/main.dart"
         },
         {
             "name": "flutter_getit (profile mode)",
