@@ -103,47 +103,47 @@ Vejamos um exemplo de como criar um **[FlutterGetItModuleRouter]**:
 
 ```dart
 FlutterGetItModuleRouter(
-                name: '/Register',
-                bindings: [
-                  Bind.lazySingleton<RegisterController>(
-                    (i) => RegisterController(),
-                  ),
-                ],
-                onInit: (i) => debugPrint('hi by /Register'),
-                onDispose: (i) => debugPrint('bye by /Register'),
-                pages: [
-                  FlutterGetItPageRouter(
-                    name: '/Page',
-                    page: (context) => RegisterPage(
-                      controller: context.get(),
-                    ),
-                    bindings: [
-                      Bind.lazySingleton<RegisterController>(
-                        (i) => RegisterController(),
-                      ),
-                    ],
-                  ),
-                  FlutterGetItModuleRouter(
-                    name: '/ActiveAccount',
-                    bindings: [
-                      Bind.lazySingleton<ActiveAccountPageDependencies>(
-                        (i) => (
-                          controller: ActiveAccountController(name: 'MyName'),
-                          validateEmailController:
-                              ValidateEmailController(email: 'fgetit@injector'),
-                        ),
-                      ),
-                    ],
-                    pages: [
-                      FlutterGetItPageRouter(
-                        name: '/Page',
-                        page: (context) => const ActiveAccountPage(),
-                        bindings: [],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+    name: '/Register',
+    bindings: [
+      Bind.lazySingleton<RegisterController>(
+        (i) => RegisterController(),
+      ),
+    ],
+    onInit: (i) => debugPrint('hi by /Register'),
+    onDispose: (i) => debugPrint('bye by /Register'),
+    pages: [
+      FlutterGetItPageRouter(
+        name: '/Page',
+        page: (context) => RegisterPage(
+          controller: context.get(),
+        ),
+        bindings: [
+          Bind.lazySingleton<RegisterController>(
+            (i) => RegisterController(),
+          ),
+        ],
+      ),
+      FlutterGetItModuleRouter(
+        name: '/ActiveAccount',
+        bindings: [
+          Bind.lazySingleton<ActiveAccountPageDependencies>(
+            (i) => (
+              controller: ActiveAccountController(name: 'MyName'),
+              validateEmailController:
+                  ValidateEmailController(email: 'fgetit@injector'),
+            ),
+          ),
+        ],
+        pages: [
+          FlutterGetItPageRouter(
+            name: '/Page',
+            page: (context) => const ActiveAccountPage(),
+            bindings: [],
+          ),
+        ],
+      ),
+    ],
+  ),
 ```
 
 Na estrutura acima o **[FlutterGetItModuleRouter]** **[/Register]** possui uma página **[/Page]** e um submodulo **[/ActiveAccount]**, que por sua vez possui uma página **[/Page]**. Se descidir navegar para **[/ActiveAccount/Page]**, o **[FlutterGetIt]** irá instanciar as dependências do **[/ActiveAccount]** e **[/ActiveAccount/Page]** e também do **[/Register]**, pois ele é um **[FlutterGetItModuleRouter]** superior na mesma arvore que **[/ActiveAccount]**.
@@ -603,9 +603,97 @@ Exemplo:
 ```
 
 
+# Router Outlet
 
+## O que é um Router Outlet
+
+O "Router Outlet" é um marcador onde o roteador insere o componente correspondente à rota ativa. Esse recurso é extremamente importante em todas as aplicações, pois permite adicionar um componente e carregar páginas com base nas rotas.
+
+## Como utilizá-lo
+
+Para utilizá-lo, basta adicionar o widget **FlutterGetItRouterOutlet** na página onde deseja ter a navegação interna. Nele, você deve configurar a rota inicial (initialRoute) e a chave de navegação. Com isso, toda a navegação registrada no Material App será carregada dentro do Router Outlet.
+
+## Segue um exemplo completo com BottomNavBar: 
+
+```dart
+ Scaffold(
+      body: FlutterGetItRouterOutlet(
+        initialRoute: '/Auth/Login',
+        navKey: internalNav,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) => ScaleTransition(
+          scale: Tween<double>(begin: 0.0, end: 1.0).animate(animation),
+          child: child,
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (value) {
+          if (_currentIndex != value) {
+            switch (value) {
+              case 0:
+                internalNav.currentState
+                    ?.pushNamedAndRemoveUntil('/Auth/Login', (_) => false);
+              case 1:
+                internalNav.currentState?.pushNamedAndRemoveUntil(
+                    '/Auth/Register/Page', (_) => false);
+              case 2:
+                internalNav.currentState
+                    ?.pushNamedAndRemoveUntil('/RootNavBar/Root', (_) => false);
+                    case 3:
+                internalNav.currentState
+                    ?.pushNamedAndRemoveUntil('/Landing/Initialize', (_) => false);
+            }
+            setState(() {
+              _currentIndex = value;
+            });
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+              color: Colors.blueAccent,
+            ),
+            label: 'Login',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.production_quantity_limits,
+              color: Colors.blueAccent,
+            ),
+            label: 'Register',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+              color: Colors.blueAccent,
+            ),
+            label: 'Custom NavBar',
+          ),
+           BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+              color: Colors.blueAccent,
+            ),
+            label: 'Presentation',
+          ),
+        ],
+      ),
+    );
+```
+
+## Customizando a Animação de Transição
+
+Você também pode personalizar a animação de transição adicionando o atributo **transitionsBuilder**.
+
+```dart
+transitionsBuilder: (context, animation, secondaryAnimation, child) => ScaleTransition(
+  scale: Tween<double>(begin: 0.0, end: 1.0).animate(animation),
+  child: child,
+),
+```
 
  
-## Projeto com exemplo
+# Projeto com exemplo
 
 [Projeto exemplo](https://github.com/rodrigorahman/flutter_getit_2_example)

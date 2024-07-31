@@ -573,6 +573,98 @@ Singleton ensures that every time a new instance is requested from the dependenc
 A factory ensures that every time you request an instance from the dependency manager, it provides a new instance.
 
 
-## Project with example
+Here's the translated markdown:
+
+# Router Outlet
+
+## What is a Router Outlet
+
+The "Router Outlet" is a placeholder where the router inserts the component corresponding to the active route. This feature is extremely important in all applications as it allows for the addition of a component and the loading of pages based on the routes.
+
+## How to Use It
+
+To use it, simply add the **FlutterGetItRouterOutlet** widget on the page where you want to have internal navigation. You should configure the initial route (`initialRoute`) and the navigation key (`navKey`). This way, all the navigation registered in the Material App will be loaded within the Router Outlet.
+
+## Here's a Complete Example with BottomNavBar:
+
+```dart
+Scaffold(
+  body: FlutterGetItRouterOutlet(
+    initialRoute: '/Auth/Login',
+    navKey: internalNav,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) => ScaleTransition(
+      scale: Tween<double>(begin: 0.0, end: 1.0).animate(animation),
+      child: child,
+    ),
+  ),
+  bottomNavigationBar: BottomNavigationBar(
+    currentIndex: _currentIndex,
+    onTap: (value) {
+      if (_currentIndex != value) {
+        switch (value) {
+          case 0:
+            internalNav.currentState
+                ?.pushNamedAndRemoveUntil('/Auth/Login', (_) => false);
+          case 1:
+            internalNav.currentState?.pushNamedAndRemoveUntil(
+                '/Auth/Register/Page', (_) => false);
+          case 2:
+            internalNav.currentState
+                ?.pushNamedAndRemoveUntil('/RootNavBar/Root', (_) => false);
+          case 3:
+            internalNav.currentState
+                ?.pushNamedAndRemoveUntil('/Landing/Initialize', (_) => false);
+        }
+        setState(() {
+          _currentIndex = value;
+        });
+      }
+    },
+    items: const [
+      BottomNavigationBarItem(
+        icon: Icon(
+          Icons.home,
+          color: Colors.blueAccent,
+        ),
+        label: 'Login',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(
+          Icons.production_quantity_limits,
+          color: Colors.blueAccent,
+        ),
+        label: 'Register',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(
+          Icons.home,
+          color: Colors.blueAccent,
+        ),
+        label: 'Custom NavBar',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(
+          Icons.home,
+          color: Colors.blueAccent,
+        ),
+        label: 'Presentation',
+      ),
+    ],
+  ),
+);
+```
+
+## Customizing the Transition Animation
+
+You can also customize the transition animation by adding the **transitionsBuilder** attribute.
+
+```dart
+transitionsBuilder: (context, animation, secondaryAnimation, child) => ScaleTransition(
+  scale: Tween<double>(begin: 0.0, end: 1.0).animate(animation),
+  child: child,
+),
+```
+
+# Project with example
 
 [Project with example](https://github.com/rodrigorahman/flutter_getit_2_example)
