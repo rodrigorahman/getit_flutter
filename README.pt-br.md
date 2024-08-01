@@ -603,21 +603,21 @@ Exemplo:
 ```
 
 
-# Router Outlet
+# Route Outlet
 
-## O que é um Router Outlet
+## O que é um RouteOutlet
 
 O "Router Outlet" é um marcador onde o roteador insere o componente correspondente à rota ativa. Esse recurso é extremamente importante em todas as aplicações, pois permite adicionar um componente e carregar páginas com base nas rotas.
 
 ## Como utilizá-lo
 
-Para utilizá-lo, basta adicionar o widget **FlutterGetItRouterOutlet** na página onde deseja ter a navegação interna. Nele, você deve configurar a rota inicial (initialRoute) e a chave de navegação. Com isso, toda a navegação registrada no Material App será carregada dentro do Router Outlet.
+Para utilizá-lo, basta adicionar o widget **FlutterGetItRouteOutlet** na página onde deseja ter a navegação interna. Nele, você deve configurar a rota inicial (initialRoute) e a chave de navegação. Com isso, toda a navegação registrada no Material App será carregada dentro do Router Outlet.
 
 ## Segue um exemplo completo com BottomNavBar: 
 
 ```dart
  Scaffold(
-      body: FlutterGetItRouterOutlet(
+      body: FlutterGetItRouteOutlet(
         initialRoute: '/Auth/Login',
         navKey: internalNav,
         transitionsBuilder: (context, animation, secondaryAnimation, child) => ScaleTransition(

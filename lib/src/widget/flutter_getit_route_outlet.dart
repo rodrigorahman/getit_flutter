@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import '../../flutter_getit.dart';
 
 
-typedef FlutterGetItRouterOutletTransictionBuilder = Widget Function(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child);
+typedef FlutterGetItRouteOutletTransictionBuilder = Widget Function(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child);
 
-class FlutterGetItRouterOutlet extends StatelessWidget {
+class FlutterGetItRouteOutlet extends StatelessWidget {
   final String initialRoute;
   final GlobalKey<NavigatorState> navKey;
   final Widget routeNotFound;
   final FlutterGetItContextType contextType;
-  final FlutterGetItRouterOutletTransictionBuilder? transitionsBuilder;
+  final FlutterGetItRouteOutletTransictionBuilder? transitionsBuilder;
 
-  const FlutterGetItRouterOutlet({
+  const FlutterGetItRouteOutlet({
     super.key,
     required this.initialRoute,
     required this.navKey,
