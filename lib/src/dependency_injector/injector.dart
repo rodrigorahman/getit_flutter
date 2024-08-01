@@ -32,9 +32,7 @@ class Injector {
       final containsFactoryDad =
           FlutterGetItBindingOpened.containsFactoryDad<T>();
       final containsHash = FlutterGetItBindingOpened.contains(obj.hashCode);
-      if (!(T == FlutterGetItNavigatorObserver ||
-              T == FlutterGetItContainerRegister ||
-              T == FlutterGetItContext) &&
+      if (!(T == FlutterGetItContainerRegister || T == FlutterGetItContext) &&
           !containsHash) {
         DebugMode.fGetItLog('🎣$cyanColor Getting: $T - ${obj.hashCode}');
       }

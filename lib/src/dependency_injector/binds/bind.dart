@@ -78,10 +78,6 @@ final class Bind<T extends Object> {
     final isRegistered = getIt.isRegistered<T>(instanceName: tag);
 
     if (isRegistered) {
-      /*  if (type != RegisterType.factory && type != RegisterType.factoryAsync) {
-      _warnThatIsAlreadyRegistered();
-        
-      } */
       return false;
     }
     DebugMode.fGetItLog(
@@ -128,11 +124,6 @@ final class Bind<T extends Object> {
         );
     }
     return true;
-  }
-
-  void _warnThatIsAlreadyRegistered() {
-    DebugMode.fGetItLog(
-        '🚧$redColor Warning:$whiteColor $T - ${T.hashCode}$yellowColor is already registered as$blueColor ${type.name}.');
   }
 
   void unload([String? tag, bool debugMode = false]) {

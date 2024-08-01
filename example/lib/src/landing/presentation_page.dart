@@ -10,14 +10,27 @@ class PresentationPage extends StatelessWidget {
         title: const Text('Presentation'),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              '/RootNavBar/Root',
-              (route) => false,
-            );
-          },
-          child: const Text('Ir a RootNav'),
+        child: Column(
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/RootNavBar/Root',
+                  (route) => false,
+                );
+              },
+              child: const Text('Ir a RootNav'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/outlet/',
+                  (route) => false,
+                );
+              },
+              child: const Text('Ir a RouteOutlet'),
+            ),
+          ],
         ),
       ),
     );
