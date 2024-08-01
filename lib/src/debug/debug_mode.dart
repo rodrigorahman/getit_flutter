@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
-import '../core/flutter_getit_container_register.dart';
-import '../dependency_injector/injector.dart';
+import '../../flutter_getit.dart';
+
+export 'debug_web.dart' if (dart.library.io) 'debug_device.dart';
 
 const cyanColor = '\x1b[36m';
 const redColor = '\x1b[31m';
@@ -56,15 +56,16 @@ final class DebugMode {
 
   static fGetItLog(String data) {
     if (isEnable && !kReleaseMode) {
-      if (Platform.isIOS) {
+      if (getPlatform() == 'iOS' || getPlatform() == 'Web') {
         log(data);
       } else {
         debugPrint(data);
       }
     }
   }
+}
 
-  /* Map<String, dynamic> transformJson(Map<String, dynamic> json) {
+/* Map<String, dynamic> transformJson(Map<String, dynamic> json) {
     final transformed = <String, dynamic>{};
 
     json.forEach((key, value) {
@@ -117,4 +118,3 @@ final class DebugMode {
 
     return transformed;
   } */
-}
