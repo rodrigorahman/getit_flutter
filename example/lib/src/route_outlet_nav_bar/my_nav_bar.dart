@@ -19,7 +19,8 @@ class _RouteOutletMyNavBarState extends State<RouteOutletMyNavBar> {
       body: FlutterGetItRouteOutlet(
         initialRoute: '/Auth/Login',
         navKey: internalNav,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) => ScaleTransition(
+        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+            ScaleTransition(
           scale: Tween<double>(begin: 0.0, end: 1.0).animate(animation),
           child: child,
         ),
@@ -38,9 +39,9 @@ class _RouteOutletMyNavBarState extends State<RouteOutletMyNavBar> {
               case 2:
                 internalNav.currentState
                     ?.pushNamedAndRemoveUntil('/RootNavBar/Root', (_) => false);
-                    case 3:
-                internalNav.currentState
-                    ?.pushNamedAndRemoveUntil('/Landing/Initialize', (_) => false);
+              case 3:
+                internalNav.currentState?.pushNamedAndRemoveUntil(
+                    '/Landing/Initialize', (_) => false);
             }
             setState(() {
               _currentIndex = value;
@@ -69,7 +70,7 @@ class _RouteOutletMyNavBarState extends State<RouteOutletMyNavBar> {
             ),
             label: 'Custom NavBar',
           ),
-           BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: Icon(
               Icons.home,
               color: Colors.blueAccent,

@@ -1,7 +1,9 @@
 # Versions
 
 ## 3.0.0
-- Um agradecimento mais do que especial ao @lleoserrano, que trabalhou arduamente nas incríveis melhorias do pacote!
+- A special thank you to @lleoserrano, who worked tirelessly on the amazing improvements to the package!
+
+- New component for internal routing using existing routes called FlutterGetItRouteOutlet.
 
 - **Breaking Change**: For existing users, please review the detailed in the documentation.
 

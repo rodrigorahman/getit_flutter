@@ -14,6 +14,4 @@ class HomeController with FlutterGetItMixin {
     final sp = Injector.get<SharedPreferences>();
     log(sp.toString());
   }
-
-  
 }
