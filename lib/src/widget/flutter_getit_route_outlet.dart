@@ -35,6 +35,7 @@ class FlutterGetItRouteOutlet extends StatelessWidget {
         final widget = pages[settings.name];
         if (widget != null) {
           PageRouteBuilder builder = PageRouteBuilder(
+            settings: settings,
             pageBuilder: (context, animation, secondaryAnimation) =>
                 widget(context),
             transitionsBuilder:
