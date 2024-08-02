@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -42,8 +40,11 @@ class Injector {
       final containsHash = FlutterGetItBindingOpened.contains(obj.hashCode);
       if (!(T == FlutterGetItContainerRegister || T == FlutterGetItContext) &&
           !containsHash) {
-        DebugMode.fGetItLog(
-            '🎣$cyanColor Getting: $T - ${obj.hashCode}${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
+        FGetItLogger.logGettingInstance<T>(
+          hashCode: obj.hashCode.toString(),
+          tag: tag,
+          factoryTag: factoryTag,
+        );
       }
 
       if (containsFactoryDad) {
@@ -56,8 +57,11 @@ class Injector {
       FlutterGetItBindingOpened.registerHashCodeOpened(obj.hashCode);
       return obj;
     } on AssertionError catch (e) {
-      log('⛔️$redColor Error on get: $T\n$yellowColor${e.message.toString()}${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
-
+      FGetItLogger.logErrorInGetInstance<T>(
+        e.toString(),
+        tag: tag,
+        factoryTag: factoryTag,
+      );
       throw Exception('${T.toString()} not found in injector}');
     }
   }
@@ -65,29 +69,31 @@ class Injector {
   static Future<T> getAsync<T extends Object>(
       {String? tag, String? factoryTag}) async {
     try {
-      DebugMode.fGetItLog(
-          '🎣🥱$yellowColor Getting async: $T${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
+      FGetItLogger.logGettingAsyncInstance<T>(tag: tag, factoryTag: factoryTag);
 
       return await GetIt.I.isReady<T>(instanceName: tag).then((_) {
-        DebugMode.fGetItLog(
-            '🎣😎$greenColor $T${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''} ready');
+        FGetItLogger.logAsyncInstanceReady<T>(
+          tag: tag,
+          factoryTag: factoryTag,
+        );
 
         return get<T>(tag: tag, factoryTag: factoryTag);
       });
     } on AssertionError catch (e) {
-      log('⛔️$redColor Error on get async: $T\n$yellowColor${e.message.toString()}${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
-
+      FGetItLogger.logErrorInGetAsyncInstance<T>(
+        e.toString(),
+        tag: tag,
+        factoryTag: factoryTag,
+      );
       throw Exception('${T.toString()} not found in injector}');
     }
   }
 
   static Future<void> allReady() async {
-    DebugMode.fGetItLog(
-        '🥱$yellowColor Waiting complete all asynchronously singletons');
+    FGetItLogger.logWaitingAllReady();
 
     await GetIt.I.allReady().then((value) {
-      DebugMode.fGetItLog(
-          '😎$greenColor All asynchronously singletons complete');
+      FGetItLogger.logWaitingAllReadyCompleted();
     });
   }
 

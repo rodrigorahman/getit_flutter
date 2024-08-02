@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
 import '../core/flutter_getit_context.dart';
+import '../debug/extension/flutter_get_it_extension.dart';
 import '../middleware/flutter_get_it_middleware.dart';
 import '../types/flutter_getit_typedefs.dart';
 
@@ -23,10 +24,9 @@ class FlutterGetIt extends StatefulWidget {
     List<FlutterGetItMiddleware>? middewares,
     this.modules,
     this.pages,
-    bool debugMode = false,
+    this.loggerConfig,
   })  : contextType = FlutterGetItContextType.main,
         appBindings = bindings,
-        appDebugMode = debugMode,
         appMiddlewares = middewares,
         appContextName = null;
 
@@ -38,17 +38,17 @@ class FlutterGetIt extends StatefulWidget {
     String? navigatorName,
     this.modules,
     this.pages,
+    this.loggerConfig,
   })  : contextType = FlutterGetItContextType.navigator,
         appBindings = bindings,
         appMiddlewares = middewares,
-        appDebugMode = false,
         appContextName = navigatorName;
 
   final ApplicationBuilder builder;
   final FlutterGetItBindings? appBindings;
   final List<FlutterGetItMiddleware>? appMiddlewares;
-  final bool appDebugMode;
   final String? appContextName;
+  final FGetItLoggerConfig? loggerConfig;
 
   /// [modules] Specifies the list of modules in your system.
   final List<FlutterGetItModule>? modules;
@@ -79,6 +79,7 @@ class _FlutterGetItState extends State<FlutterGetIt> {
       :contextType,
       :appMiddlewares,
       :appContextName,
+      :loggerConfig,
     ) = widget;
     switch (contextType) {
       case FlutterGetItContextType.main:
@@ -86,16 +87,17 @@ class _FlutterGetItState extends State<FlutterGetIt> {
           throw Exception(
               'You can only have one instance of FlutterGetItContainerRegister.\nCheck if you are using the FlutterGetIt in the multiple locations, try FlutterGetIt.navigator and pass a "name" if necessary.');
         }
-
         final register = getIt.registerSingleton(
-          FlutterGetItContainerRegister(debugMode: widget.appDebugMode),
+          FlutterGetItContainerRegister(),
         );
+        final logRules = loggerConfig ?? FGetItLoggerConfig();
 
         getIt
-          ..registerSingleton(DebugMode())
+          ..registerSingleton(FlutterGetItExtension(register: register))
+          ..registerSingleton(logRules)
+          ..registerSingleton(FGetItLogger(logRules))
           ..registerLazySingleton(FlutterGetItContext.new);
-        DebugMode.fGetItLog(
-            '$yellowColor💡 - Info:$whiteColor Creating $yellowColor${contextType.key}$whiteColor context.');
+        FGetItLogger.logCreatingContext(contextType.key);
         register
           ..register(
             contextType.key,
@@ -110,8 +112,7 @@ class _FlutterGetItState extends State<FlutterGetIt> {
           throw Exception(
               'Are you trying to use the FlutterGetIt.navigator without the FlutterGetIt in the main context? Please add the FlutterGetIt in the main');
         }
-        DebugMode.fGetItLog(
-            '$yellowColor💡 - Info:$whiteColor Creating $yellowColor${appContextName ?? contextType.key}$whiteColor context.');
+        FGetItLogger.logCreatingContext(appContextName ?? contextType.key);
         final register = Injector.get<FlutterGetItContainerRegister>();
         if (register.isRegistered(contextType.key)) {
           throw Exception(
@@ -188,21 +189,18 @@ class _FlutterGetItState extends State<FlutterGetIt> {
   }) {
     final routesMap = <String, WidgetBuilder>{};
     if (lastModuleName != '/' && lastModuleName.endsWith('/')) {
-      DebugMode.fGetItLog(
-          '🚨 - ${redColor}ERROR:$whiteColor The module $yellowColor($lastModuleName)$whiteColor should not end with /');
+      FGetItLogger.logErrorModuleShouldStartWithSlash(lastModuleName);
       lastModuleName = lastModuleName.replaceFirst(RegExp(r'/$'), '');
     }
 
     if (lastModuleName != '/' && !lastModuleName.startsWith('/')) {
-      DebugMode.fGetItLog(
-          '🚨 - ${redColor}ERROR:$whiteColor The module $yellowColor($lastModuleName)$whiteColor should start with /');
+      FGetItLogger.logErrorModuleShouldStartWithSlash(lastModuleName);
       lastModuleName = '/$lastModuleName';
     }
 
     var pageRouteName = page.name;
     if (!pageRouteName.startsWith(r'/')) {
-      DebugMode.fGetItLog(
-          '🚨 - ${redColor}ERROR:$whiteColor Page $yellowColor($pageRouteName)$whiteColor should starts with /');
+      FGetItLogger.logErrorModuleShouldStartWithSlash(lastModuleName);
       pageRouteName = '/${page.name}';
     }
 
