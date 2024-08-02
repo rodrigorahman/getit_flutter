@@ -81,7 +81,7 @@ final class Bind<T extends Object> {
       return false;
     }
     DebugMode.fGetItLog(
-        '📠$blueColor Registering: $T$yellowColor as$blueColor ${type.name}${keepAlive ? '$yellowColor with$blueColor keepAlive' : ''}');
+        '📠$blueColor Registering: $T$yellowColor as$blueColor ${type.name}${keepAlive ? '$yellowColor with$blueColor keepAlive' : ''}${tag == null ? '' : '$yellowColor and tag:$blueColor $tag'}');
     switch (type) {
       case RegisterType.singleton:
         getIt.registerSingleton<T>(

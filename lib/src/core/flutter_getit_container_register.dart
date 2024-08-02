@@ -55,7 +55,7 @@ final class FlutterGetItContainerRegister {
           )) {
         var unRegistered = [];
         for (var bind in register.bindings) {
-          final wasRegistered = bind.load(register.tag, debugMode);
+          final wasRegistered = bind.load(bind.tag, debugMode);
           if (!wasRegistered) {
             unRegistered.add(bind);
           }
