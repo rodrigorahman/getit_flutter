@@ -26,7 +26,8 @@ final class DebugMode {
       (_, parameters) async {
         final dataDefault = readyReferences();
 
-        return ServiceExtensionResponse.result(jsonEncode({'data': dataDefault}));
+        return ServiceExtensionResponse.result(
+            jsonEncode({'data': dataDefault}));
       },
     );
   }
