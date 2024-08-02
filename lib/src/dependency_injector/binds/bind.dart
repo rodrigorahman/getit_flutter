@@ -81,7 +81,7 @@ final class Bind<T extends Object> {
       return false;
     }
     DebugMode.fGetItLog(
-        '📠$blueColor Registering: $T$yellowColor as$blueColor ${type.name}${keepAlive ? '$yellowColor with$blueColor keepAlive' : ''}');
+        '📠$blueColor Registering: $T$yellowColor as$blueColor ${type.name}${keepAlive ? '$yellowColor with$blueColor keepAlive' : ''}${tag == null ? '' : '$yellowColor and tag:$blueColor $tag'}');
     switch (type) {
       case RegisterType.singleton:
         getIt.registerSingleton<T>(
@@ -153,7 +153,7 @@ final class Bind<T extends Object> {
             (entity as FlutterGetItMixin).onDispose();
           }
           DebugMode.fGetItLog(
-              '🚮$yellowColor Dispose: $T (${type.name}) - ${entity.hashCode}');
+              '🚮$yellowColor Dispose: $T (${type.name}) - ${entity.hashCode}${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
 
           runOnDisposingFunction = true;
           return;
@@ -162,7 +162,7 @@ final class Bind<T extends Object> {
 
       if (isFactory && isTheFactoryDad || !runOnDisposingFunction) {
         DebugMode.fGetItLog(
-            '🚮$yellowColor Dispose: $T (${type.name}) - ${T.hashCode}');
+            '🚮$yellowColor Dispose: $T (${type.name}) - ${T.hashCode}${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
       }
 
       return;
