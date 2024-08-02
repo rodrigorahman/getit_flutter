@@ -1,6 +1,6 @@
 # Versions
 
-## 3.0.0
+## 3.0.0-rc.3
 - A special thank you to @lleoserrano, who worked tirelessly on the amazing improvements to the package!
 
 - New component for internal routing using existing routes called FlutterGetItRouteOutlet.
