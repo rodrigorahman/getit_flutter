@@ -92,8 +92,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
     final moduleAlreadyRegistered =
         flutterGetItContext.isRegistered(moduleName);
     if (!moduleAlreadyRegistered) {
-      DebugMode.fGetItLog(
-          '🛣️$yellowColor Entering Module: $moduleName - calling $yellowColor"onInit()"');
+      FGetItLogger.logEnterOnModule(moduleName);
     }
     middlewareExecution.addAll(containerRegister.middlewares('APPLICATION'));
     //Module Binds
@@ -119,8 +118,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
           final moduleAlreadyRegisteredInternal =
               flutterGetItContext.isRegistered(routeM);
           if (!moduleAlreadyRegisteredInternal) {
-            DebugMode.fGetItLog(
-                '🛣️$yellowColor Entering Sub-Module: $routeM - calling $yellowColor"onInit()"');
+            FGetItLogger.logEnterOnSubModule(routeM);
           }
 
           containerRegister
@@ -199,8 +197,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
       if (canRemoveModuleInternal) {
         containerRegister.unRegister(route);
         flutterGetItContext.deleteId(route);
-        DebugMode.fGetItLog(
-            '🛣️$yellowColor Exiting Sub-Module: $route - calling "onDispose()"');
+        FGetItLogger.logDisposeSubModule(route);
         final element =
             widget.moduleRouter.cast<FlutterGetItModuleRouter?>().firstWhere(
                   (element) =>
@@ -224,8 +221,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
     if (canRemoveModuleCore) {
       containerRegister.unRegister(moduleName);
       flutterGetItContext.deleteId(moduleName);
-      DebugMode.fGetItLog(
-          '🛣️$yellowColor Exiting Module: ${widget.module.moduleRouteName} - calling "onDispose()"');
+      FGetItLogger.logDisposeModule(widget.module.moduleRouteName);
       widget.module.onDispose(Injector());
     }
     super.dispose();

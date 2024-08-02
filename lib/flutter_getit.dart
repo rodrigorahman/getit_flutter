@@ -1,6 +1,6 @@
 export 'src/config/flutter_getit_config.dart';
 export 'src/core/flutter_getit_container_register.dart';
-export 'src/debug/debug_mode.dart';
+export 'src/debug/log/flutter_get_it_logger.dart';
 export 'src/dependency_injector/binds/application_bindings.dart';
 export 'src/dependency_injector/binds/bind.dart';
 export 'src/dependency_injector/binds/flutter_get_it_binding_register.dart';

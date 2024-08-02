@@ -3,10 +3,9 @@ import '../middleware/flutter_get_it_middleware.dart';
 import 'model/binding_register.dart';
 
 final class FlutterGetItContainerRegister {
-  FlutterGetItContainerRegister({this.debugMode = false});
+  FlutterGetItContainerRegister();
 
   final Map<String, ({RegisterModel register, bool loaded})> _references = {};
-  final bool debugMode;
   List<FlutterGetItMiddleware> middlewares(String id) =>
       _references[id]?.register.middlewares ?? [];
   void register(String id, List<Bind> bindings,
@@ -44,7 +43,7 @@ final class FlutterGetItContainerRegister {
   void unRegister(String id) {
     if (_references[id] case (:final register, loaded: final _)) {
       for (var bind in register.bindings) {
-        bind.unload(bind.tag, debugMode);
+        bind.unload(bind.tag);
       }
     }
     _references.remove(id);
@@ -60,7 +59,7 @@ final class FlutterGetItContainerRegister {
           )) {
         var unRegistered = [];
         for (var bind in register.bindings) {
-          final wasRegistered = bind.load(bind.tag, debugMode);
+          final wasRegistered = bind.load(bind.tag);
           if (!wasRegistered) {
             unRegistered.add(bind);
           }
@@ -78,10 +77,7 @@ final class FlutterGetItContainerRegister {
   }
 
   Map<String, ({bool loaded, RegisterModel register})> references() {
-    if (debugMode) {
-      return _references;
-    }
-    throw Exception('Debug mode not enabled');
+    return _references;
   }
 
   bool isRegistered(String id) {
