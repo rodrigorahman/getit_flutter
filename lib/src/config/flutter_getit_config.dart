@@ -150,10 +150,11 @@ class _FlutterGetItState extends State<FlutterGetIt> {
 
     // register routes for use in FlutterGetIt.navigator
     final getit = GetIt.I;
-    if(!getit.isRegistered<Map<String, WidgetBuilder>>(instanceName: 'RoutesMap_${widget.contextType.key}')) {
-      getit.registerSingleton(routesMap, instanceName: 'RoutesMap_${widget.contextType.key}');
+    if (!getit.isRegistered<Map<String, WidgetBuilder>>(
+        instanceName: 'RoutesMap_${widget.contextType.key}')) {
+      getit.registerSingleton(routesMap,
+          instanceName: 'RoutesMap_${widget.contextType.key}');
     }
-    
 
     return routesMap;
   }
