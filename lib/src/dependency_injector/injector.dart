@@ -17,6 +17,10 @@ class Injector {
     FlutterGetItBindingOpened.unRegisterFactories<T>();
   }
 
+  static bool isRegistered<T extends Object>({String? tag}) {
+    return GetIt.I.isRegistered<T>(instanceName: tag);
+  }
+
   /// Get para recupera a instancia do GetIt
   static T get<T extends Object>({String? tag, String? factoryTag}) {
     try {
@@ -34,7 +38,8 @@ class Injector {
       final containsHash = FlutterGetItBindingOpened.contains(obj.hashCode);
       if (!(T == FlutterGetItContainerRegister || T == FlutterGetItContext) &&
           !containsHash) {
-        DebugMode.fGetItLog('🎣$cyanColor Getting: $T - ${obj.hashCode}');
+        DebugMode.fGetItLog(
+            '🎣$cyanColor Getting: $T - ${obj.hashCode}${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
       }
 
       if (containsFactoryDad) {
@@ -47,7 +52,7 @@ class Injector {
       FlutterGetItBindingOpened.registerHashCodeOpened(obj.hashCode);
       return obj;
     } on AssertionError catch (e) {
-      log('⛔️$redColor Error on get: $T\n$yellowColor${e.message.toString()}');
+      log('⛔️$redColor Error on get: $T\n$yellowColor${e.message.toString()}${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
 
       throw Exception('${T.toString()} not found in injector}');
     }
@@ -56,15 +61,17 @@ class Injector {
   static Future<T> getAsync<T extends Object>(
       {String? tag, String? factoryTag}) async {
     try {
-      DebugMode.fGetItLog('🎣🥱$yellowColor Getting async: $T');
+      DebugMode.fGetItLog(
+          '🎣🥱$yellowColor Getting async: $T${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
 
       return await GetIt.I.isReady<T>(instanceName: tag).then((_) {
-        DebugMode.fGetItLog('🎣😎$greenColor $T ready');
+        DebugMode.fGetItLog(
+            '🎣😎$greenColor $T${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''} ready');
 
         return get<T>(tag: tag, factoryTag: factoryTag);
       });
     } on AssertionError catch (e) {
-      log('⛔️$redColor Error on get async: $T\n$yellowColor${e.message.toString()}');
+      log('⛔️$redColor Error on get async: $T\n$yellowColor${e.message.toString()}${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
 
       throw Exception('${T.toString()} not found in injector}');
     }
@@ -89,4 +96,7 @@ class Injector {
 extension InjectorContext on BuildContext {
   T get<T extends Object>({String? tag, String? factoryTag}) =>
       Injector.get<T>(tag: tag, factoryTag: factoryTag);
+
+  bool isRegistered<T extends Object>({String? tag}) =>
+      Injector.isRegistered<T>(tag: tag);
 }

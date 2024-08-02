@@ -153,7 +153,7 @@ final class Bind<T extends Object> {
             (entity as FlutterGetItMixin).onDispose();
           }
           DebugMode.fGetItLog(
-              '🚮$yellowColor Dispose: $T (${type.name}) - ${entity.hashCode}');
+              '🚮$yellowColor Dispose: $T (${type.name}) - ${entity.hashCode}${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
 
           runOnDisposingFunction = true;
           return;
@@ -162,7 +162,7 @@ final class Bind<T extends Object> {
 
       if (isFactory && isTheFactoryDad || !runOnDisposingFunction) {
         DebugMode.fGetItLog(
-            '🚮$yellowColor Dispose: $T (${type.name}) - ${T.hashCode}');
+            '🚮$yellowColor Dispose: $T (${type.name}) - ${T.hashCode}${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
       }
 
       return;
