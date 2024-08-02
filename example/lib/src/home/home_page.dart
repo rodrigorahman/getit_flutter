@@ -10,12 +10,10 @@ class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   final _home1 = Injector.get<HomeController>(tag: 'HomeController');
-  final _home2 = Injector.get<HomeController>(tag: 'HomeController2');
 
   @override
   Widget build(BuildContext context) {
     log(_home1.toString());
-    log(_home2.toString());
     log(context.any<HomeController>().toString());
 
     return Scaffold(

@@ -7,6 +7,7 @@ import 'package:example/src/detail/internal/detail_internal_child.dart';
 import 'package:example/src/detail/internal/detail_internal_page.dart';
 import 'package:example/src/detail/internal/detail_internal_repository.dart';
 import 'package:example/src/detail/widget/form_item_controller.dart';
+import 'package:example/src/home/home_controller.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
 class DetailModule extends FlutterGetItModule {
@@ -23,7 +24,11 @@ class DetailModule extends FlutterGetItModule {
   List<Bind<Object>> get bindings => [
         Bind.lazySingleton(
           (i) => DetailRepository(),
-        )
+        ),
+        Bind.singleton(
+          (i) => HomeController(),
+          tag: 'HomeController2',
+        ),
       ];
 
   @override
