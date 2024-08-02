@@ -26,8 +26,7 @@ final class DebugMode {
       (_, parameters) async {
         final dataDefault = readyReferences();
 
-        return ServiceExtensionResponse.result(
-            jsonEncode({'data': dataDefault}));
+        return ServiceExtensionResponse.result(jsonEncode({'data': dataDefault}));
       },
     );
   }
@@ -56,9 +55,7 @@ final class DebugMode {
 
   static fGetItLog(String data) {
     if (isEnable && !kReleaseMode) {
-
-      if (getPlatform() == 'iOS' || getPlatform() == 'Web') {
-
+      // if (getPlatform() == 'iOS' || getPlatform() == 'Web') {
       log(data, name: 'FGetIt');
       /* if (Platform.isIOS) {
         log(data, name: 'FGetIt');
@@ -66,6 +63,7 @@ final class DebugMode {
       } else {
         debugPrint(data);
       } */
+      // }
     }
   }
 }
