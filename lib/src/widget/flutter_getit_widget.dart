@@ -54,8 +54,7 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
       ..load(id);
 
     if (!moduleAlreadyRegistered) {
-      DebugMode.fGetItLog(
-          '🛣️$yellowColor Initiating Widget: $id - calling "onInit()"');
+      FGetItLogger.logEnterOnWidget(id);
       widget.onInit?.call();
     }
     fGetItContext.registerId(
@@ -71,8 +70,9 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
   @override
   void dispose() {
     fGetItContext.reduceId(id);
-    DebugMode.fGetItLog(
-        '🛣️$yellowColor Disposing Widget: $id - calling "onDispose()"');
+    FGetItLogger.logDisposeWidget(
+      id,
+    );
     widget.onDispose?.call();
     containerRegister.unRegister(id);
     fGetItContext.deleteId(id);

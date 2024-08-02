@@ -1,31 +1,35 @@
 import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
+import '../middleware/flutter_get_it_middleware.dart';
 
 class FlutterGetItPageRouter {
   final String name;
   final WidgetBuilder page;
   final List<Bind> bindings;
   final List<FlutterGetItPageRouter> pages;
+  final List<FlutterGetItMiddleware> middlewares;
 
   FlutterGetItPageRouter({
     required this.name,
     required this.page,
     this.bindings = const [],
     this.pages = const [],
+    this.middlewares = const [],
   });
 
-  FlutterGetItPageRouter copyWith({
-    String? name,
-    WidgetBuilder? page,
-    List<Bind>? bindings,
-    List<FlutterGetItPageRouter>? pages,
-  }) {
+  FlutterGetItPageRouter copyWith(
+      {String? name,
+      WidgetBuilder? page,
+      List<Bind>? bindings,
+      List<FlutterGetItPageRouter>? pages,
+      List<FlutterGetItMiddleware>? middlewares}) {
     return FlutterGetItPageRouter(
       name: name ?? this.name,
       page: page ?? this.page,
       bindings: bindings ?? this.bindings,
       pages: pages ?? this.pages,
+      middlewares: middlewares ?? this.middlewares,
     );
   }
 }
@@ -38,6 +42,7 @@ class FlutterGetItModuleRouter extends FlutterGetItPageRouter {
     required super.name,
     super.bindings = const [],
     super.pages = const [],
+    super.middlewares = const [],
     this.onDispose,
     this.onInit,
   }) : super(
@@ -49,6 +54,7 @@ class FlutterGetItModuleRouter extends FlutterGetItPageRouter {
     String? name,
     WidgetBuilder? page,
     List<Bind>? bindings,
+    List<FlutterGetItMiddleware>? middlewares,
     List<FlutterGetItPageRouter>? pages,
     void Function(Injector i)? onDispose,
     void Function(Injector i)? onInit,
@@ -59,6 +65,7 @@ class FlutterGetItModuleRouter extends FlutterGetItPageRouter {
       pages: pages ?? this.pages,
       onDispose: onDispose ?? this.onDispose,
       onInit: onInit ?? this.onInit,
+      middlewares: middlewares ?? this.middlewares,
     );
   }
 }

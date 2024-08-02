@@ -1,4 +1,6 @@
 import 'package:example/application/bindings/application_bindings.dart';
+import 'package:example/application/debug/my_debug_log.dart';
+import 'package:example/application/middleware/print_middleware.dart';
 import 'package:example/src/auth/repository/auth_repository.dart';
 import 'package:example/src/auth/view/active_account/active_account_controller.dart';
 import 'package:example/src/auth/view/active_account/active_account_page.dart';
@@ -24,11 +26,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlutterGetIt(
       bindings: MyApplicationBindings(),
-      debugMode: true,
+      middewares: [
+        PrintMiddleware(),
+      ],
       modules: [
         LandingModule(),
         NavBarModule(),
       ],
+      loggerConfig: MyDebugLog(),
       pages: [
         FlutterGetItModuleRouter(
           name: '/outlet',

@@ -1,4 +1,6 @@
 import 'package:example/application/bindings/navigator_bindings.dart';
+import 'package:example/application/middleware/module_middleware.dart';
+import 'package:example/application/middleware/page_middleware.dart';
 import 'package:example/src/auth/repository/auth_repository.dart';
 import 'package:example/src/auth/view/active_account/active_account_controller.dart';
 import 'package:example/src/auth/view/active_account/active_account_page.dart';
@@ -76,6 +78,9 @@ class _MyNavBarState extends State<MyNavBar> {
                 ],
               ),
               FlutterGetItModuleRouter(
+                middlewares: [
+                  ModuleMiddleware(),
+                ],
                 name: '/Register',
                 bindings: [
                   Bind.lazySingleton<RegisterController>(
@@ -86,6 +91,9 @@ class _MyNavBarState extends State<MyNavBar> {
                 onDispose: (i) => debugPrint('bye by /Register'),
                 pages: [
                   FlutterGetItPageRouter(
+                    middlewares: [
+                      PageMiddleware(),
+                    ],
                     name: '/Page',
                     page: (context) => RegisterPage(
                       controller: context.get(),
