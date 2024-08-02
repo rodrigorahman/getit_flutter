@@ -1,4 +1,5 @@
 import '../../flutter_getit.dart';
+import '../middleware/flutter_get_it_middleware.dart';
 import 'model/binding_register.dart';
 
 final class FlutterGetItContainerRegister {
@@ -6,15 +7,19 @@ final class FlutterGetItContainerRegister {
 
   final Map<String, ({RegisterModel register, bool loaded})> _references = {};
   final bool debugMode;
-
-  void register(String id, List<Bind> bindings, {bool withTag = false}) {
+  List<FlutterGetItMiddleware> middlewares(String id) =>
+      _references[id]?.register.middlewares ?? [];
+  void register(String id, List<Bind> bindings,
+      {bool withTag = false,
+      List<FlutterGetItMiddleware> middleware = const []}) {
     final normalBinds = bindings.where((bind) => !bind.keepAlive).toList();
     final keepAliveBinds = bindings.where((bind) => bind.keepAlive).toList();
     if (!_references.containsKey(id)) {
       final tag = withTag ? id : null;
       _references[id] = (
-        register: RegisterModel(bindings: normalBinds, tag: tag),
-        loaded: false
+        register: RegisterModel(
+            bindings: normalBinds, tag: tag, middlewares: middleware),
+        loaded: false,
       );
     }
     if (keepAliveBinds.isNotEmpty) {
