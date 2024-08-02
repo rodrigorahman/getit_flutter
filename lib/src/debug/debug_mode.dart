@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
@@ -56,11 +55,12 @@ final class DebugMode {
 
   static fGetItLog(String data) {
     if (isEnable && !kReleaseMode) {
-      if (Platform.isIOS) {
-        log(data);
+      log(data, name: 'FGetIt');
+      /* if (Platform.isIOS) {
+        log(data, name: 'FGetIt');
       } else {
         debugPrint(data);
-      }
+      } */
     }
   }
 

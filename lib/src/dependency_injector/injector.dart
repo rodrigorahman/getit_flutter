@@ -21,6 +21,10 @@ class Injector {
     return GetIt.I.isRegistered<T>(instanceName: tag);
   }
 
+  static bool any<T extends Object>() {
+    return GetIt.I.getAll<T>().isNotEmpty;
+  }
+
   /// Get para recupera a instancia do GetIt
   static T get<T extends Object>({String? tag, String? factoryTag}) {
     try {
@@ -99,4 +103,6 @@ extension InjectorContext on BuildContext {
 
   bool isRegistered<T extends Object>({String? tag}) =>
       Injector.isRegistered<T>(tag: tag);
+
+  bool any<T extends Object>() => Injector.any<T>();
 }

@@ -16,6 +16,8 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     log(_home1.toString());
     log(_home2.toString());
+    log(context.any<HomeController>().toString());
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
