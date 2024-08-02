@@ -8,6 +8,7 @@ class MyNavigatorBindings extends NavigatorBindings {
         Bind.singleton(
           (i) => HomeController(),
           keepAlive: true,
+          tag: 'HomeController',
         ),
         Bind.lazySingleton<MyNavBarHelperController>(
           (i) => MyNavBarHelperController(),

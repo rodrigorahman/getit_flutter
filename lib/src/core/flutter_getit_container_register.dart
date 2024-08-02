@@ -44,7 +44,7 @@ final class FlutterGetItContainerRegister {
   void unRegister(String id) {
     if (_references[id] case (:final register, loaded: final _)) {
       for (var bind in register.bindings) {
-        bind.unload(register.tag, debugMode);
+        bind.unload(bind.tag, debugMode);
       }
     }
     _references.remove(id);
@@ -60,7 +60,7 @@ final class FlutterGetItContainerRegister {
           )) {
         var unRegistered = [];
         for (var bind in register.bindings) {
-          final wasRegistered = bind.load(register.tag, debugMode);
+          final wasRegistered = bind.load(bind.tag, debugMode);
           if (!wasRegistered) {
             unRegistered.add(bind);
           }

@@ -9,11 +9,13 @@ import 'package:flutter_getit/flutter_getit.dart';
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
-  final _home = Injector.get<HomeController>();
+  final _home1 = Injector.get<HomeController>(tag: 'HomeController');
 
   @override
   Widget build(BuildContext context) {
-    log(_home.toString());
+    log(_home1.toString());
+    log(context.any<HomeController>().toString());
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {

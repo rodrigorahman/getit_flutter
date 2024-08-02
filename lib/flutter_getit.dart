@@ -15,3 +15,4 @@ export 'src/routers/flutter_getit_module_page_router.dart';
 export 'src/widget/flutter_getit_route_outlet.dart';
 export 'src/widget/flutter_getit_view.dart';
 export 'src/widget/flutter_getit_widget.dart';
+export 'src/widget/flutter_getit_route_outlet.dart';

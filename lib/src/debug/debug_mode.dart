@@ -56,11 +56,16 @@ final class DebugMode {
 
   static fGetItLog(String data) {
     if (isEnable && !kReleaseMode) {
+
       if (getPlatform() == 'iOS' || getPlatform() == 'Web') {
-        log(data);
+
+      log(data, name: 'FGetIt');
+      /* if (Platform.isIOS) {
+        log(data, name: 'FGetIt');
+
       } else {
         debugPrint(data);
-      }
+      } */
     }
   }
 }
