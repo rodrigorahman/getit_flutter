@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlutterGetIt(
       bindings: MyApplicationBindings(),
-      middewares: [
+      middlewares: [
         PrintMiddleware(),
       ],
       modules: [

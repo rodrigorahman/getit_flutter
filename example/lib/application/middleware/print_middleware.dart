@@ -6,7 +6,7 @@ import 'package:flutter_getit/flutter_getit.dart';
 class PrintMiddleware extends FlutterGetItSyncMiddleware {
   @override
   MiddlewareResult execute(RouteSettings? route) {
-    log("VINDO DO APPLICATION! ===== ${route?.name ?? 'SEM ROTA'}");
+    log("DE APPLICATION! ===== ${route?.name ?? 'SEM ROTA'}");
 
     if (executeWhen(route)) {
       return MiddlewareResult.next;

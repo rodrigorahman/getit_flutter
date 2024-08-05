@@ -21,27 +21,27 @@ class FlutterGetIt extends StatefulWidget {
     super.key,
     required this.builder,
     ApplicationBindings? bindings,
-    List<FlutterGetItMiddleware>? middewares,
+    List<FlutterGetItMiddleware>? middlewares,
     this.modules,
     this.pages,
     this.loggerConfig,
   })  : contextType = FlutterGetItContextType.main,
         appBindings = bindings,
-        appMiddlewares = middewares,
+        appMiddlewares = middlewares,
         appContextName = null;
 
   const FlutterGetIt.navigator({
     super.key,
     required this.builder,
     NavigatorBindings? bindings,
-    List<FlutterGetItMiddleware>? middewares,
+    List<FlutterGetItMiddleware>? middlewares,
     String? navigatorName,
     this.modules,
     this.pages,
     this.loggerConfig,
   })  : contextType = FlutterGetItContextType.navigator,
         appBindings = bindings,
-        appMiddlewares = middewares,
+        appMiddlewares = middlewares,
         appContextName = navigatorName;
 
   final ApplicationBuilder builder;

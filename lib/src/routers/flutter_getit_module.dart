@@ -157,10 +157,6 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
       ..load(id);
 
     middlewareExecution.addAll(page.middlewares);
-    //appbinding
-    //rotapai
-    //subrota
-    //page
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final canLoad = await _executeMiddlewares(middlewareExecution,
           route: ModalRoute.of(context)?.settings);
@@ -237,15 +233,15 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
         case FlutterGetItSyncMiddleware():
           final resultMiddleware = middleware.execute(route);
           if (resultMiddleware != MiddlewareResult.next) {
-            middleware.onFail(route, flutterGetItMiddlewareContext, 'Falha',
-                resultMiddleware);
+            middleware.onFail(
+                route, flutterGetItMiddlewareContext, resultMiddleware);
             return resultMiddleware;
           }
           break;
 
         case FlutterGetItAsyncMiddleware():
           setState(() {
-            onExecute = middleware.onExcute;
+            onExecute = middleware.onExecute;
             isExecuting = true;
           });
 
@@ -255,8 +251,8 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
               isExecuting = false;
               onExecute = null;
             });
-            middleware.onFail(route, flutterGetItMiddlewareContext, 'Falha',
-                resultMiddleware);
+            middleware.onFail(
+                route, flutterGetItMiddlewareContext, resultMiddleware);
             return resultMiddleware;
           }
           setState(() {

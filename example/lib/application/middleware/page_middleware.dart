@@ -12,13 +12,11 @@ class PageMiddleware extends FlutterGetItAsyncMiddleware {
   }
 
   @override
-  FutureOr<void> onFail(
-      RouteSettings? route,
-      FlutterGetItMiddlewareContext fcontext,
-      error,
-      MiddlewareResult result) async {
-    super.onFail(route, fcontext, error, result);
-    await fcontext.bottomSheet(
+  FutureOr<void> onFail(RouteSettings? route,
+      FlutterGetItMiddlewareContext fContext, MiddlewareResult result,
+      {dynamic error}) async {
+    super.onFail(route, fContext, result, error: error);
+    await fContext.bottomSheet(
         builder: (_) => Scaffold(body: Center(child: Text(error.toString()))));
   }
 }
