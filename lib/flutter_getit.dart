@@ -6,6 +6,7 @@ export 'src/dependency_injector/binds/bind.dart';
 export 'src/dependency_injector/binds/flutter_get_it_binding_register.dart';
 export 'src/dependency_injector/injector.dart';
 export 'src/enum/middleware_result.dart';
+export 'src/middleware/flutter_get_it_async_bindings.dart';
 export 'src/middleware/flutter_get_it_async_middleware.dart';
 export 'src/middleware/flutter_get_it_middleware_context.dart';
 export 'src/middleware/flutter_get_it_sync_middleware.dart';
