@@ -10,7 +10,7 @@ class MyApplicationBindings extends ApplicationBindings {
         ),
         Bind.singletonAsync<AsyncTest>(
           (i) async => Future.delayed(
-            const Duration(seconds: 4),
+            const Duration(seconds: 1),
             () => AsyncTest(),
           ),
         ),

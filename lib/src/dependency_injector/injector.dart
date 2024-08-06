@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
-import '../core/flutter_getit_context.dart';
 import 'flutter_get_it_binding_opened.dart';
 
 /// Classe responsável pelo encapsulamento da busca das instancias do GetIt
@@ -38,8 +37,7 @@ class Injector {
       final containsFactoryDad =
           FlutterGetItBindingOpened.containsFactoryDad<T>();
       final containsHash = FlutterGetItBindingOpened.contains(obj.hashCode);
-      if (!(T == FlutterGetItContainerRegister || T == FlutterGetItContext) &&
-          !containsHash) {
+      if (!(T == FlutterGetItContainerRegister) && !containsHash) {
         FGetItLogger.logGettingInstance<T>(
           hashCode: obj.hashCode.toString(),
           tag: tag,

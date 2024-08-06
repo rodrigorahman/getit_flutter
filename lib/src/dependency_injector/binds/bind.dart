@@ -21,6 +21,7 @@ final class Bind<T extends Object> {
   bool isTheFactoryDad;
   final String? tag;
   Iterable<Type> dependsOn;
+  bool loaded = false;
 
   Bind._(this.bindRegister, this.type, this.keepAlive, this.tag,
       this.isTheFactoryDad, this.dependsOn);
@@ -77,12 +78,12 @@ final class Bind<T extends Object> {
       Bind<T>._async(
           bindAsyncRegister, RegisterType.factoryAsync, false, tag, false, []);
 
-  bool load([String? tag, bool debugMode = false]) {
+  void load([String? tag, bool debugMode = false]) {
     final getIt = GetIt.I;
     final isRegistered = getIt.isRegistered<T>(instanceName: tag);
-
+    loaded = true;
     if (isRegistered) {
-      return false;
+      return;
     }
     FGetItLogger.logRegisteringInstance<T>(this);
     switch (type) {
@@ -139,7 +140,7 @@ final class Bind<T extends Object> {
           instanceName: tag,
         );
     }
-    return true;
+    return;
   }
 
   void unload([String? tag, bool debugMode = false]) {
@@ -159,27 +160,19 @@ final class Bind<T extends Object> {
       } else if (isFactory && isTheFactoryDad) {
         FlutterGetItBindingOpened.unRegisterFactories<T>();
       }
-      bool runOnDisposingFunction = false;
 
+      FGetItLogger.logDisposeInstance<T>(this);
       GetIt.I.unregister<T>(
         instanceName: tag,
         disposingFunction: (entity) async {
           if (hasMixin<FlutterGetItMixin>(entity)) {
             (entity as FlutterGetItMixin).onDispose();
           }
-          FGetItLogger.logDisposeInstance<T>(this);
-
-          runOnDisposingFunction = true;
-          return;
         },
       );
-
-      if (isFactory && isTheFactoryDad || !runOnDisposingFunction) {
-        FGetItLogger.logDisposeInstance<T>(this);
-      }
-
-      return;
     }
+    loaded = false;
+    return;
   }
 
   @override

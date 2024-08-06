@@ -1,4 +1,4 @@
-class FlutterGetItContext {
+/* class FlutterGetItContext {
   // Salva o modulo e sua hash quando aberto pela primeira vez
   final _modulesFirstRouteHash = <String, int>{};
 
@@ -42,3 +42,4 @@ class FlutterGetItContext {
     return qntOfModuleId < 1;
   }
 }
+ */

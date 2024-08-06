@@ -28,7 +28,7 @@ class DetailPage extends StatelessWidget {
             ),
             const Divider(),
             const FormItem(
-              id: '',
+              id: 'FormItem2',
             ),
             const Divider(),
             const FormItem(

@@ -74,6 +74,7 @@ class _MyNavBarState extends State<MyNavBar> {
                       name: 'Login',
                       authRepository: i(),
                     ),
+                    keepAlive: true,
                   ),
                 ],
               ),

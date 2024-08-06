@@ -4,7 +4,7 @@ import 'package:flutter_getit/flutter_getit.dart';
 class AuthMiddleware extends FlutterGetItAsyncMiddleware {
   @override
   Future<MiddlewareResult> execute(RouteSettings? route) async {
-    await Future.delayed(const Duration(seconds: 10));
+    await Future.delayed(const Duration(seconds: 1));
     return MiddlewareResult.next;
   }
 

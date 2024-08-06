@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
-import '../core/flutter_getit_context.dart';
 import '../debug/extension/flutter_get_it_extension.dart';
 import '../middleware/flutter_get_it_middleware.dart';
 import '../types/flutter_getit_typedefs.dart';
@@ -99,8 +98,7 @@ class _FlutterGetItState extends State<FlutterGetIt>
         getIt
           ..registerSingleton(FlutterGetItExtension(register: register))
           ..registerSingleton(logRules)
-          ..registerSingleton(FGetItLogger(logRules))
-          ..registerLazySingleton(FlutterGetItContext.new);
+          ..registerSingleton(FGetItLogger(logRules));
         FGetItLogger.logCreatingContext(contextType.key);
         register
           ..register(
@@ -108,8 +106,7 @@ class _FlutterGetItState extends State<FlutterGetIt>
             appBindings?.bindings() ?? [],
             middleware: appMiddlewares ?? [],
           )
-          ..load(contextType.key)
-          ..loadPermanent();
+          ..load(contextType.key);
 
         break;
       case FlutterGetItContextType.navigator:
@@ -127,8 +124,7 @@ class _FlutterGetItState extends State<FlutterGetIt>
           ..register(
               appContextName ?? contextType.key, appBindings?.bindings() ?? [],
               middleware: appMiddlewares ?? [])
-          ..load(appContextName ?? contextType.key)
-          ..loadPermanent();
+          ..load(appContextName ?? contextType.key);
         break;
     }
   }
