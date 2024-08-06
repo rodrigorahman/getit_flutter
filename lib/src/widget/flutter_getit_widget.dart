@@ -51,7 +51,8 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
         id,
         binds,
       )
-      ..load(id);
+      ..load(id)
+      ..loadPermanent();
 
     if (!moduleAlreadyRegistered) {
       FGetItLogger.logEnterOnWidget(id);

@@ -11,7 +11,7 @@ class HomeModule extends FlutterGetItModule {
   List<FlutterGetItPageRouter> get pages => [
         FlutterGetItPageRouter(
           name: '/Page',
-          page: (context) => HomePage(),
+          page: (context, isReady, loader) => HomePage(),
           bindings: [],
         ),
       ];

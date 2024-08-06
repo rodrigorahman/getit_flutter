@@ -20,12 +20,13 @@ final class Bind<T extends Object> {
   final bool keepAlive;
   bool isTheFactoryDad;
   final String? tag;
+  Iterable<Type> dependsOn;
 
   Bind._(this.bindRegister, this.type, this.keepAlive, this.tag,
-      this.isTheFactoryDad);
+      this.isTheFactoryDad, this.dependsOn);
 
   Bind._async(this.bindAsyncRegister, this.type, this.keepAlive, this.tag,
-      this.isTheFactoryDad);
+      this.isTheFactoryDad, this.dependsOn);
 
   String get bindingClassName => T.toString();
 
@@ -33,8 +34,10 @@ final class Bind<T extends Object> {
     BindRegister<T> bindRegister, {
     bool keepAlive = false,
     String? tag,
+    Iterable<Type> dependsOn = const [],
   }) =>
-      Bind<T>._(bindRegister, RegisterType.singleton, keepAlive, tag, false);
+      Bind<T>._(bindRegister, RegisterType.singleton, keepAlive, tag, false,
+          dependsOn);
 
   static Bind lazySingleton<T extends Object>(
     BindRegister<T> bindRegister, {
@@ -42,21 +45,22 @@ final class Bind<T extends Object> {
     String? tag,
   }) =>
       Bind<T>._(
-          bindRegister, RegisterType.lazySingleton, keepAlive, tag, false);
+          bindRegister, RegisterType.lazySingleton, keepAlive, tag, false, []);
 
   static Bind factory<T extends Object>(
     BindRegister<T> bindRegister, {
     String? tag,
   }) =>
-      Bind<T>._(bindRegister, RegisterType.factory, false, tag, false);
+      Bind<T>._(bindRegister, RegisterType.factory, false, tag, false, []);
 
   static Bind singletonAsync<T extends Object>(
     BindAsyncRegister<T> bindAsyncRegister, {
     bool keepAlive = false,
     String? tag,
+    Iterable<Type> dependsOn = const [],
   }) =>
       Bind<T>._async(bindAsyncRegister, RegisterType.singletonAsync, keepAlive,
-          tag, false);
+          tag, false, dependsOn);
 
   static Bind lazySingletonAsync<T extends Object>(
     BindAsyncRegister<T> bindAsyncRegister, {
@@ -64,14 +68,14 @@ final class Bind<T extends Object> {
     String? tag,
   }) =>
       Bind<T>._async(bindAsyncRegister, RegisterType.lazySingletonAsync,
-          keepAlive, tag, false);
+          keepAlive, tag, false, []);
 
   static Bind factoryAsync<T extends Object>(
     BindAsyncRegister<T> bindAsyncRegister, {
     String? tag,
   }) =>
       Bind<T>._async(
-          bindAsyncRegister, RegisterType.factoryAsync, false, tag, false);
+          bindAsyncRegister, RegisterType.factoryAsync, false, tag, false, []);
 
   bool load([String? tag, bool debugMode = false]) {
     final getIt = GetIt.I;
@@ -83,11 +87,22 @@ final class Bind<T extends Object> {
     FGetItLogger.logRegisteringInstance<T>(this);
     switch (type) {
       case RegisterType.singleton:
-        getIt.registerSingleton<T>(
-          bindRegister(Injector()),
-          instanceName: tag,
-          dispose: (entity) => null,
-        );
+        if (dependsOn.isEmpty) {
+          getIt.registerSingleton<T>(
+            bindRegister(Injector()),
+            instanceName: tag,
+            dispose: (entity) => null,
+            signalsReady: false,
+          );
+        } else {
+          getIt.registerSingletonWithDependencies<T>(
+            () => bindRegister(Injector()),
+            instanceName: tag,
+            dispose: (entity) => null,
+            dependsOn: dependsOn,
+            signalsReady: false,
+          );
+        }
       case RegisterType.lazySingleton:
         getIt.registerLazySingleton<T>(
           () => bindRegister(Injector()),
@@ -99,6 +114,8 @@ final class Bind<T extends Object> {
           () async => await bindAsyncRegister(Injector()),
           instanceName: tag,
           dispose: (entity) => null,
+          dependsOn: dependsOn,
+          signalsReady: false,
         );
       case RegisterType.lazySingletonAsync:
         getIt.registerLazySingletonAsync<T>(

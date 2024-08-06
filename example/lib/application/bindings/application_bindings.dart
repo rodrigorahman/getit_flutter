@@ -5,18 +5,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MyApplicationBindings extends ApplicationBindings {
   @override
   List<Bind<Object>> bindings() => [
-        Bind.singletonAsync(
+        Bind.singletonAsync<SharedPreferences>(
           (i) async => SharedPreferences.getInstance(),
         ),
-        Bind.lazySingletonAsync(
+        Bind.singletonAsync<AsyncTest>(
           (i) async => Future.delayed(
             const Duration(seconds: 4),
             () => AsyncTest(),
           ),
         ),
-        Bind.singleton(
-          (i) => MyDeepLink(),
+        Bind.singleton<MyDeepLink>(
+          (i) => MyDeepLink(i()),
           keepAlive: true,
+          dependsOn: [
+            SharedPreferences,
+            AsyncTest,
+          ],
         ),
       ];
 }
