@@ -10,6 +10,7 @@ import 'package:example/src/auth/view/login/login_page.dart';
 import 'package:example/src/auth/view/register/register_controller.dart';
 import 'package:example/src/auth/view/register/register_page.dart';
 import 'package:example/src/landing/landing_module.dart';
+import 'package:example/src/landing/my_widget_bind_loader.dart';
 import 'package:example/src/nav_bar/nav_bar_module.dart';
 import 'package:example/src/route_outlet_nav_bar/my_nav_bar.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,7 @@ class MyApp extends StatelessWidget {
           pages: [
             FlutterGetItPageRouter(
               name: '/',
-              page: (context) {
+              page: (context, isReady, loader) {
                 return const RouteOutletMyNavBar();
               },
               bindings: [],
@@ -59,7 +60,7 @@ class MyApp extends StatelessWidget {
           pages: [
             FlutterGetItPageRouter(
               name: '/Login',
-              page: (context) => LoginPage(
+              page: (context, isReady, loader) => LoginPage(
                 controller: context.get(),
               ),
               bindings: [
@@ -83,7 +84,7 @@ class MyApp extends StatelessWidget {
               pages: [
                 FlutterGetItPageRouter(
                   name: '/Page',
-                  page: (context) => RegisterPage(
+                  page: (context, isReady, loader) => RegisterPage(
                     controller: context.get(),
                   ),
                   bindings: [
@@ -106,7 +107,8 @@ class MyApp extends StatelessWidget {
                   pages: [
                     FlutterGetItPageRouter(
                       name: '/Page',
-                      page: (context) => const ActiveAccountPage(),
+                      page: (context, isReady, loader) =>
+                          const ActiveAccountPage(),
                       bindings: [],
                     ),
                   ],
@@ -116,7 +118,7 @@ class MyApp extends StatelessWidget {
           ],
         )
       ],
-      builder: (context, routes) {
+      builder: (context, routes, isReady) {
         return MaterialApp(
           title: 'Flutter Demo',
           theme: ThemeData(
@@ -125,6 +127,10 @@ class MyApp extends StatelessWidget {
           ),
           initialRoute: '/Landing/Initialize',
           routes: routes,
+          builder: (context, child) => switch (isReady) {
+            true => child ?? const SizedBox.shrink(),
+            false => const MyWidgetBindLoader(),
+          },
         );
       },
     );

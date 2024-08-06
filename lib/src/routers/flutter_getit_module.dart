@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
@@ -70,7 +72,6 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
   late final FlutterGetItContainerRegister containerRegister;
   List<String> routerModule = [];
   Widget? onExecute;
-  bool isExecuting = false;
 
   @override
   void initState() {
@@ -103,6 +104,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
         middleware: middlewaresModule,
       )
       ..load(moduleName)
+      ..loadPermanent()
       ..middlewares(moduleRouteName).forEach(middlewareExecution.add);
 
     if (!moduleAlreadyRegistered) {
@@ -130,6 +132,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
             ..load(
               routeM,
             )
+            ..loadPermanent()
             ..middlewares(routeM).forEach(middlewareExecution.add);
 
           if (!moduleAlreadyRegisteredInternal) {
@@ -154,27 +157,43 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
         page.bindings,
         middleware: page.middlewares,
       )
-      ..load(id);
+      ..load(id)
+      ..loadPermanent();
 
     middlewareExecution.addAll(page.middlewares);
+    final modularRoute = ModalRoute.of(context);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final canLoad = await _executeMiddlewares(middlewareExecution,
-          route: ModalRoute.of(context)?.settings);
+      await _callAllReady();
+      final canLoad = await _executeMiddlewares(
+        middlewareExecution,
+        route: modularRoute?.settings,
+      );
       if (canLoad == MiddlewareResult.complete) {
         for (var initExecute in initExecution) {
           initExecute();
         }
+        setState(() {
+          _completer.complete();
+        });
       }
     });
 
     super.initState();
   }
 
+  final _completer = Completer<void>();
+
+  Future<void> _callAllReady() async {
+    await Injector.allReady();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return (isExecuting)
-        ? onExecute ?? const SizedBox.shrink()
-        : widget.page.page(context);
+    return widget.page.page(
+      context,
+      _completer.isCompleted,
+      onExecute,
+    );
   }
 
   @override
@@ -242,13 +261,11 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
         case FlutterGetItAsyncMiddleware():
           setState(() {
             onExecute = middleware.onExecute;
-            isExecuting = true;
           });
 
           final resultMiddleware = await middleware.execute(route);
           if (resultMiddleware == MiddlewareResult.failure) {
             setState(() {
-              isExecuting = false;
               onExecute = null;
             });
             middleware.onFail(
@@ -256,7 +273,6 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
             return resultMiddleware;
           }
           setState(() {
-            isExecuting = false;
             onExecute = null;
           });
 

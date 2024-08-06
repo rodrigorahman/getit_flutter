@@ -45,7 +45,7 @@ class DetailModule extends FlutterGetItModule {
           pages: [
             FlutterGetItPageRouter(
               name: '/One',
-              page: (context) => DetailPage(
+              page: (context, isReady, loader) => DetailPage(
                 controller: context.get(),
               ),
               bindings: [
@@ -64,14 +64,15 @@ class DetailModule extends FlutterGetItModule {
                   pages: [
                     FlutterGetItPageRouter(
                       name: '/Page',
-                      page: (context) => DetailInternalPage(
+                      page: (context, isReady, loader) => DetailInternalPage(
                         repository: context.get(),
                       ),
                       bindings: [],
                       pages: [
                         FlutterGetItPageRouter(
                           name: '/Child',
-                          page: (context) => DetailInternalChild(
+                          page: (context, isReady, loader) =>
+                              DetailInternalChild(
                             repository: context.get(),
                           ),
                           bindings: [],
@@ -84,7 +85,7 @@ class DetailModule extends FlutterGetItModule {
             ),
             FlutterGetItPageRouter(
               name: '/Two',
-              page: (context) => DetailSuperPage(
+              page: (context, isReady, loader) => DetailSuperPage(
                 controller: context.get(),
               ),
               bindings: [

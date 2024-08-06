@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -62,13 +64,15 @@ class FlutterGetIt extends StatefulWidget {
   State<FlutterGetIt> createState() => _FlutterGetItState();
 }
 
-class _FlutterGetItState extends State<FlutterGetIt> {
+class _FlutterGetItState extends State<FlutterGetIt>
+    with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     _registerAndLoadDependencies();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   _loadMiddlewares();
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      //_loadMiddlewares();
+      _callAllReady();
+    });
     super.initState();
   }
 
@@ -104,7 +108,8 @@ class _FlutterGetItState extends State<FlutterGetIt> {
             appBindings?.bindings() ?? [],
             middleware: appMiddlewares ?? [],
           )
-          ..load(contextType.key);
+          ..load(contextType.key)
+          ..loadPermanent();
 
         break;
       case FlutterGetItContextType.navigator:
@@ -122,7 +127,8 @@ class _FlutterGetItState extends State<FlutterGetIt> {
           ..register(
               appContextName ?? contextType.key, appBindings?.bindings() ?? [],
               middleware: appMiddlewares ?? [])
-          ..load(appContextName ?? contextType.key);
+          ..load(appContextName ?? contextType.key)
+          ..loadPermanent();
         break;
     }
   }
@@ -239,11 +245,26 @@ class _FlutterGetItState extends State<FlutterGetIt> {
     return routesMap;
   }
 
+  final _completer = Completer<void>();
+
+  Future<void> _callAllReady() async {
+    await Injector.allReady();
+    setState(() {
+      _completer.complete();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return widget.builder(
       context,
       _routes(),
+      _completer.isCompleted,
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

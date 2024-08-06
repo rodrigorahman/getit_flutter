@@ -13,4 +13,5 @@ typedef BindAsyncRegister<T> = Future<T> Function(Injector i);
 typedef ApplicationBuilder = Widget Function(
   BuildContext context,
   Map<String, WidgetBuilder> routes,
+  bool isReady,
 );

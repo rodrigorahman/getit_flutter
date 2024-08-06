@@ -14,7 +14,7 @@ class ProductsModule extends FlutterGetItModule {
   List<FlutterGetItPageRouter> get pages => [
         FlutterGetItPageRouter(
           name: '/Page',
-          page: (context) => ProductsPage(
+          page: (context, isReady, loader) => ProductsPage(
             ctrl: context.get(),
           ),
           bindings: [
@@ -25,7 +25,7 @@ class ProductsModule extends FlutterGetItModule {
           pages: [
             FlutterGetItPageRouter(
               name: '/Detail',
-              page: (context) => const ProductsDetail(),
+              page: (context, isReady, loader) => const ProductsDetail(),
               bindings: [],
             ),
           ],
