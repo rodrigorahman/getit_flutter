@@ -12,7 +12,7 @@ class NavBarModule extends FlutterGetItModule {
   List<FlutterGetItPageRouter> get pages => [
         FlutterGetItPageRouter(
           name: '/Root',
-          page: (context) => const MyNavBar(),
+          page: (context, isReady, loader) => const MyNavBar(),
         ),
       ];
 

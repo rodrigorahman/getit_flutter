@@ -44,7 +44,7 @@ class _MyNavBarState extends State<MyNavBar> {
             pages: [
               FlutterGetItPageRouter(
                 name: '/Page',
-                page: (context) => const RandomPage(),
+                page: (context, isReady, loader) => const RandomPage(),
                 bindings: [
                   Bind.lazySingleton<RandomController>(
                     (i) => RandomController('Random by FlutterGetItPageRouter'),
@@ -65,7 +65,7 @@ class _MyNavBarState extends State<MyNavBar> {
             pages: [
               FlutterGetItPageRouter(
                 name: '/Login',
-                page: (context) => LoginPage(
+                page: (context, isReady, loader) => LoginPage(
                   controller: context.get(),
                 ),
                 bindings: [
@@ -95,7 +95,7 @@ class _MyNavBarState extends State<MyNavBar> {
                       PageMiddleware(),
                     ],
                     name: '/Page',
-                    page: (context) => RegisterPage(
+                    page: (context, isReady, loader) => RegisterPage(
                       controller: context.get(),
                     ),
                     bindings: [
@@ -118,7 +118,8 @@ class _MyNavBarState extends State<MyNavBar> {
                     pages: [
                       FlutterGetItPageRouter(
                         name: '/Page',
-                        page: (context) => const ActiveAccountPage(),
+                        page: (context, isReady, loader) =>
+                            const ActiveAccountPage(),
                         bindings: [],
                       ),
                     ],
@@ -134,7 +135,7 @@ class _MyNavBarState extends State<MyNavBar> {
           /* AuthModule(),
           ProductsModule(), */
         ],
-        builder: (context, routes) => Navigator(
+        builder: (context, routes, isReady) => Navigator(
           key: internalNav,
           initialRoute: '/Home/Page',
           observers: const [],

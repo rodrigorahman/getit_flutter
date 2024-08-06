@@ -17,7 +17,10 @@ final class FlutterGetItContainerRegister {
       final tag = withTag ? id : null;
       _references[id] = (
         register: RegisterModel(
-            bindings: normalBinds, tag: tag, middlewares: middleware),
+          bindings: normalBinds,
+          tag: tag,
+          middlewares: middleware,
+        ),
         loaded: false,
       );
     }
@@ -36,7 +39,7 @@ final class FlutterGetItContainerRegister {
           loaded: false,
         );
       }
-      load('APPLICATION_PERMANENT');
+      // load('APPLICATION_PERMANENT');
     }
   }
 
@@ -47,6 +50,10 @@ final class FlutterGetItContainerRegister {
       }
     }
     _references.remove(id);
+  }
+
+  void loadPermanent() {
+    load('APPLICATION_PERMANENT');
   }
 
   void load(String id) {

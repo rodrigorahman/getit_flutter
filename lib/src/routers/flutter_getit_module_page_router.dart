@@ -3,9 +3,15 @@ import 'package:flutter/material.dart';
 import '../../flutter_getit.dart';
 import '../middleware/flutter_get_it_middleware.dart';
 
+typedef WidgetBuilderWithDependencies = Widget Function(
+  BuildContext context,
+  bool isReady,
+  Widget? loader,
+);
+
 class FlutterGetItPageRouter {
   final String name;
-  final WidgetBuilder page;
+  final WidgetBuilderWithDependencies page;
   final List<Bind> bindings;
   final List<FlutterGetItPageRouter> pages;
   final List<FlutterGetItMiddleware> middlewares;
@@ -20,7 +26,7 @@ class FlutterGetItPageRouter {
 
   FlutterGetItPageRouter copyWith(
       {String? name,
-      WidgetBuilder? page,
+      WidgetBuilderWithDependencies? page,
       List<Bind>? bindings,
       List<FlutterGetItPageRouter>? pages,
       List<FlutterGetItMiddleware>? middlewares}) {
@@ -46,13 +52,13 @@ class FlutterGetItModuleRouter extends FlutterGetItPageRouter {
     this.onDispose,
     this.onInit,
   }) : super(
-          page: (context) => const SizedBox.shrink(),
+          page: (context, isReady, loader) => const SizedBox.shrink(),
         );
 
   @override
   FlutterGetItModuleRouter copyWith({
     String? name,
-    WidgetBuilder? page,
+    WidgetBuilderWithDependencies? page,
     List<Bind>? bindings,
     List<FlutterGetItMiddleware>? middlewares,
     List<FlutterGetItPageRouter>? pages,
