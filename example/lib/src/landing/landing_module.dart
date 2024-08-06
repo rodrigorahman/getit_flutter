@@ -37,9 +37,10 @@ class LandingModule extends FlutterGetItModule {
           bindings: [
             Bind.singletonAsync<PresentationRepository>(
               (i) => Future.delayed(
-                const Duration(seconds: 4),
+                const Duration(seconds: 1),
                 () => PresentationRepository(),
               ),
+              keepAlive: true,
             ),
             Bind.singleton<PresentationController>(
               (i) => PresentationController(
@@ -49,7 +50,7 @@ class LandingModule extends FlutterGetItModule {
             ),
             Bind.lazySingletonAsync<PresentationDatabase>(
               (i) => Future.delayed(
-                const Duration(seconds: 2),
+                const Duration(seconds: 1),
                 () => PresentationDatabase(),
               ),
             ),

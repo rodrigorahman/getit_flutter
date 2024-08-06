@@ -1,4 +1,4 @@
-import '../../../flutter_getit.dart';
+/* import '../../../flutter_getit.dart';
 
 final class FlutterGetItBindingRegister {
   FlutterGetItBindingRegister._();
@@ -15,3 +15,4 @@ final class FlutterGetItBindingRegister {
       ..load('APPLICATION_PERMANENT');
   }
 }
+ */

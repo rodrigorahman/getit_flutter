@@ -42,16 +42,21 @@ final class DebugMode {
   Map<String, List<Map<String, dynamic>>> readyReferences() {
     final references = _register.references();
 
-    return references.map((key, value) {
-      final bindings = value.register.bindings;
-      final bindingsMap = bindings
-          .map<Map<String, dynamic>>(
-            (e) => {'className': e.bindingClassName, 'type': e.type.name},
-          )
-          .toList();
+    var myMap = <String, List<Map<String, dynamic>>>{};
 
-      return MapEntry(key, bindingsMap);
-    });
+    for (var ref in references) {
+      myMap[ref.id] = <Map<String, dynamic>>[];
+      for (var bind in ref.bindings) {
+        myMap[ref.id]!.add(
+          {
+            'className': bind.bindingClassName,
+            'type': bind.type.name + (bind.keepAlive ? ' (keepAlive)' : ''),
+          },
+        );
+      }
+    }
+
+    return myMap;
   }
 
   static fGetItLog(String data) {

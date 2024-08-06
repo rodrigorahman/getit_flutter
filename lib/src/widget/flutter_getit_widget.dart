@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
-import '../core/flutter_getit_context.dart';
 
 class FlutterGetItWidget extends StatefulWidget {
   const FlutterGetItWidget({
@@ -26,7 +25,6 @@ class FlutterGetItWidget extends StatefulWidget {
 class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
   late final String id;
   late final FlutterGetItContainerRegister containerRegister;
-  late final FlutterGetItContext fGetItContext;
 
   @override
   void initState() {
@@ -36,11 +34,10 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
       :binds,
     ) = widget;
     containerRegister = Injector.get<FlutterGetItContainerRegister>();
-    fGetItContext = Injector.get<FlutterGetItContext>();
     //Utilizado a hashCode para garantir que o id seja único, podendo ser utilizado em mais de um lugar
     id = '/WIDGET-$name';
 
-    final moduleAlreadyRegistered = fGetItContext.isRegistered(id);
+    final moduleAlreadyRegistered = containerRegister.isRegistered(id);
 
     if (moduleAlreadyRegistered) {
       throw Exception('Widget $id already registered');
@@ -51,16 +48,12 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
         id,
         binds,
       )
-      ..load(id)
-      ..loadPermanent();
+      ..load(id);
 
     if (!moduleAlreadyRegistered) {
       FGetItLogger.logEnterOnWidget(id);
       widget.onInit?.call();
     }
-    fGetItContext.registerId(
-      id,
-    );
   }
 
   @override
@@ -70,13 +63,12 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
 
   @override
   void dispose() {
-    fGetItContext.reduceId(id);
+    containerRegister.decrementListener(id);
     FGetItLogger.logDisposeWidget(
       id,
     );
     widget.onDispose?.call();
     containerRegister.unRegister(id);
-    fGetItContext.deleteId(id);
     super.dispose();
   }
 }
