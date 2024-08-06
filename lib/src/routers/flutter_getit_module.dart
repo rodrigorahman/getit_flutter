@@ -161,8 +161,9 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
       ..loadPermanent();
 
     middlewareExecution.addAll(page.middlewares);
-    final modularRoute = ModalRoute.of(context);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final modularRoute = ModalRoute.of(context);
+
       await _callAllReady();
       final canLoad = await _executeMiddlewares(
         middlewareExecution,
