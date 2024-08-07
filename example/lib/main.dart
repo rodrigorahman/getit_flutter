@@ -9,7 +9,7 @@ import 'package:example/src/auth/view/login/login_page.dart';
 import 'package:example/src/auth/view/register/register_controller.dart';
 import 'package:example/src/auth/view/register/register_page.dart';
 import 'package:example/src/landing/landing_module.dart';
-import 'package:example/src/landing/my_widget_bind_loader.dart';
+import 'package:example/src/loader/load_dependencies.dart';
 import 'package:example/src/nav_bar/nav_bar_module.dart';
 import 'package:example/src/route_outlet_nav_bar/my_nav_bar.dart';
 import 'package:flutter/material.dart';
@@ -40,8 +40,9 @@ class MyApp extends StatelessWidget {
           pages: [
             FlutterGetItPageRouter(
               name: '/',
-              page: (context, isReady, loader) {
-                return const RouteOutletMyNavBar();
+              page: (context, isReady, loader) => switch (isReady) {
+                true => const RouteOutletMyNavBar(),
+                false => loader ?? const WidgetLoadDependencies(),
               },
               bindings: [],
             ),
@@ -59,9 +60,12 @@ class MyApp extends StatelessWidget {
           pages: [
             FlutterGetItPageRouter(
               name: '/Login',
-              page: (context, isReady, loader) => LoginPage(
-                controller: context.get(),
-              ),
+              page: (context, isReady, loader) => switch (isReady) {
+                true => LoginPage(
+                    controller: context.get(),
+                  ),
+                false => loader ?? const WidgetLoadDependencies(),
+              },
               bindings: [
                 Bind.lazySingleton<LoginController>(
                   (i) => LoginController(
@@ -83,9 +87,12 @@ class MyApp extends StatelessWidget {
               pages: [
                 FlutterGetItPageRouter(
                   name: '/Page',
-                  page: (context, isReady, loader) => RegisterPage(
-                    controller: context.get(),
-                  ),
+                  page: (context, isReady, loader) => switch (isReady) {
+                    true => RegisterPage(
+                        controller: context.get(),
+                      ),
+                    false => loader ?? const WidgetLoadDependencies(),
+                  },
                   bindings: [
                     Bind.lazySingleton<RegisterController>(
                       (i) => RegisterController(),
@@ -106,8 +113,10 @@ class MyApp extends StatelessWidget {
                   pages: [
                     FlutterGetItPageRouter(
                       name: '/Page',
-                      page: (context, isReady, loader) =>
-                          const ActiveAccountPage(),
+                      page: (context, isReady, loader) => switch (isReady) {
+                        true => const ActiveAccountPage(),
+                        false => loader ?? const WidgetLoadDependencies(),
+                      },
                       bindings: [],
                     ),
                   ],
@@ -128,7 +137,7 @@ class MyApp extends StatelessWidget {
           routes: routes,
           builder: (context, child) => switch (isReady) {
             true => child ?? const SizedBox.shrink(),
-            false => const MyWidgetBindLoader(),
+            false => const WidgetLoadDependencies(),
           },
         );
       },

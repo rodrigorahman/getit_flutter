@@ -1,3 +1,4 @@
+import 'package:example/src/loader/load_dependencies.dart';
 import 'package:example/src/nav_bar/my_nav_bar.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
@@ -12,7 +13,10 @@ class NavBarModule extends FlutterGetItModule {
   List<FlutterGetItPageRouter> get pages => [
         FlutterGetItPageRouter(
           name: '/Root',
-          page: (context, isReady, loader) => const MyNavBar(),
+          page: (context, isReady, loader) => switch (isReady) {
+            true => const MyNavBar(),
+            false => loader ?? const WidgetLoadDependencies(),
+          },
         ),
       ];
 

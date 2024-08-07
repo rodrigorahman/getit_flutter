@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
 import '../middleware/flutter_get_it_middleware.dart';
@@ -158,6 +159,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
         for (var initExecute in initExecution) {
           initExecute();
         }
+        FGetItLogger.logWaitingAsyncByModuleCompleted(id);
         setState(() {
           _completer.complete();
         });
@@ -170,7 +172,8 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
   final _completer = Completer<void>();
 
   Future<void> _callAllReady() async {
-    await Injector.allReady();
+    FGetItLogger.logWaitingAsyncByModule(id);
+    await GetIt.I.allReady();
   }
 
   @override
@@ -187,7 +190,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
     //Remove counter on context
     containerRegister.decrementListener(moduleName);
     containerRegister.decrementListener(id);
-
+    containerRegister.unRegister(id);
     for (var route in routerModule.reversed) {
       containerRegister.decrementListener(route);
 
@@ -200,6 +203,15 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
                       element?.name.endsWith(route.split('/').last) ?? false,
                   orElse: () => null,
                 );
+        //Decrement all Dad Sub-modules behind the current module disposed
+        final currentIndex = routerModule.indexOf(route);
+        final subModules = routerModule.sublist(0, currentIndex);
+
+        for (var subRoute in subModules) {
+          containerRegister.decrementListener(subRoute);
+        }
+
+        FGetItLogger.logDisposeModule(route);
         if (element != null) {
           element.onDispose?.call(
             Injector(),
@@ -207,11 +219,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
         }
       }
     }
-
     final anyCoreDependents = containerRegister.anyCoreDependents(moduleName);
-
-    containerRegister.unRegister(id);
-
     if (!anyCoreDependents) {
       containerRegister.unRegister(moduleName);
       FGetItLogger.logDisposeModule(widget.module.moduleRouteName);
@@ -230,10 +238,18 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
         case FlutterGetItSyncMiddleware():
           final resultMiddleware = middleware.execute(route);
           if (resultMiddleware != MiddlewareResult.next) {
+            FGetItLogger.logAsyncDependenceFail(
+              middleware.runtimeType.toString(),
+              id,
+            );
             middleware.onFail(
-                route, flutterGetItMiddlewareContext, resultMiddleware);
+              route,
+              flutterGetItMiddlewareContext,
+              resultMiddleware,
+            );
             return resultMiddleware;
           }
+
           break;
 
         case FlutterGetItAsyncMiddleware():
@@ -246,8 +262,15 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
             setState(() {
               onExecute = null;
             });
+            FGetItLogger.logAsyncDependenceFail(
+              middleware.runtimeType.toString(),
+              id,
+            );
             middleware.onFail(
-                route, flutterGetItMiddlewareContext, resultMiddleware);
+              route,
+              flutterGetItMiddlewareContext,
+              resultMiddleware,
+            );
             return resultMiddleware;
           }
           setState(() {
@@ -256,6 +279,10 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
 
           break;
       }
+      FGetItLogger.logAsyncDependenceComplete(
+        middleware.runtimeType.toString(),
+        id,
+      );
     }
     return MiddlewareResult.complete;
   }

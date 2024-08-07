@@ -13,7 +13,6 @@ class InitializeController implements InitializeBloc, FlutterGetItMixin {
 
   @override
   void onInit() async {
-    await Injector.allReady();
     final spByAsync = Injector.get<SharedPreferences>();
     final myTest = await Injector.getAsync<AsyncTest>();
     log(spByAsync.toString());

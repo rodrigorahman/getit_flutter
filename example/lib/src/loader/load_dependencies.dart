@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class MyWidgetBindLoader extends StatelessWidget {
-  const MyWidgetBindLoader({super.key});
+class WidgetLoadDependencies extends StatelessWidget {
+  const WidgetLoadDependencies({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text('Loading dependencies...'),
+        child: Text('⏰ - Loading dependencies...'),
       ),
     );
   }

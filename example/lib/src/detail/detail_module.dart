@@ -8,6 +8,7 @@ import 'package:example/src/detail/internal/detail_internal_page.dart';
 import 'package:example/src/detail/internal/detail_internal_repository.dart';
 import 'package:example/src/detail/widget/form_item_controller.dart';
 import 'package:example/src/home/home_controller.dart';
+import 'package:example/src/loader/load_dependencies.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
 class DetailModule extends FlutterGetItModule {
@@ -45,9 +46,12 @@ class DetailModule extends FlutterGetItModule {
           pages: [
             FlutterGetItPageRouter(
               name: '/One',
-              page: (context, isReady, loader) => DetailPage(
-                controller: context.get(),
-              ),
+              page: (context, isReady, loader) => switch (isReady) {
+                true => DetailPage(
+                    controller: context.get(),
+                  ),
+                false => loader ?? const WidgetLoadDependencies(),
+              },
               bindings: [
                 Bind.lazySingleton<DetailController>(
                   (i) => DetailController(),
@@ -64,17 +68,22 @@ class DetailModule extends FlutterGetItModule {
                   pages: [
                     FlutterGetItPageRouter(
                       name: '/Page',
-                      page: (context, isReady, loader) => DetailInternalPage(
-                        repository: context.get(),
-                      ),
+                      page: (context, isReady, loader) => switch (isReady) {
+                        true => DetailInternalPage(
+                            repository: context.get(),
+                          ),
+                        false => loader ?? const WidgetLoadDependencies(),
+                      },
                       bindings: [],
                       pages: [
                         FlutterGetItPageRouter(
                           name: '/Child',
-                          page: (context, isReady, loader) =>
-                              DetailInternalChild(
-                            repository: context.get(),
-                          ),
+                          page: (context, isReady, loader) => switch (isReady) {
+                            true => DetailInternalChild(
+                                repository: context.get(),
+                              ),
+                            false => loader ?? const WidgetLoadDependencies(),
+                          },
                           bindings: [],
                         ),
                       ],
@@ -85,9 +94,12 @@ class DetailModule extends FlutterGetItModule {
             ),
             FlutterGetItPageRouter(
               name: '/Two',
-              page: (context, isReady, loader) => DetailSuperPage(
-                controller: context.get(),
-              ),
+              page: (context, isReady, loader) => switch (isReady) {
+                true => DetailSuperPage(
+                    controller: context.get(),
+                  ),
+                false => loader ?? const WidgetLoadDependencies(),
+              },
               bindings: [
                 Bind.lazySingleton<DetailSuperController>(
                   (i) => DetailSuperController(),

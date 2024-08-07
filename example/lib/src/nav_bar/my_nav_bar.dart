@@ -11,6 +11,7 @@ import 'package:example/src/auth/view/register/register_controller.dart';
 import 'package:example/src/auth/view/register/register_page.dart';
 import 'package:example/src/detail/detail_module.dart';
 import 'package:example/src/home/home_module.dart';
+import 'package:example/src/loader/load_dependencies.dart';
 import 'package:example/src/random/random_controller.dart';
 import 'package:example/src/random/random_page.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +45,10 @@ class _MyNavBarState extends State<MyNavBar> {
             pages: [
               FlutterGetItPageRouter(
                 name: '/Page',
-                page: (context, isReady, loader) => const RandomPage(),
+                page: (context, isReady, loader) => switch (isReady) {
+                  true => const RandomPage(),
+                  false => loader ?? const WidgetLoadDependencies(),
+                },
                 bindings: [
                   Bind.lazySingleton<RandomController>(
                     (i) => RandomController('Random by FlutterGetItPageRouter'),
@@ -65,9 +69,12 @@ class _MyNavBarState extends State<MyNavBar> {
             pages: [
               FlutterGetItPageRouter(
                 name: '/Login',
-                page: (context, isReady, loader) => LoginPage(
-                  controller: context.get(),
-                ),
+                page: (context, isReady, loader) => switch (isReady) {
+                  true => LoginPage(
+                      controller: context.get(),
+                    ),
+                  false => loader ?? const WidgetLoadDependencies(),
+                },
                 bindings: [
                   Bind.lazySingleton<LoginController>(
                     (i) => LoginController(
@@ -96,13 +103,16 @@ class _MyNavBarState extends State<MyNavBar> {
                       PageMiddleware(),
                     ],
                     name: '/Page',
-                    page: (context, isReady, loader) => RegisterPage(
-                      controller: context.get(),
-                    ),
+                    page: (context, isReady, loader) => switch (isReady) {
+                      true => RegisterPage(
+                          controller: context.get(),
+                        ),
+                      false => loader ?? const WidgetLoadDependencies(),
+                    },
                     bindings: [
-                      Bind.lazySingleton<RegisterController>(
+                      /*   Bind.lazySingleton<RegisterController>(
                         (i) => RegisterController(),
-                      ),
+                      ), */
                     ],
                   ),
                   FlutterGetItModuleRouter(
@@ -119,8 +129,10 @@ class _MyNavBarState extends State<MyNavBar> {
                     pages: [
                       FlutterGetItPageRouter(
                         name: '/Page',
-                        page: (context, isReady, loader) =>
-                            const ActiveAccountPage(),
+                        page: (context, isReady, loader) => switch (isReady) {
+                          true => const ActiveAccountPage(),
+                          false => loader ?? const WidgetLoadDependencies(),
+                        },
                         bindings: [],
                       ),
                     ],
