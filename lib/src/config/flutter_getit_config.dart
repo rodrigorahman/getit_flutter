@@ -68,9 +68,9 @@ class _FlutterGetItState extends State<FlutterGetIt>
   @override
   void initState() {
     _registerAndLoadDependencies();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       //_loadMiddlewares();
-      _callAllReady();
+      await _callAllReady();
     });
     super.initState();
   }
@@ -244,7 +244,9 @@ class _FlutterGetItState extends State<FlutterGetIt>
   final _completer = Completer<void>();
 
   Future<void> _callAllReady() async {
-    await Injector.allReady();
+    FGetItLogger.logWaitingAsyncByModule(widget.contextType.key);
+    await GetIt.I.allReady();
+    FGetItLogger.logWaitingAsyncByModuleCompleted(widget.contextType.key);
     setState(() {
       _completer.complete();
     });

@@ -26,7 +26,7 @@ final class FlutterGetItContainerRegister {
   }) {
     switch (_contains(id)) {
       case true:
-        final position = _references.indexWhere((element) => element.id == id);
+        /* final position = _references.indexWhere((element) => element.id == id);
         _references[position] = _references[position].copyWith(
           bindings: bindings
                   .where(
@@ -36,7 +36,8 @@ final class FlutterGetItContainerRegister {
                   .toList() +
               _references[position].bindings,
           listeners: _references[position].listeners + 1,
-        );
+        ); */
+        break;
       case false:
         _references.add(
           RegisterModel(
@@ -45,6 +46,7 @@ final class FlutterGetItContainerRegister {
             middlewares: middleware,
           ),
         );
+        break;
     }
   }
 
@@ -76,7 +78,10 @@ final class FlutterGetItContainerRegister {
     final index = _references.indexWhere((element) => element.id == id);
     if (index != -1) {
       for (var bind in _references[index].bindings) {
-        bind.unload(bind.tag);
+        if (bind.loaded) {
+          final indexBind = _references[index].bindings.indexOf(bind);
+          _references[index].bindings[indexBind] = bind.unRegister();
+        }
       }
 
       if (!_references[index].bindings.any(
@@ -89,7 +94,10 @@ final class FlutterGetItContainerRegister {
     final index = _references.indexWhere((element) => element.id == id);
     if (index != -1) {
       for (var bind in _references[index].bindings) {
-        bind.load(bind.tag);
+        if (!bind.loaded) {
+          final indexBind = _references[index].bindings.indexOf(bind);
+          _references[index].bindings[indexBind] = bind.register();
+        }
       }
     }
   }
