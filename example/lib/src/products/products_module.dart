@@ -1,4 +1,3 @@
-import 'package:example/src/loader/load_dependencies.dart';
 import 'package:example/src/products/product_controller.dart';
 import 'package:example/src/products/products_detail.dart';
 import 'package:example/src/products/products_page.dart';
@@ -15,12 +14,9 @@ class ProductsModule extends FlutterGetItModule {
   List<FlutterGetItPageRouter> get pages => [
         FlutterGetItPageRouter(
           name: '/Page',
-          page: (context, isReady, loader) => switch (isReady) {
-            true => ProductsPage(
-                ctrl: context.get(),
-              ),
-            false => loader ?? const WidgetLoadDependencies(),
-          },
+          page: (context) => ProductsPage(
+            ctrl: context.get(),
+          ),
           bindings: [
             Bind.lazySingleton(
               (i) => ProductController(),
@@ -29,10 +25,7 @@ class ProductsModule extends FlutterGetItModule {
           pages: [
             FlutterGetItPageRouter(
               name: '/Detail',
-              page: (context, isReady, loader) => switch (isReady) {
-                true => const ProductsDetail(),
-                false => loader ?? const WidgetLoadDependencies(),
-              },
+              page: (context) => const ProductsDetail(),
               bindings: [],
             ),
           ],

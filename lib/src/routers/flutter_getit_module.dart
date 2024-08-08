@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
+import '../dependency_injector/flutter_get_it_check_dependency.dart';
 import '../middleware/flutter_get_it_middleware.dart';
+import '../widget/flutter_getit_simple_loader.dart';
 
 abstract class FlutterGetItModule {
   List<Bind> get bindings => [];
@@ -95,6 +97,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
       FGetItLogger.logEnterOnModule(moduleName);
       initExecution.add(() => widget.module.onInit(Injector()));
     }
+    final applicationBindings = containerRegister.bindings('APPLICATION');
     middlewareExecution.addAll(containerRegister.middlewares('APPLICATION'));
     //Module Binds
     containerRegister
@@ -104,7 +107,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
         middleware: middlewaresModule,
       )
       ..load(moduleName)
-      ..middlewares(moduleRouteName).forEach(middlewareExecution.add);
+      ..middlewares(moduleName).forEach(middlewareExecution.add);
 
     if (widget.moduleRouter.isNotEmpty) {
       for (var moduleRouter in widget.moduleRouter) {
@@ -146,6 +149,12 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
       )
       ..load(id);
 
+    FlutterGetItCheckDependency.checkOnDependencies(bindings: [
+      ...applicationBindings,
+      ...page.bindings,
+      ...bindingsModule
+    ]);
+
     middlewareExecution.addAll(page.middlewares);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final modularRoute = ModalRoute.of(context);
@@ -172,17 +181,31 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
   final _completer = Completer<void>();
 
   Future<void> _callAllReady() async {
+    final loader = GetIt.I.get<Widget>(instanceName: 'LoaderDefault');
+
+    setState(() {
+      onExecute = loader;
+    });
     FGetItLogger.logWaitingAsyncByModule(id);
     await GetIt.I.allReady();
+    setState(() {
+      onExecute = null;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.page.page(
-      context,
-      _completer.isCompleted,
-      onExecute,
-    );
+    return FutureBuilder(
+        future: _completer.future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return widget.page.page(
+              context,
+            );
+          } else {
+            return onExecute ?? const FlutterGetitSimpleLoader();
+          }
+        });
   }
 
   @override

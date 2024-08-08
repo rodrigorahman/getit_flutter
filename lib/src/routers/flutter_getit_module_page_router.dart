@@ -5,8 +5,6 @@ import '../middleware/flutter_get_it_middleware.dart';
 
 typedef WidgetBuilderWithDependencies = Widget Function(
   BuildContext context,
-  bool isReady,
-  Widget? loader,
 );
 
 class FlutterGetItPageRouter {
@@ -52,7 +50,7 @@ class FlutterGetItModuleRouter extends FlutterGetItPageRouter {
     this.onDispose,
     this.onInit,
   }) : super(
-          page: (context, isReady, loader) => const SizedBox.shrink(),
+          page: (context) => const SizedBox.shrink(),
         );
 
   @override

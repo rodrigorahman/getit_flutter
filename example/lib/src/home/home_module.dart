@@ -1,5 +1,4 @@
 import 'package:example/src/home/home_page.dart';
-import 'package:example/src/loader/load_dependencies.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
 class HomeModule extends FlutterGetItModule {
@@ -12,10 +11,7 @@ class HomeModule extends FlutterGetItModule {
   List<FlutterGetItPageRouter> get pages => [
         FlutterGetItPageRouter(
           name: '/Page',
-          page: (context, isReady, loader) => switch (isReady) {
-            true => HomePage(),
-            false => loader ?? const WidgetLoadDependencies(),
-          },
+          page: (context) => HomePage(),
           bindings: [],
         ),
       ];

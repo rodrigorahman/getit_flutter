@@ -4,7 +4,6 @@ import 'package:example/application/middleware/auth_middleware.dart';
 import 'package:example/src/landing/initialize_controller.dart';
 import 'package:example/src/landing/initialize_page.dart';
 import 'package:example/src/landing/presentation_page.dart';
-import 'package:example/src/loader/load_dependencies.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
 class LandingModule extends FlutterGetItModule {
@@ -18,10 +17,7 @@ class LandingModule extends FlutterGetItModule {
   List<FlutterGetItPageRouter> get pages => [
         FlutterGetItPageRouter(
           name: '/Initialize',
-          page: (context, isReady, loader) => switch (isReady) {
-            true => const InitializePage(),
-            false => loader ?? const WidgetLoadDependencies(),
-          },
+          page: (context) => const InitializePage(),
           bindings: [
             Bind.lazySingleton<InitializeController>(
               (i) => InitializeController(),
@@ -30,10 +26,7 @@ class LandingModule extends FlutterGetItModule {
         ),
         FlutterGetItPageRouter(
           name: '/Presentation',
-          page: (context, isReady, loader) => switch (isReady) {
-            true => const PresentationPage(),
-            false => loader ?? const WidgetLoadDependencies(),
-          },
+          page: (context) => const PresentationPage(),
           middlewares: [
             AuthMiddleware(),
           ],

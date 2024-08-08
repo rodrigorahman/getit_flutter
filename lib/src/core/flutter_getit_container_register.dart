@@ -17,6 +17,16 @@ final class FlutterGetItContainerRegister {
           ?.middlewares ??
       [];
 
+  List<Bind<Object>> bindings(String id) =>
+      _references
+          .cast<RegisterModel?>()
+          .firstWhere(
+            (element) => element?.id == id,
+            orElse: () => null,
+          )
+          ?.bindings ??
+      [];
+
   bool _contains(String id) => _references.any((element) => element.id == id);
 
   void register(
@@ -26,17 +36,6 @@ final class FlutterGetItContainerRegister {
   }) {
     switch (_contains(id)) {
       case true:
-        /* final position = _references.indexWhere((element) => element.id == id);
-        _references[position] = _references[position].copyWith(
-          bindings: bindings
-                  .where(
-                    (element) =>
-                        !_references[position].bindings.contains(element),
-                  )
-                  .toList() +
-              _references[position].bindings,
-          listeners: _references[position].listeners + 1,
-        ); */
         break;
       case false:
         _references.add(

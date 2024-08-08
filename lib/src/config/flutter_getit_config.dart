@@ -5,8 +5,10 @@ import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
 import '../debug/extension/flutter_get_it_extension.dart';
+import '../dependency_injector/flutter_get_it_check_dependency.dart';
 import '../middleware/flutter_get_it_middleware.dart';
 import '../types/flutter_getit_typedefs.dart';
+import '../widget/flutter_getit_simple_loader.dart';
 
 enum FlutterGetItContextType {
   main('APPLICATION'),
@@ -22,6 +24,7 @@ class FlutterGetIt extends StatefulWidget {
     super.key,
     required this.builder,
     ApplicationBindings? bindings,
+    Widget? loader,
     List<FlutterGetItMiddleware>? middlewares,
     this.modules,
     this.pages,
@@ -29,6 +32,7 @@ class FlutterGetIt extends StatefulWidget {
   })  : contextType = FlutterGetItContextType.main,
         appBindings = bindings,
         appMiddlewares = middlewares,
+        loaderDefault = loader ?? const FlutterGetitSimpleLoader(),
         appContextName = null;
 
   const FlutterGetIt.navigator({
@@ -37,17 +41,20 @@ class FlutterGetIt extends StatefulWidget {
     NavigatorBindings? bindings,
     List<FlutterGetItMiddleware>? middlewares,
     String? navigatorName,
+    Widget? loader,
     this.modules,
     this.pages,
     this.loggerConfig,
   })  : contextType = FlutterGetItContextType.navigator,
         appBindings = bindings,
         appMiddlewares = middlewares,
+        loaderDefault = loader ?? const FlutterGetitSimpleLoader(),
         appContextName = navigatorName;
 
   final ApplicationBuilder builder;
   final FlutterGetItBindings? appBindings;
   final List<FlutterGetItMiddleware>? appMiddlewares;
+  final Widget? loaderDefault;
   final String? appContextName;
   final FGetItLoggerConfig? loggerConfig;
 
@@ -68,6 +75,7 @@ class _FlutterGetItState extends State<FlutterGetIt>
   @override
   void initState() {
     _registerAndLoadDependencies();
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       //_loadMiddlewares();
       await _callAllReady();
@@ -83,7 +91,14 @@ class _FlutterGetItState extends State<FlutterGetIt>
       :appMiddlewares,
       :appContextName,
       :loggerConfig,
+      :loaderDefault,
     ) = widget;
+
+    if (appBindings?.bindings() != null) {
+      FlutterGetItCheckDependency.checkOnDependencies(
+          bindings: [...appBindings!.bindings()]);
+    }
+
     switch (contextType) {
       case FlutterGetItContextType.main:
         if (getIt.isRegistered<FlutterGetItContainerRegister>()) {
@@ -98,7 +113,10 @@ class _FlutterGetItState extends State<FlutterGetIt>
         getIt
           ..registerSingleton(FlutterGetItExtension(register: register))
           ..registerSingleton(logRules)
-          ..registerSingleton(FGetItLogger(logRules));
+          ..registerSingleton(FGetItLogger(logRules))
+          ..registerSingleton<Widget>(loaderDefault!,
+              instanceName: 'LoaderDefault');
+
         FGetItLogger.logCreatingContext(contextType.key);
         register
           ..register(
@@ -256,11 +274,18 @@ class _FlutterGetItState extends State<FlutterGetIt>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return widget.builder(
-      context,
-      _routes(),
-      _completer.isCompleted,
-    );
+    return FutureBuilder(
+        future: _completer.future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return widget.builder(
+              context,
+              _routes(),
+            );
+          } else {
+            return MaterialApp(home: widget.loaderDefault);
+          }
+        });
   }
 
   @override
