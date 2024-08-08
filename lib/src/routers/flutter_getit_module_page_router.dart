@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../flutter_getit.dart';
 import '../middleware/flutter_get_it_middleware.dart';
 
-typedef WidgetBuilderWithDependencies = Widget Function(
+typedef WidgetBuilderAsync = Widget Function(
   BuildContext context,
   bool isReady,
   Widget? loader,
@@ -11,28 +11,32 @@ typedef WidgetBuilderWithDependencies = Widget Function(
 
 class FlutterGetItPageRouter {
   final String name;
-  final WidgetBuilderWithDependencies page;
+  final WidgetBuilder? builder;
+  final WidgetBuilderAsync? builderAsync;
   final List<Bind> bindings;
   final List<FlutterGetItPageRouter> pages;
   final List<FlutterGetItMiddleware> middlewares;
 
   FlutterGetItPageRouter({
     required this.name,
-    required this.page,
+    this.builder,
+    this.builderAsync,
     this.bindings = const [],
     this.pages = const [],
     this.middlewares = const [],
   });
 
-  FlutterGetItPageRouter copyWith(
-      {String? name,
-      WidgetBuilderWithDependencies? page,
-      List<Bind>? bindings,
-      List<FlutterGetItPageRouter>? pages,
-      List<FlutterGetItMiddleware>? middlewares}) {
+  FlutterGetItPageRouter copyWith({
+    String? name,
+    WidgetBuilder? builder,
+    WidgetBuilderAsync? builderAsync,
+    List<Bind>? bindings,
+    List<FlutterGetItPageRouter>? pages,
+    List<FlutterGetItMiddleware>? middlewares,
+  }) {
     return FlutterGetItPageRouter(
       name: name ?? this.name,
-      page: page ?? this.page,
+      builder: builder ?? this.builder,
       bindings: bindings ?? this.bindings,
       pages: pages ?? this.pages,
       middlewares: middlewares ?? this.middlewares,
@@ -52,13 +56,15 @@ class FlutterGetItModuleRouter extends FlutterGetItPageRouter {
     this.onDispose,
     this.onInit,
   }) : super(
-          page: (context, isReady, loader) => const SizedBox.shrink(),
+          builder: (context) => const SizedBox.shrink(),
+          builderAsync: (context, isReady, loader) => const SizedBox.shrink(),
         );
 
   @override
   FlutterGetItModuleRouter copyWith({
     String? name,
-    WidgetBuilderWithDependencies? page,
+    WidgetBuilder? builder,
+    WidgetBuilderAsync? builderAsync,
     List<Bind>? bindings,
     List<FlutterGetItMiddleware>? middlewares,
     List<FlutterGetItPageRouter>? pages,

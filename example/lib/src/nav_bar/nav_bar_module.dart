@@ -13,7 +13,7 @@ class NavBarModule extends FlutterGetItModule {
   List<FlutterGetItPageRouter> get pages => [
         FlutterGetItPageRouter(
           name: '/Root',
-          page: (context, isReady, loader) => switch (isReady) {
+          builderAsync: (context, isReady, loader) => switch (isReady) {
             true => const MyNavBar(),
             false => loader ?? const WidgetLoadDependencies(),
           },

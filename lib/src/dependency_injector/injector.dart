@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
+import '../helper/flutter_get_it_helper.dart';
 import 'flutter_get_it_binding_opened.dart';
 
 /// Classe responsável pelo encapsulamento da busca das instancias do GetIt
@@ -18,14 +19,35 @@ class Injector {
     return GetIt.I.isRegistered<T>(instanceName: tag);
   }
 
+  static dynamic getParameters<T extends Object>() {
+    return FlutterGetItBindingOpened.getParameters(
+      T.hashCode,
+    );
+  }
+
   static bool any<T extends Object>() {
     return GetIt.I.getAll<T>().isNotEmpty;
   }
 
   /// Get para recupera a instancia do GetIt
-  static T get<T extends Object>({String? tag, String? factoryTag}) {
+  static T get<T extends Object>({
+    String? tag,
+    String? factoryTag,
+    dynamic parameters,
+  }) {
     try {
       final getIt = GetIt.I;
+      FlutterGetItHelper.throwIfNot(
+        getIt.isRegistered<T>(),
+        FlutterError(
+          'The type $T is not registered in the GetIt injector, please check if it is registered in the module or in the main injector',
+        ),
+      );
+      FlutterGetItBindingOpened.registerHashCodeOpened(
+        T.hashCode,
+        params: parameters,
+      );
+
       if (factoryTag != null) {
         final factoryAlreadyRegistered =
             FlutterGetItBindingOpened.containsFactoryOpenedByTag<T>(factoryTag);
@@ -36,7 +58,7 @@ class Injector {
       final obj = getIt.get<T>(instanceName: tag);
       final containsFactoryDad =
           FlutterGetItBindingOpened.containsFactoryDad<T>();
-      final containsHash = FlutterGetItBindingOpened.contains(obj.hashCode);
+      final containsHash = FlutterGetItBindingOpened.contains(T.hashCode);
       if (!(T == FlutterGetItContainerRegister) && !containsHash) {
         FGetItLogger.logGettingInstance<T>(
           tag: tag,
@@ -51,7 +73,7 @@ class Injector {
       if (hasMixin<FlutterGetItMixin>(obj) && !containsHash) {
         (obj as dynamic).onInit();
       }
-      FlutterGetItBindingOpened.registerHashCodeOpened(obj.hashCode);
+
       return obj;
     } on AssertionError catch (e) {
       FGetItLogger.logErrorInGetInstance<T>(

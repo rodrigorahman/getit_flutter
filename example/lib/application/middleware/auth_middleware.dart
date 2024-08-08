@@ -5,7 +5,7 @@ class AuthMiddleware extends FlutterGetItAsyncMiddleware {
   @override
   Future<MiddlewareResult> execute(RouteSettings? route) async {
     await Future.delayed(const Duration(seconds: 1));
-    return route?.name == '/Landing/Presentation'
+    return route?.name == '/Landing/Presentation7AAA'
         ? MiddlewareResult.failure
         : MiddlewareResult.next;
   }

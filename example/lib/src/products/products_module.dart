@@ -15,7 +15,7 @@ class ProductsModule extends FlutterGetItModule {
   List<FlutterGetItPageRouter> get pages => [
         FlutterGetItPageRouter(
           name: '/Page',
-          page: (context, isReady, loader) => switch (isReady) {
+          builderAsync: (context, isReady, loader) => switch (isReady) {
             true => ProductsPage(
                 ctrl: context.get(),
               ),
@@ -29,7 +29,7 @@ class ProductsModule extends FlutterGetItModule {
           pages: [
             FlutterGetItPageRouter(
               name: '/Detail',
-              page: (context, isReady, loader) => switch (isReady) {
+              builderAsync: (context, isReady, loader) => switch (isReady) {
                 true => const ProductsDetail(),
                 false => loader ?? const WidgetLoadDependencies(),
               },

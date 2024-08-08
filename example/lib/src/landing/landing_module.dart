@@ -18,7 +18,7 @@ class LandingModule extends FlutterGetItModule {
   List<FlutterGetItPageRouter> get pages => [
         FlutterGetItPageRouter(
           name: '/Initialize',
-          page: (context, isReady, loader) => switch (isReady) {
+          builderAsync: (context, isReady, loader) => switch (isReady) {
             true => const InitializePage(),
             false => loader ?? const WidgetLoadDependencies(),
           },
@@ -30,7 +30,7 @@ class LandingModule extends FlutterGetItModule {
         ),
         FlutterGetItPageRouter(
           name: '/Presentation',
-          page: (context, isReady, loader) => switch (isReady) {
+          builderAsync: (context, isReady, loader) => switch (isReady) {
             true => const PresentationPage(),
             false => loader ?? const WidgetLoadDependencies(),
           },
