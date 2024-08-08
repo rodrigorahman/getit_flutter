@@ -12,6 +12,7 @@ import 'package:example/src/auth/view/register/register_page.dart';
 import 'package:example/src/detail/detail_module.dart';
 import 'package:example/src/home/home_module.dart';
 import 'package:example/src/loader/load_dependencies.dart';
+import 'package:example/src/param_example/param_example_module.dart';
 import 'package:example/src/random/random_controller.dart';
 import 'package:example/src/random/random_page.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,7 @@ class _MyNavBarState extends State<MyNavBar> {
             pages: [
               FlutterGetItPageRouter(
                 name: '/Page',
-                page: (context, isReady, loader) => switch (isReady) {
+                builderAsync: (context, isReady, loader) => switch (isReady) {
                   true => const RandomPage(),
                   false => loader ?? const WidgetLoadDependencies(),
                 },
@@ -69,7 +70,7 @@ class _MyNavBarState extends State<MyNavBar> {
             pages: [
               FlutterGetItPageRouter(
                 name: '/Login',
-                page: (context, isReady, loader) => switch (isReady) {
+                builderAsync: (context, isReady, loader) => switch (isReady) {
                   true => LoginPage(
                       controller: context.get(),
                     ),
@@ -103,7 +104,8 @@ class _MyNavBarState extends State<MyNavBar> {
                       PageMiddleware(),
                     ],
                     name: '/Page',
-                    page: (context, isReady, loader) => switch (isReady) {
+                    builderAsync: (context, isReady, loader) =>
+                        switch (isReady) {
                       true => RegisterPage(
                           controller: context.get(),
                         ),
@@ -129,7 +131,8 @@ class _MyNavBarState extends State<MyNavBar> {
                     pages: [
                       FlutterGetItPageRouter(
                         name: '/Page',
-                        page: (context, isReady, loader) => switch (isReady) {
+                        builderAsync: (context, isReady, loader) =>
+                            switch (isReady) {
                           true => const ActiveAccountPage(),
                           false => loader ?? const WidgetLoadDependencies(),
                         },
@@ -145,6 +148,7 @@ class _MyNavBarState extends State<MyNavBar> {
         modules: [
           HomeModule(),
           DetailModule(),
+          ParamExampleModule(),
           /* AuthModule(),
           ProductsModule(), */
         ],

@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
           pages: [
             FlutterGetItPageRouter(
               name: '/',
-              page: (context, isReady, loader) => switch (isReady) {
+              builderAsync: (context, isReady, loader) => switch (isReady) {
                 true => const RouteOutletMyNavBar(),
                 false => loader ?? const WidgetLoadDependencies(),
               },
@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
           pages: [
             FlutterGetItPageRouter(
               name: '/Login',
-              page: (context, isReady, loader) => switch (isReady) {
+              builderAsync: (context, isReady, loader) => switch (isReady) {
                 true => LoginPage(
                     controller: context.get(),
                   ),
@@ -87,7 +87,7 @@ class MyApp extends StatelessWidget {
               pages: [
                 FlutterGetItPageRouter(
                   name: '/Page',
-                  page: (context, isReady, loader) => switch (isReady) {
+                  builderAsync: (context, isReady, loader) => switch (isReady) {
                     true => RegisterPage(
                         controller: context.get(),
                       ),
@@ -113,7 +113,8 @@ class MyApp extends StatelessWidget {
                   pages: [
                     FlutterGetItPageRouter(
                       name: '/Page',
-                      page: (context, isReady, loader) => switch (isReady) {
+                      builderAsync: (context, isReady, loader) =>
+                          switch (isReady) {
                         true => const ActiveAccountPage(),
                         false => loader ?? const WidgetLoadDependencies(),
                       },

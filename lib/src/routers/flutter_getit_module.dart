@@ -178,11 +178,15 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.page.page(
-      context,
-      _completer.isCompleted,
-      onExecute,
-    );
+    return switch (widget.page.builder) {
+      null => switch (widget.page.builderAsync) {
+          null =>
+            throw FlutterError('builder or builderAsync must be provided'),
+          _ => widget.page.builderAsync!(
+              context, _completer.isCompleted, onExecute),
+        },
+      _ => widget.page.builder!(context),
+    };
   }
 
   @override

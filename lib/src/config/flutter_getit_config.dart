@@ -94,7 +94,7 @@ class _FlutterGetItState extends State<FlutterGetIt>
           FlutterGetItContainerRegister(),
         );
         final logRules = loggerConfig ?? FGetItLoggerConfig();
-
+        //! CHECK HERE Bindings //TODO
         getIt
           ..registerSingleton(FlutterGetItExtension(register: register))
           ..registerSingleton(logRules)
@@ -120,6 +120,7 @@ class _FlutterGetItState extends State<FlutterGetIt>
           throw Exception(
               'You can only have one instance of ${appContextName ?? contextType.key}.\nCheck if you are using the FlutterGetIt.navigator in the multiple locations, try pass a "name" to create a different context.');
         }
+        //! CHECK HERE Bindings //TODO
         register
           ..register(
               appContextName ?? contextType.key, appBindings?.bindings() ?? [],
@@ -138,7 +139,7 @@ class _FlutterGetItState extends State<FlutterGetIt>
       for (var module in modules) {
         for (var page in module.pages) {
           routesMap.addAll(
-            recursivePage(
+            _recursivePage(
               module: module,
               page: page,
               lastModuleName: module.moduleRouteName,
@@ -162,7 +163,7 @@ class _FlutterGetItState extends State<FlutterGetIt>
           pages: page.pages,
         );
         routesMap.addAll(
-          recursivePage(
+          _recursivePage(
             module: module,
             page: page,
             lastModuleName: '/',
@@ -183,7 +184,7 @@ class _FlutterGetItState extends State<FlutterGetIt>
     return routesMap;
   }
 
-  Map<String, WidgetBuilder> recursivePage({
+  Map<String, WidgetBuilder> _recursivePage({
     String lastModuleName = '',
     required FlutterGetItModule module,
     required FlutterGetItPageRouter page,
@@ -210,10 +211,12 @@ class _FlutterGetItState extends State<FlutterGetIt>
 
     final isModuleRouter = page is FlutterGetItModuleRouter;
 
+    //! CHECK HERE Bindings //TODO
+
     if (page.pages.isNotEmpty) {
       for (final pageInternal in page.pages) {
         routesMap.addAll(
-          recursivePage(
+          _recursivePage(
             lastModuleName: finalRoute,
             module: module,
             page: pageInternal,

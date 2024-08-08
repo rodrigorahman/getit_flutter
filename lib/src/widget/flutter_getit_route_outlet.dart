@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
 
-typedef FlutterGetItRouteOutletTransictionBuilder = Widget Function(
+typedef FlutterGetItRouteOutletTransitionBuilder = Widget Function(
     BuildContext context,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
@@ -13,7 +13,7 @@ class FlutterGetItRouteOutlet extends StatelessWidget {
   final GlobalKey<NavigatorState> navKey;
   final Widget routeNotFound;
   final FlutterGetItContextType contextType;
-  final FlutterGetItRouteOutletTransictionBuilder? transitionsBuilder;
+  final FlutterGetItRouteOutletTransitionBuilder? transitionsBuilder;
 
   const FlutterGetItRouteOutlet({
     super.key,
@@ -31,7 +31,8 @@ class FlutterGetItRouteOutlet extends StatelessWidget {
       initialRoute: initialRoute,
       onGenerateRoute: (settings) {
         final pages = context.get<Map<String, WidgetBuilder>>(
-            tag: 'RoutesMap_${contextType.key}');
+          tag: 'RoutesMap_${contextType.key}',
+        );
         final widget = pages[settings.name];
         if (widget != null) {
           PageRouteBuilder builder = PageRouteBuilder(
