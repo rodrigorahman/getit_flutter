@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
 import '../debug/extension/flutter_get_it_extension.dart';
+import '../dependency_injector/flutter_get_it_check_dependency.dart';
 import '../middleware/flutter_get_it_middleware.dart';
 import '../types/flutter_getit_typedefs.dart';
 
@@ -65,6 +66,7 @@ class FlutterGetIt extends StatefulWidget {
 
 class _FlutterGetItState extends State<FlutterGetIt>
     with AutomaticKeepAliveClientMixin {
+  Set<String> checkBinds = {};
   @override
   void initState() {
     _registerAndLoadDependencies();
@@ -94,7 +96,11 @@ class _FlutterGetItState extends State<FlutterGetIt>
           FlutterGetItContainerRegister(),
         );
         final logRules = loggerConfig ?? FGetItLoggerConfig();
-        //! CHECK HERE Bindings //TODO
+        if (appBindings?.bindings() != null) {
+          checkBinds.addAll(FlutterGetItCheckDependency.checkOnDependencies(
+              alreadyCheck: checkBinds,
+              bindings: appBindings!.bindings().toList()));
+        }
         getIt
           ..registerSingleton(FlutterGetItExtension(register: register))
           ..registerSingleton(logRules)
@@ -120,7 +126,10 @@ class _FlutterGetItState extends State<FlutterGetIt>
           throw Exception(
               'You can only have one instance of ${appContextName ?? contextType.key}.\nCheck if you are using the FlutterGetIt.navigator in the multiple locations, try pass a "name" to create a different context.');
         }
-        //! CHECK HERE Bindings //TODO
+        if (appBindings?.bindings() != null) {
+          checkBinds.addAll(FlutterGetItCheckDependency.checkOnDependencies(
+              alreadyCheck: checkBinds, bindings: appBindings!.bindings()));
+        }
         register
           ..register(
               appContextName ?? contextType.key, appBindings?.bindings() ?? [],
@@ -211,10 +220,13 @@ class _FlutterGetItState extends State<FlutterGetIt>
 
     final isModuleRouter = page is FlutterGetItModuleRouter;
 
-    //! CHECK HERE Bindings //TODO
+    checkBinds.addAll(FlutterGetItCheckDependency.checkOnDependencies(
+        alreadyCheck: checkBinds, bindings: module.bindings));
 
     if (page.pages.isNotEmpty) {
       for (final pageInternal in page.pages) {
+        checkBinds.addAll(FlutterGetItCheckDependency.checkOnDependencies(
+            alreadyCheck: checkBinds, bindings: pageInternal.bindings));
         routesMap.addAll(
           _recursivePage(
             lastModuleName: finalRoute,
