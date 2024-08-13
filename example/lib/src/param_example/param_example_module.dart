@@ -18,13 +18,15 @@ class ParamExampleModule extends FlutterGetItModule {
           name: '/Page',
           bindings: [
             Bind.lazySingleton(
-              (i) => ParamPageController(
-                Injector.getParameters<ParamPageController>(),
-              ),
+              (i) => ParamPageController(),
             ),
           ],
-          builderAsync: (context, isReady, loader) {
+          builder: (context) {
             return const ParamPage();
+            /*  return switch (isReady) {
+              true => const ParamPage(),
+              false => loader ?? const CircularProgressIndicator(),
+            }; */
           },
         ),
       ];

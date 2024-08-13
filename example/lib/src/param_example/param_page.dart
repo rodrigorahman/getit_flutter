@@ -9,15 +9,42 @@ class ParamPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dto = ModalRoute.of(context)?.settings.arguments as ParamPageDto;
-    final controller = Injector.get<ParamPageController>(parameters: dto);
+    final controller = Injector.get<ParamPageController>();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(controller.dto.name),
+        title: ValueListenableBuilder(
+          valueListenable: controller.dtoByInjector,
+          builder: (context, dtoByInjector, child) {
+            return Text(
+              switch (dtoByInjector) {
+                null => 'null',
+                _ => dtoByInjector.name,
+              },
+            );
+          },
+        ),
       ),
+      floatingActionButton: FloatingActionButton(onPressed: () {
+        controller.setDtoByInjector();
+      }),
       body: Center(
-        child: Text(controller.dto.date.toIso8601String()),
+        child: Column(
+          children: [
+            const Text('Dto by injector'),
+            ValueListenableBuilder(
+              valueListenable: controller.dtoByInjector,
+              builder: (context, dtoByInjector, child) {
+                return Text(
+                  switch (dtoByInjector) {
+                    null => 'null',
+                    _ => dtoByInjector.date.toIso8601String()
+                  },
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

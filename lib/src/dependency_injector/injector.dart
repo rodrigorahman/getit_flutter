@@ -19,11 +19,7 @@ class Injector {
     return GetIt.I.isRegistered<T>(instanceName: tag);
   }
 
-  static dynamic getParameters<T extends Object>() {
-    return FlutterGetItBindingOpened.getParameters(
-      T.hashCode,
-    );
-  }
+  static dynamic get arguments => FlutterGetItBindingOpened.argument;
 
   static bool any<T extends Object>() {
     return GetIt.I.getAll<T>().isNotEmpty;
@@ -33,7 +29,6 @@ class Injector {
   static T get<T extends Object>({
     String? tag,
     String? factoryTag,
-    dynamic parameters,
   }) {
     try {
       final getIt = GetIt.I;
@@ -42,10 +37,6 @@ class Injector {
         FlutterError(
           'The type $T is not registered in the GetIt injector, please check if it is registered in the module or in the main injector',
         ),
-      );
-      FlutterGetItBindingOpened.registerHashCodeOpened(
-        T.hashCode,
-        params: parameters,
       );
 
       if (factoryTag != null) {
@@ -81,7 +72,7 @@ class Injector {
         tag: tag,
         factoryTag: factoryTag,
       );
-      throw Exception('${T.toString()} not found in injector}');
+      rethrow;
     }
   }
 

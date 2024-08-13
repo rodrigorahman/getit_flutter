@@ -4,29 +4,22 @@ typedef FactoryRegister = ({Object obj, String? factoryTag});
 
 final class FlutterGetItBindingOpened {
   static final _factory = <Type, List<FactoryRegister>>{};
-
-  static final _hashCodes = <int, dynamic>{};
+  static final _hashCodes = <int>[];
+  static dynamic argument;
   FlutterGetItBindingOpened._();
 
-  static bool contains(int hashCode) => _hashCodes.containsKey(hashCode);
+  static bool contains(int hashCode) => _hashCodes.contains(hashCode);
 
-  static void registerHashCodeOpened(int hashCode, {dynamic params}) {
-    if (!_hashCodes.containsKey(hashCode)) {
+  static void registerHashCodeOpened(int hashCode) {
+    if (!_hashCodes.contains(hashCode)) {
       _hashCodes.addAll(
-        {hashCode: params},
+        [hashCode],
       );
     }
   }
 
-  static dynamic getParameters<T>(int hashCode) {
-    if (_hashCodes.containsKey(hashCode)) {
-      return _hashCodes[hashCode];
-    }
-    return throw 'No parameters found for $T';
-  }
-
   static void unRegisterHashCodeOpened(int hashCode) {
-    if (_hashCodes.containsKey(hashCode)) _hashCodes.remove(hashCode);
+    if (_hashCodes.contains(hashCode)) _hashCodes.remove(hashCode);
   }
 
   static void registerFactoryOpened(Object factory, String? factoryTag) {
