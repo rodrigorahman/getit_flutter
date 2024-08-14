@@ -65,6 +65,7 @@ class Injector {
         (obj as dynamic).onInit();
       }
 
+      FlutterGetItBindingOpened.registerHashCodeOpened(obj.hashCode);
       return obj;
     } on AssertionError catch (e) {
       FGetItLogger.logErrorInGetInstance<T>(
