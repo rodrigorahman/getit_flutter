@@ -33,8 +33,16 @@ final class Bind<T extends Object> {
       this.loaded,
       this.bindAsyncRegister);
 
-  Bind._async(this.bindAsyncRegister, this.type, this.keepAlive, this.tag,
-      this.isTheFactoryDad, this.dependsOn, this.loaded, this.bindRegister);
+  Bind._async(
+    this.bindAsyncRegister,
+    this.type,
+    this.keepAlive,
+    this.tag,
+    this.isTheFactoryDad,
+    this.dependsOn,
+    this.loaded,
+    this.bindRegister,
+  );
 
   String get bindingClassName => T.toString();
 

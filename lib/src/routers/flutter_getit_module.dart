@@ -198,7 +198,10 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
           null =>
             throw FlutterError('builder or builderAsync must be provided'),
           _ => widget.page.builderAsync!(
-              context, _completer.isCompleted, onExecute),
+              context,
+              _completer.isCompleted,
+              onExecute,
+            ),
         },
       _ => widget.page.builder!(context),
     };

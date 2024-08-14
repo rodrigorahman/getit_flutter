@@ -5,6 +5,9 @@ import 'model/binding_register.dart';
 final class FlutterGetItContainerRegister {
   FlutterGetItContainerRegister();
 
+  /// The references that will be used in the [FlutterGetItContainerRegister].
+  /// Normally used to register the references that will be used or are in use throughout the application.
+  ///
   final List<RegisterModel> _references = [];
 
   List<FlutterGetItMiddleware> middlewares(String id) =>
@@ -19,6 +22,10 @@ final class FlutterGetItContainerRegister {
 
   bool _contains(String id) => _references.any((element) => element.id == id);
 
+  /// Register a reference in the [FlutterGetItContainerRegister].
+  /// Normally used to register the references that will be used or are in use throughout the application.
+  /// If the reference is already registered, it will not be registered again.
+  ///
   void register(
     String id,
     List<Bind> bindings, {
@@ -26,17 +33,7 @@ final class FlutterGetItContainerRegister {
   }) {
     switch (_contains(id)) {
       case true:
-        /* final position = _references.indexWhere((element) => element.id == id);
-        _references[position] = _references[position].copyWith(
-          bindings: bindings
-                  .where(
-                    (element) =>
-                        !_references[position].bindings.contains(element),
-                  )
-                  .toList() +
-              _references[position].bindings,
-          listeners: _references[position].listeners + 1,
-        ); */
+        incrementListener(id);
         break;
       case false:
         _references.add(
@@ -50,6 +47,8 @@ final class FlutterGetItContainerRegister {
     }
   }
 
+  /// Increment a listener in the reference.
+  ///
   void incrementListener(String id) {
     final index = _references.indexWhere((element) => element.id == id);
     if (index != -1) {
@@ -57,6 +56,8 @@ final class FlutterGetItContainerRegister {
     }
   }
 
+  /// Decrement a listener in the reference.
+  ///
   void decrementListener(String id) {
     final index = _references.indexWhere((element) => element.id == id);
     if (index != -1) {
@@ -64,6 +65,8 @@ final class FlutterGetItContainerRegister {
     }
   }
 
+  /// Check if the reference is registered.
+  ///
   bool isRegistered(String id) {
     var qntOfModuleId = 0;
     for (var register in _references) {
@@ -74,6 +77,11 @@ final class FlutterGetItContainerRegister {
     return qntOfModuleId > 0;
   }
 
+  /// Unregister a reference in the [FlutterGetItContainerRegister].
+  /// Normally used to unregister the references that will not be used throughout the application.
+  /// If the reference is not registered, it will not be unregistered.
+  /// If the reference has listeners, it will not be unregistered.
+  ///
   void unRegister(String id) {
     final index = _references.indexWhere((element) => element.id == id);
     if (index != -1) {
@@ -90,6 +98,10 @@ final class FlutterGetItContainerRegister {
     }
   }
 
+  /// Load a reference in the [FlutterGetItContainerRegister].
+  /// Normally used to load the references that will be used throughout the application.
+  /// If the reference is not registered, it will not be loaded.
+  ///
   void load(String id) {
     final index = _references.indexWhere((element) => element.id == id);
     if (index != -1) {
@@ -106,6 +118,8 @@ final class FlutterGetItContainerRegister {
     return _references;
   }
 
+  /// Check if the reference has any dependents.
+  ///
   bool anyCoreDependents(String id) {
     var qntOfModuleId = 0;
     for (var register in _references) {

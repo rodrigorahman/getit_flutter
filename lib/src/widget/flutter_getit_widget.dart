@@ -5,17 +5,31 @@ import '../../flutter_getit.dart';
 class FlutterGetItWidget extends StatefulWidget {
   const FlutterGetItWidget({
     super.key,
-    required this.name,
+    this.name = '',
     required this.builder,
     this.binds = const [],
     this.onDispose,
     this.onInit,
   });
 
+  /// The name of the widget
+  ///
   final String name;
+
+  /// The widget builder
+  ///
   final WidgetBuilder builder;
+
+  /// The binds of the widget
+  ///
   final List<Bind> binds;
+
+  /// The onDispose of the widget
+  ///
   final void Function()? onDispose;
+
+  /// The onInit of the widget
+  ///
   final void Function()? onInit;
 
   @override
@@ -34,8 +48,8 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
       :binds,
     ) = widget;
     containerRegister = Injector.get<FlutterGetItContainerRegister>();
-    //Utilizado a hashCode para garantir que o id seja único, podendo ser utilizado em mais de um lugar
-    id = '/WIDGET-$name';
+
+    id = '/WIDGET-${name.isEmpty ? widget.hashCode : name}';
 
     final moduleAlreadyRegistered = containerRegister.isRegistered(id);
 

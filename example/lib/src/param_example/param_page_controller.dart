@@ -11,9 +11,9 @@ class ParamPageController with FlutterGetItMixin {
   void onDispose() {}
 
   @override
-  void onInit() {}
-
-  void setDtoByInjector() {
+  void onInit() {
     dtoByInjector.value = Injector.arguments;
   }
+
+  void setDtoByInjector() {}
 }
