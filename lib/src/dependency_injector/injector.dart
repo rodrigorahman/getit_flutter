@@ -49,7 +49,7 @@ class Injector {
       final obj = getIt.get<T>(instanceName: tag);
       final containsFactoryDad =
           FlutterGetItBindingOpened.containsFactoryDad<T>();
-      final containsHash = FlutterGetItBindingOpened.contains(T.hashCode);
+      final containsHash = FlutterGetItBindingOpened.contains(obj.hashCode);
       if (!(T == FlutterGetItContainerRegister) && !containsHash) {
         FGetItLogger.logGettingInstance<T>(
           tag: tag,

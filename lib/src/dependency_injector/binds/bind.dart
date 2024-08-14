@@ -140,8 +140,6 @@ final class Bind<T extends Object> {
       return this;
     }
 
-    FlutterGetItBindingOpened.unRegisterHashCodeOpened(T.hashCode);
-
     final isFactory =
         type == RegisterType.factory || type == RegisterType.factoryAsync;
 
@@ -158,6 +156,8 @@ final class Bind<T extends Object> {
         if (hasMixin<FlutterGetItMixin>(entity)) {
           (entity as FlutterGetItMixin).onDispose();
         }
+
+        FlutterGetItBindingOpened.unRegisterHashCodeOpened(entity.hashCode);
       },
     );
 
