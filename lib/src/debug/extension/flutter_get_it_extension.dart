@@ -34,9 +34,29 @@ final class FlutterGetItExtension {
         myMap[ref.id]!.add(
           {
             'className': bind.bindingClassName,
-            'type': bind.type.name +
-                (bind.keepAlive ? ' (keepAlive)' : '') +
-                (bind.loaded ? ' (loaded)' : ' (unLoaded)'),
+            'type': bind.type.name,
+            'keepAlive': bind.keepAlive.toString(),
+            'loaded': bind.loaded.toString(),
+            'dependsOn': bind.dependsOn.map((e) => e.toString()).toList(),
+          },
+        );
+      }
+    }
+
+    final allReferencesThaIsKeepAlive = references
+        .where((element) => element.bindings.any((bind) => bind.keepAlive))
+        .toList();
+    myMap['permanent'] = <Map<String, dynamic>>[];
+    for (var ref in allReferencesThaIsKeepAlive) {
+      for (var bind in ref.bindings) {
+        myMap['permanent']!.add(
+          {
+            'className': bind.bindingClassName,
+            'type': bind.type.name,
+            'keepAlive': bind.keepAlive.toString(),
+            'loaded': bind.loaded.toString(),
+            'dependsOn': bind.dependsOn.map((e) => e.toString()).toList(),
+            'by': ref.id,
           },
         );
       }

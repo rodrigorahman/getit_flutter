@@ -33,8 +33,16 @@ final class Bind<T extends Object> {
       this.loaded,
       this.bindAsyncRegister);
 
-  Bind._async(this.bindAsyncRegister, this.type, this.keepAlive, this.tag,
-      this.isTheFactoryDad, this.dependsOn, this.loaded, this.bindRegister);
+  Bind._async(
+    this.bindAsyncRegister,
+    this.type,
+    this.keepAlive,
+    this.tag,
+    this.isTheFactoryDad,
+    this.dependsOn,
+    this.loaded,
+    this.bindRegister,
+  );
 
   String get bindingClassName => T.toString();
 
@@ -140,8 +148,6 @@ final class Bind<T extends Object> {
       return this;
     }
 
-    FlutterGetItBindingOpened.unRegisterHashCodeOpened(T.hashCode);
-
     final isFactory =
         type == RegisterType.factory || type == RegisterType.factoryAsync;
 
@@ -158,6 +164,8 @@ final class Bind<T extends Object> {
         if (hasMixin<FlutterGetItMixin>(entity)) {
           (entity as FlutterGetItMixin).onDispose();
         }
+
+        FlutterGetItBindingOpened.unRegisterHashCodeOpened(entity.hashCode);
       },
     );
 

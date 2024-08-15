@@ -22,42 +22,60 @@ class FlutterGetIt extends StatefulWidget {
   const FlutterGetIt({
     super.key,
     required this.builder,
-    ApplicationBindings? bindings,
-    List<FlutterGetItMiddleware>? middlewares,
+    this.bindings,
+    this.middlewares,
     this.modules,
     this.pages,
     this.loggerConfig,
   })  : contextType = FlutterGetItContextType.main,
-        appBindings = bindings,
-        appMiddlewares = middlewares,
-        appContextName = null;
+        name = null;
 
   const FlutterGetIt.navigator({
     super.key,
     required this.builder,
-    NavigatorBindings? bindings,
-    List<FlutterGetItMiddleware>? middlewares,
-    String? navigatorName,
+    this.bindings,
+    this.middlewares,
+    this.name,
     this.modules,
     this.pages,
     this.loggerConfig,
-  })  : contextType = FlutterGetItContextType.navigator,
-        appBindings = bindings,
-        appMiddlewares = middlewares,
-        appContextName = navigatorName;
+  }) : contextType = FlutterGetItContextType.navigator;
 
+  /// [builder] The builder that will be used to wrap the MaterialApp or CupertinoApp.
+  ///
   final ApplicationBuilder builder;
-  final FlutterGetItBindings? appBindings;
-  final List<FlutterGetItMiddleware>? appMiddlewares;
-  final String? appContextName;
+
+  /// [bindings] The bindings that will be used in the main context.
+  /// Normally used to register the bindings that will be used in the main context throughout the application.
+  ///
+  final FlutterGetItBindings? bindings;
+
+  /// [middlewares] The middlewares that will be used in the main context.
+  /// Normally used to register the middlewares that will be used in the main context throughout the application.
+  ///
+  /// The middlewares are used to intercept the creation of the [FlutterGetItPageRouter] and the [FlutterGetItModuleRouter].
+  /// When you put a middleware in the main context, it will be used in all contexts, be careful with this.
+  /// If you need to use a middleware only in a specific context,you can add the middleware in the [FlutterGetItPageRouter] and the [FlutterGetItModuleRouter].
+  ///
+  final List<FlutterGetItMiddleware>? middlewares;
+
+  /// [name] The name of the context that will be used in the [FlutterGetIt.navigator].
+  ///
+  final String? name;
+
+  /// [loggerConfig] The configuration that will be used in the logger.
+  ///
   final FGetItLoggerConfig? loggerConfig;
 
   /// [modules] Specifies the list of modules in your system.
+  ///
   final List<FlutterGetItModule>? modules;
 
   /// [pages] Define the pages that will serve as named routes based on [FlutterGetItPageRoute].
+  ///
   final List<FlutterGetItModuleRouter>? pages;
 
+  /// [contextType] The type of context that will be used in the [FlutterGetIt].
   final FlutterGetItContextType contextType;
 
   @override
@@ -80,10 +98,10 @@ class _FlutterGetItState extends State<FlutterGetIt>
   void _registerAndLoadDependencies() {
     final getIt = GetIt.I;
     var FlutterGetIt(
-      :appBindings,
+      bindings: appBindings,
       :contextType,
-      :appMiddlewares,
-      :appContextName,
+      middlewares: appMiddlewares,
+      name: appContextName,
       :loggerConfig,
     ) = widget;
     switch (contextType) {

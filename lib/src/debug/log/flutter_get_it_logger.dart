@@ -106,7 +106,7 @@ final class FGetItLogger {
   static logGettingInstance<T>({String? tag, String? factoryTag}) {
     if (_config.enable && _config.gettingInstance) {
       _log(
-        '🎣$_cyanColor Getting: $T ${T.hashCode}${_tagLog(tag)}${_factoryLog(factoryTag)}',
+        '🎣$_cyanColor Getting: $T $T${_tagLog(tag)}${_factoryLog(factoryTag)}',
       );
     }
   }
@@ -191,7 +191,7 @@ final class FGetItLogger {
       {String? tag, String? factoryTag}) {
     if (_config.enable) {
       _log(
-        '🚧$_yellowColor Info:$_whiteColor $T - ${T.hashCode}${_tagLog(tag)}${_factoryLog(factoryTag)} $_yellowColor is$_whiteColor permanent,$_yellowColor and can\'t be disposed.',
+        '🚧$_yellowColor Info:$_whiteColor $T - $T${_tagLog(tag)}${_factoryLog(factoryTag)} $_yellowColor is$_whiteColor permanent,$_yellowColor and can\'t be disposed.',
       );
     }
   }
@@ -199,7 +199,7 @@ final class FGetItLogger {
   static logDisposeInstance<T>(Bind bind) {
     if (_config.enable && _config.registerInstance) {
       _log(
-        '🚮$_yellowColor Dispose: $T (${bind.type.name}) - ${T.hashCode}${_tagLog(bind.tag)}',
+        '🚮$_yellowColor Dispose: $T (${bind.type.name}) - $T${_tagLog(bind.tag)}',
       );
     }
   }

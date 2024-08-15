@@ -19,13 +19,36 @@ class ActiveAccountPage
         title: Text(fGetIt.controller.name),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).popUntil(
-              (route) => route.settings.name == '/Home/Page',
-            );
-          },
-          child: const Text('PopUntil - Home - Page'),
+        child: Column(
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).popUntil(
+                  (route) => route.settings.name == '/Home/Page',
+                );
+              },
+              child: const Text('PopUntil - Home - Page'),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .pushReplacementNamed('/Auth/Register/Page');
+              },
+              child: const Text('PushReplacementNamed - Register - Page'),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/Auth/Register/Page');
+              },
+              child: const Text('PushNamed - Register - Page'),
+            ),
+          ],
         ),
       ),
     );

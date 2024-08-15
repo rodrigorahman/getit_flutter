@@ -33,7 +33,7 @@ class _MyNavBarState extends State<MyNavBar> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FlutterGetIt.navigator(
-        navigatorName: 'NAVbarProducts',
+        name: 'NAVbarProducts',
         bindings: MyNavigatorBindings(),
         pages: [
           FlutterGetItModuleRouter(

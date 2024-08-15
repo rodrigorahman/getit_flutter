@@ -1,5 +1,6 @@
 import 'package:example/src/param_example/param_page.dart';
 import 'package:example/src/param_example/param_page_controller.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
 class ParamExampleModule extends FlutterGetItModule {
@@ -17,14 +18,15 @@ class ParamExampleModule extends FlutterGetItModule {
         FlutterGetItPageRouter(
           name: '/Page',
           bindings: [
-            Bind.lazySingleton(
-              (i) => ParamPageController(
-                Injector.getParameters<ParamPageController>(),
-              ),
+            Bind.singleton(
+              (i) => ParamPageController(),
             ),
           ],
           builderAsync: (context, isReady, loader) {
-            return const ParamPage();
+            return switch (isReady) {
+              true => const ParamPage(),
+              false => loader ?? const CircularProgressIndicator(),
+            };
           },
         ),
       ];

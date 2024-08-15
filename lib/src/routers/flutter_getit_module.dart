@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
+import '../dependency_injector/flutter_get_it_binding_opened.dart';
 import '../middleware/flutter_get_it_middleware.dart';
 
 abstract class FlutterGetItModule {
@@ -75,6 +76,35 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
 
   @override
   void initState() {
+    final config = _registerBindsAndCollectTheOnInitFunctions();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final modularRoute = ModalRoute.of(context);
+      FlutterGetItBindingOpened.argument = modularRoute?.settings.arguments;
+
+      await _callAllReady();
+      final canLoad = await _executeMiddlewares(
+        config.middlewareExecution,
+        route: modularRoute?.settings,
+      );
+      if (canLoad == MiddlewareResult.complete) {
+        for (var initExecute in config.initExecution) {
+          initExecute();
+        }
+        FGetItLogger.logWaitingAsyncByModuleCompleted(id);
+        setState(() {
+          _completer.complete();
+        });
+      }
+    });
+
+    super.initState();
+  }
+
+  ({
+    List<Function> initExecution,
+    List<FlutterGetItMiddleware> middlewareExecution
+  }) _registerBindsAndCollectTheOnInitFunctions() {
     var initExecution = <Function>[];
     final FlutterGetItPageModule(
       module: (FlutterGetItModule(
@@ -147,26 +177,11 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
       ..load(id);
 
     middlewareExecution.addAll(page.middlewares);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final modularRoute = ModalRoute.of(context);
 
-      await _callAllReady();
-      final canLoad = await _executeMiddlewares(
-        middlewareExecution,
-        route: modularRoute?.settings,
-      );
-      if (canLoad == MiddlewareResult.complete) {
-        for (var initExecute in initExecution) {
-          initExecute();
-        }
-        FGetItLogger.logWaitingAsyncByModuleCompleted(id);
-        setState(() {
-          _completer.complete();
-        });
-      }
-    });
-
-    super.initState();
+    return (
+      initExecution: initExecution,
+      middlewareExecution: middlewareExecution
+    );
   }
 
   final _completer = Completer<void>();
@@ -183,7 +198,10 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
           null =>
             throw FlutterError('builder or builderAsync must be provided'),
           _ => widget.page.builderAsync!(
-              context, _completer.isCompleted, onExecute),
+              context,
+              _completer.isCompleted,
+              onExecute,
+            ),
         },
       _ => widget.page.builder!(context),
     };
