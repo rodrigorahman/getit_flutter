@@ -1,85 +1,132 @@
 import '../../flutter_getit.dart';
+import '../middleware/flutter_get_it_middleware.dart';
 import 'model/binding_register.dart';
 
 final class FlutterGetItContainerRegister {
-  FlutterGetItContainerRegister({this.debugMode = false});
+  FlutterGetItContainerRegister();
 
-  final Map<String, ({RegisterModel register, bool loaded})> _references = {};
-  final bool debugMode;
+  /// The references that will be used in the [FlutterGetItContainerRegister].
+  /// Normally used to register the references that will be used or are in use throughout the application.
+  ///
+  final List<RegisterModel> _references = [];
 
-  void register(String id, List<Bind> bindings, {bool withTag = false}) {
-    final normalBinds = bindings.where((bind) => !bind.keepAlive).toList();
-    final keepAliveBinds = bindings.where((bind) => bind.keepAlive).toList();
-    if (!_references.containsKey(id)) {
-      final tag = withTag ? id : null;
-      _references[id] = (
-        register: RegisterModel(bindings: normalBinds, tag: tag),
-        loaded: false
-      );
-    }
-    if (keepAliveBinds.isNotEmpty) {
-      if (_references.containsKey('APPLICATION_PERMANENT')) {
-        final ref = _references.remove('APPLICATION_PERMANENT')!;
-        _references['APPLICATION_PERMANENT'] = (
-          register: RegisterModel(
-            bindings: [...ref.register.bindings, ...keepAliveBinds],
+  List<FlutterGetItMiddleware> middlewares(String id) =>
+      _references
+          .cast<RegisterModel?>()
+          .firstWhere(
+            (element) => element?.id == id,
+            orElse: () => null,
+          )
+          ?.middlewares ??
+      [];
+
+  bool _contains(String id) => _references.any((element) => element.id == id);
+
+  /// Register a reference in the [FlutterGetItContainerRegister].
+  /// Normally used to register the references that will be used or are in use throughout the application.
+  /// If the reference is already registered, it will not be registered again.
+  ///
+  void register(
+    String id,
+    List<Bind> bindings, {
+    List<FlutterGetItMiddleware> middleware = const [],
+  }) {
+    switch (_contains(id)) {
+      case true:
+        incrementListener(id);
+        break;
+      case false:
+        _references.add(
+          RegisterModel(
+            bindings: bindings,
+            id: id,
+            middlewares: middleware,
           ),
-          loaded: false,
         );
-      } else {
-        _references['APPLICATION_PERMANENT'] = (
-          register: RegisterModel(bindings: keepAliveBinds),
-          loaded: false,
-        );
-      }
-      load('APPLICATION_PERMANENT');
+        break;
     }
   }
 
-  void unRegister(String id) {
-    if (_references[id] case (:final register, loaded: final _)) {
-      for (var bind in register.bindings) {
-        bind.unload(register.tag, debugMode);
-      }
-    }
-    _references.remove(id);
-  }
-
-  void load(String id) {
-    final bindingRegister = _references[id];
-    if (bindingRegister != null) {
-      if (bindingRegister
-          case (
-            :final register,
-            loaded: false,
-          )) {
-        var unRegistered = [];
-        for (var bind in register.bindings) {
-          final wasRegistered = bind.load(bind.tag, debugMode);
-          if (!wasRegistered) {
-            unRegistered.add(bind);
-          }
-        }
-        register.bindings.removeWhere((bind) => unRegistered.contains(bind));
-
-        _references[id] = (
-          register: register,
-          loaded: true,
-        );
-      }
-    } else {
-      throw Exception('Register($id) not found');
+  /// Increment a listener in the reference.
+  ///
+  void incrementListener(String id) {
+    final index = _references.indexWhere((element) => element.id == id);
+    if (index != -1) {
+      _references[index].addListener();
     }
   }
 
-  Map<String, ({bool loaded, RegisterModel register})> references() {
-    if (debugMode) {
-      return _references;
+  /// Decrement a listener in the reference.
+  ///
+  void decrementListener(String id) {
+    final index = _references.indexWhere((element) => element.id == id);
+    if (index != -1) {
+      _references[index].removeListener();
     }
-    throw Exception('Debug mode not enabled');
   }
 
+  /// Check if the reference is registered.
+  ///
   bool isRegistered(String id) {
-    return _references.containsKey(id);
+    var qntOfModuleId = 0;
+    for (var register in _references) {
+      if (register.id.contains(id) && register.listeners > 0) {
+        qntOfModuleId++;
+      }
+    }
+    return qntOfModuleId > 0;
+  }
+
+  /// Unregister a reference in the [FlutterGetItContainerRegister].
+  /// Normally used to unregister the references that will not be used throughout the application.
+  /// If the reference is not registered, it will not be unregistered.
+  /// If the reference has listeners, it will not be unregistered.
+  ///
+  void unRegister(String id) {
+    final index = _references.indexWhere((element) => element.id == id);
+    if (index != -1) {
+      for (var bind in _references[index].bindings) {
+        if (bind.loaded) {
+          final indexBind = _references[index].bindings.indexOf(bind);
+          _references[index].bindings[indexBind] = bind.unRegister();
+        }
+      }
+
+      if (!_references[index].bindings.any(
+            (element) => element.loaded,
+          )) _references.removeAt(index);
+    }
+  }
+
+  /// Load a reference in the [FlutterGetItContainerRegister].
+  /// Normally used to load the references that will be used throughout the application.
+  /// If the reference is not registered, it will not be loaded.
+  ///
+  void load(String id) {
+    final index = _references.indexWhere((element) => element.id == id);
+    if (index != -1) {
+      for (var bind in _references[index].bindings) {
+        if (!bind.loaded) {
+          final indexBind = _references[index].bindings.indexOf(bind);
+          _references[index].bindings[indexBind] = bind.register();
+        }
+      }
+    }
+  }
+
+  List<RegisterModel> references() {
+    return _references;
+  }
+
+  /// Check if the reference has any dependents.
+  ///
+  bool anyCoreDependents(String id) {
+    var qntOfModuleId = 0;
+    for (var register in _references) {
+      if (register.id.startsWith(id) && (register.listeners > 0)) {
+        qntOfModuleId++;
+      }
+    }
+    return qntOfModuleId > 0;
   }
 }

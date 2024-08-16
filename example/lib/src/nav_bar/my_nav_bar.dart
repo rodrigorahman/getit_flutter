@@ -1,4 +1,6 @@
 import 'package:example/application/bindings/navigator_bindings.dart';
+import 'package:example/application/middleware/module_middleware.dart';
+import 'package:example/application/middleware/page_middleware.dart';
 import 'package:example/src/auth/repository/auth_repository.dart';
 import 'package:example/src/auth/view/active_account/active_account_controller.dart';
 import 'package:example/src/auth/view/active_account/active_account_page.dart';
@@ -9,6 +11,9 @@ import 'package:example/src/auth/view/register/register_controller.dart';
 import 'package:example/src/auth/view/register/register_page.dart';
 import 'package:example/src/detail/detail_module.dart';
 import 'package:example/src/home/home_module.dart';
+import 'package:example/src/loader/load_dependencies.dart';
+import 'package:example/src/param_example/param_example_module.dart';
+import 'package:example/src/products/products_module.dart';
 import 'package:example/src/random/random_controller.dart';
 import 'package:example/src/random/random_page.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +34,9 @@ class _MyNavBarState extends State<MyNavBar> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FlutterGetIt.navigator(
-        navigatorName: 'NAVbarProducts',
+        name: 'NAVbarProducts',
         bindings: MyNavigatorBindings(),
-        pages: [
+        pagesRouter: [
           FlutterGetItModuleRouter(
             name: '/Random',
             bindings: [
@@ -42,7 +47,10 @@ class _MyNavBarState extends State<MyNavBar> {
             pages: [
               FlutterGetItPageRouter(
                 name: '/Page',
-                page: (context) => const RandomPage(),
+                builderAsync: (context, isReady, loader) => switch (isReady) {
+                  true => const RandomPage(),
+                  false => loader ?? const WidgetLoadDependencies(),
+                },
                 bindings: [
                   Bind.lazySingleton<RandomController>(
                     (i) => RandomController('Random by FlutterGetItPageRouter'),
@@ -63,19 +71,26 @@ class _MyNavBarState extends State<MyNavBar> {
             pages: [
               FlutterGetItPageRouter(
                 name: '/Login',
-                page: (context) => LoginPage(
-                  controller: context.get(),
-                ),
+                builderAsync: (context, isReady, loader) => switch (isReady) {
+                  true => LoginPage(
+                      controller: context.get(),
+                    ),
+                  false => loader ?? const WidgetLoadDependencies(),
+                },
                 bindings: [
                   Bind.lazySingleton<LoginController>(
                     (i) => LoginController(
                       name: 'Login',
                       authRepository: i(),
                     ),
+                    keepAlive: true,
                   ),
                 ],
               ),
               FlutterGetItModuleRouter(
+                middlewares: [
+                  ModuleMiddleware(),
+                ],
                 name: '/Register',
                 bindings: [
                   Bind.lazySingleton<RegisterController>(
@@ -86,14 +101,21 @@ class _MyNavBarState extends State<MyNavBar> {
                 onDispose: (i) => debugPrint('bye by /Register'),
                 pages: [
                   FlutterGetItPageRouter(
+                    middlewares: [
+                      PageMiddleware(),
+                    ],
                     name: '/Page',
-                    page: (context) => RegisterPage(
-                      controller: context.get(),
-                    ),
+                    builderAsync: (context, isReady, loader) =>
+                        switch (isReady) {
+                      true => RegisterPage(
+                          controller: context.get(),
+                        ),
+                      false => loader ?? const WidgetLoadDependencies(),
+                    },
                     bindings: [
-                      Bind.lazySingleton<RegisterController>(
+                      /*   Bind.lazySingleton<RegisterController>(
                         (i) => RegisterController(),
-                      ),
+                      ), */
                     ],
                   ),
                   FlutterGetItModuleRouter(
@@ -110,7 +132,11 @@ class _MyNavBarState extends State<MyNavBar> {
                     pages: [
                       FlutterGetItPageRouter(
                         name: '/Page',
-                        page: (context) => const ActiveAccountPage(),
+                        builderAsync: (context, isReady, loader) =>
+                            switch (isReady) {
+                          true => const ActiveAccountPage(),
+                          false => loader ?? const WidgetLoadDependencies(),
+                        },
                         bindings: [],
                       ),
                     ],
@@ -123,10 +149,11 @@ class _MyNavBarState extends State<MyNavBar> {
         modules: [
           HomeModule(),
           DetailModule(),
-          /* AuthModule(),
-          ProductsModule(), */
+          ParamExampleModule(),
+          /* AuthModule(),*/
+          ProductsModule(), 
         ],
-        builder: (context, routes) => Navigator(
+        builder: (context, routes, isReady) => Navigator(
           key: internalNav,
           initialRoute: '/Home/Page',
           observers: const [],
@@ -149,13 +176,13 @@ class _MyNavBarState extends State<MyNavBar> {
                     ?.pushNamedAndRemoveUntil('/Home/Page', (_) => false);
               case 1:
                 internalNav.currentState
-                    ?.pushNamedAndRemoveUntil('/Products/Page', (_) => false);
+                    ?.pushNamedAndRemoveUntil('/Products/Page/', (_) => false);
               case 2:
                 internalNav.currentState
                     ?.pushNamedAndRemoveUntil('/Home/Page', (_) => false);
               case 3:
                 internalNav.currentState
-                    ?.pushNamedAndRemoveUntil('/Products/Page', (_) => false);
+                    ?.pushNamedAndRemoveUntil('/Products/Page/', (_) => false);
             }
             setState(() {
               _currentIndex = value;

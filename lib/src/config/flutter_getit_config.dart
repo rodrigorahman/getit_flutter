@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
-import '../core/flutter_getit_context.dart';
+import '../debug/extension/flutter_get_it_extension.dart';
+import '../dependency_injector/flutter_get_it_check_dependency.dart';
+import '../middleware/flutter_get_it_middleware.dart';
 import '../types/flutter_getit_typedefs.dart';
 
 enum FlutterGetItContextType {
@@ -18,71 +22,117 @@ class FlutterGetIt extends StatefulWidget {
   const FlutterGetIt({
     super.key,
     required this.builder,
-    ApplicationBindings? bindings,
+    this.bindings,
+    this.middlewares,
     this.modules,
-    this.pages,
-    bool debugMode = false,
+    this.pagesRouter,
+    this.modulesRouter,
+    this.loggerConfig,
   })  : contextType = FlutterGetItContextType.main,
-        appBindings = bindings,
-        appDebugMode = debugMode,
-        appContextName = null;
+        name = null;
 
   const FlutterGetIt.navigator({
     super.key,
     required this.builder,
-    NavigatorBindings? bindings,
-    String? navigatorName,
+    this.bindings,
+    this.middlewares,
+    this.name,
     this.modules,
-    this.pages,
-  })  : contextType = FlutterGetItContextType.navigator,
-        appBindings = bindings,
-        appDebugMode = false,
-        appContextName = navigatorName;
+    this.modulesRouter,
+    this.pagesRouter,
+    this.loggerConfig,
+  }) : contextType = FlutterGetItContextType.navigator;
 
+  /// [builder] The builder that will be used to wrap the MaterialApp or CupertinoApp.
+  ///
   final ApplicationBuilder builder;
-  final FlutterGetItBindings? appBindings;
-  final bool appDebugMode;
-  final String? appContextName;
+
+  /// [bindings] The bindings that will be used in the main context.
+  /// Normally used to register the bindings that will be used in the main context throughout the application.
+  ///
+  final FlutterGetItBindings? bindings;
+
+  /// [middlewares] The middlewares that will be used in the main context.
+  /// Normally used to register the middlewares that will be used in the main context throughout the application.
+  ///
+  /// The middlewares are used to intercept the creation of the [FlutterGetItPageRouter] and the [FlutterGetItModuleRouter].
+  /// When you put a middleware in the main context, it will be used in all contexts, be careful with this.
+  /// If you need to use a middleware only in a specific context,you can add the middleware in the [FlutterGetItPageRouter] and the [FlutterGetItModuleRouter].
+  ///
+  final List<FlutterGetItMiddleware>? middlewares;
+
+  /// [name] The name of the context that will be used in the [FlutterGetIt.navigator].
+  ///
+  final String? name;
+
+  /// [loggerConfig] The configuration that will be used in the logger.
+  ///
+  final FGetItLoggerConfig? loggerConfig;
 
   /// [modules] Specifies the list of modules in your system.
+  ///
   final List<FlutterGetItModule>? modules;
 
   /// [pages] Define the pages that will serve as named routes based on [FlutterGetItPageRoute].
-  final List<FlutterGetItModuleRouter>? pages;
+  ///
+  final List<FlutterGetItPageRouter>? pagesRouter;
+  final List<FlutterGetItModuleRouter>? modulesRouter;
 
+  /// [contextType] The type of context that will be used in the [FlutterGetIt].
   final FlutterGetItContextType contextType;
 
   @override
   State<FlutterGetIt> createState() => _FlutterGetItState();
 }
 
-class _FlutterGetItState extends State<FlutterGetIt> {
+class _FlutterGetItState extends State<FlutterGetIt>
+    with AutomaticKeepAliveClientMixin {
+  Set<String> checkBinds = {};
   @override
   void initState() {
     _registerAndLoadDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      //_loadMiddlewares();
+      await _callAllReady();
+    });
     super.initState();
   }
 
   void _registerAndLoadDependencies() {
     final getIt = GetIt.I;
-    var FlutterGetIt(:appBindings, :contextType, :appContextName) = widget;
+    var FlutterGetIt(
+      bindings: appBindings,
+      :contextType,
+      middlewares: appMiddlewares,
+      name: appContextName,
+      :loggerConfig,
+    ) = widget;
     switch (contextType) {
       case FlutterGetItContextType.main:
         if (getIt.isRegistered<FlutterGetItContainerRegister>()) {
           throw Exception(
               'You can only have one instance of FlutterGetItContainerRegister.\nCheck if you are using the FlutterGetIt in the multiple locations, try FlutterGetIt.navigator and pass a "name" if necessary.');
         }
-
         final register = getIt.registerSingleton(
-          FlutterGetItContainerRegister(debugMode: widget.appDebugMode),
+          FlutterGetItContainerRegister(),
         );
+        final logRules = loggerConfig ?? FGetItLoggerConfig();
+        if (appBindings?.bindings() != null) {
+          checkBinds.addAll(FlutterGetItCheckDependency.checkOnDependencies(
+              alreadyCheck: checkBinds,
+              bindings: appBindings!.bindings().toList()));
+        }
         getIt
-          ..registerSingleton(DebugMode())
-          ..registerLazySingleton(FlutterGetItContext.new);
-        DebugMode.fGetItLog(
-            '$yellowColor💡 - Info:$whiteColor Creating $yellowColor${contextType.key}$whiteColor context.');
+          ..registerSingleton(FlutterGetItExtension(register: register))
+          ..registerSingleton(logRules)
+          ..registerSingleton(FGetItLogger(logRules));
+        FGetItLogger.logCreatingContext(contextType.key);
         register
-          ..register(contextType.key, appBindings?.bindings() ?? [])
+          ..register(
+            contextType.key,
+            appBindings?.bindings() ?? [],
+            middleware: appMiddlewares ?? [],
+          )
           ..load(contextType.key);
 
         break;
@@ -91,16 +141,20 @@ class _FlutterGetItState extends State<FlutterGetIt> {
           throw Exception(
               'Are you trying to use the FlutterGetIt.navigator without the FlutterGetIt in the main context? Please add the FlutterGetIt in the main');
         }
-        DebugMode.fGetItLog(
-            '$yellowColor💡 - Info:$whiteColor Creating $yellowColor${appContextName ?? contextType.key}$whiteColor context.');
+        FGetItLogger.logCreatingContext(appContextName ?? contextType.key);
         final register = Injector.get<FlutterGetItContainerRegister>();
         if (register.isRegistered(contextType.key)) {
           throw Exception(
               'You can only have one instance of ${appContextName ?? contextType.key}.\nCheck if you are using the FlutterGetIt.navigator in the multiple locations, try pass a "name" to create a different context.');
         }
+        if (appBindings?.bindings() != null) {
+          checkBinds.addAll(FlutterGetItCheckDependency.checkOnDependencies(
+              alreadyCheck: checkBinds, bindings: appBindings!.bindings()));
+        }
         register
           ..register(
-              appContextName ?? contextType.key, appBindings?.bindings() ?? [])
+              appContextName ?? contextType.key, appBindings?.bindings() ?? [],
+              middleware: appMiddlewares ?? [])
           ..load(appContextName ?? contextType.key);
         break;
     }
@@ -108,13 +162,15 @@ class _FlutterGetItState extends State<FlutterGetIt> {
 
   Map<String, WidgetBuilder> _routes() {
     final routesMap = <String, WidgetBuilder>{};
-    final FlutterGetIt(:modules, :pages) = widget;
+    final modules = widget.modules;
+    final pages = widget.pagesRouter;
+    final modulesRouter = widget.modulesRouter ?? [];
 
     if (modules != null) {
       for (var module in modules) {
         for (var page in module.pages) {
           routesMap.addAll(
-            recursivePage(
+            _recursivePage(
               module: module,
               page: page,
               lastModuleName: module.moduleRouteName,
@@ -129,20 +185,34 @@ class _FlutterGetItState extends State<FlutterGetIt> {
     }
 
     if (pages != null) {
-      for (var page in pages) {
+      // Adding the pages within the page module to avoid altering the core of modules in fgetit."
+      final pagesModule = pages.map(
+        (page) {
+          assert(page is! FlutterGetItModuleRouter, 'You cannot use the FlutterGetItModuleRouter in the pagesRouter, use the modulesRouter instead.');
+          return FlutterGetItModuleRouter(
+            name: '/',
+            pages: [page],
+          );
+        },
+      );
+      modulesRouter.addAll(pagesModule);
+    }
+
+    if (modulesRouter.isNotEmpty) {
+      for (var moduleRoute in modulesRouter) {
         final module = FlutterGetItModuleInternalForPage(
-          binds: page.bindings,
-          moduleRouteName: page.name,
-          onDispose: page.onDispose ?? (i) {},
-          onInit: page.onInit ?? (i) {},
-          pages: page.pages,
+          binds: moduleRoute.bindings,
+          moduleRouteName: moduleRoute.name,
+          onDispose: moduleRoute.onDispose ?? (i) {},
+          onInit: moduleRoute.onInit ?? (i) {},
+          pages: moduleRoute.pages,
         );
         routesMap.addAll(
-          recursivePage(
+          _recursivePage(
             module: module,
-            page: page,
-            lastModuleName: '/', //module.moduleRouteName,
-            moduleRouter: [page],
+            page: moduleRoute,
+            lastModuleName: '/',
+            moduleRouter: [moduleRoute],
           ),
         );
       }
@@ -159,7 +229,7 @@ class _FlutterGetItState extends State<FlutterGetIt> {
     return routesMap;
   }
 
-  Map<String, WidgetBuilder> recursivePage({
+  Map<String, WidgetBuilder> _recursivePage({
     String lastModuleName = '',
     required FlutterGetItModule module,
     required FlutterGetItPageRouter page,
@@ -167,45 +237,56 @@ class _FlutterGetItState extends State<FlutterGetIt> {
   }) {
     final routesMap = <String, WidgetBuilder>{};
     if (lastModuleName != '/' && lastModuleName.endsWith('/')) {
-      DebugMode.fGetItLog(
-          '🚨 - ${redColor}ERROR:$whiteColor The module $yellowColor($lastModuleName)$whiteColor should not end with /');
+      FGetItLogger.logErrorModuleShouldStartWithSlash(lastModuleName);
       lastModuleName = lastModuleName.replaceFirst(RegExp(r'/$'), '');
     }
 
     if (lastModuleName != '/' && !lastModuleName.startsWith('/')) {
-      DebugMode.fGetItLog(
-          '🚨 - ${redColor}ERROR:$whiteColor The module $yellowColor($lastModuleName)$whiteColor should start with /');
+      FGetItLogger.logErrorModuleShouldStartWithSlash(lastModuleName);
       lastModuleName = '/$lastModuleName';
     }
 
     var pageRouteName = page.name;
     if (!pageRouteName.startsWith(r'/')) {
-      DebugMode.fGetItLog(
-          '🚨 - ${redColor}ERROR:$whiteColor Page $yellowColor($pageRouteName)$whiteColor should starts with /');
+      FGetItLogger.logErrorModuleShouldStartWithSlash(lastModuleName);
       pageRouteName = '/${page.name}';
     }
 
     var finalRoute = '$lastModuleName$pageRouteName';
 
-    final isModuleRouter = page is FlutterGetItModuleRouter;
+    checkBinds.addAll(
+      FlutterGetItCheckDependency.checkOnDependencies(
+        alreadyCheck: checkBinds,
+        bindings: module.bindings,
+      ),
+    );
 
-    if (page.pages.isNotEmpty) {
-      for (final pageInternal in page.pages) {
-        routesMap.addAll(
-          recursivePage(
-            lastModuleName: finalRoute,
-            module: module,
-            page: pageInternal,
-            moduleRouter: switch (pageInternal) {
-              FlutterGetItModuleRouter() => [...moduleRouter, pageInternal],
-              _ => moduleRouter,
-            },
-          ),
-        );
+    if (page is FlutterGetItModuleRouter) {
+      if (page.pages.isNotEmpty) {
+        for (final pageInternal in page.pages) {
+          checkBinds.addAll(
+            FlutterGetItCheckDependency.checkOnDependencies(
+              alreadyCheck: checkBinds,
+              bindings: pageInternal.bindings,
+            ),
+          );
+          routesMap.addAll(
+            _recursivePage(
+              lastModuleName: finalRoute,
+              module: module,
+              page: pageInternal,
+              moduleRouter: switch (pageInternal) {
+                FlutterGetItModuleRouter() => [
+                    ...moduleRouter,
+                    pageInternal,
+                  ],
+                _ => moduleRouter,
+              },
+            ),
+          );
+        }
       }
-    }
-
-    if (!isModuleRouter) {
+    } else {
       routesMap[finalRoute.replaceAll(r'//', r'/')] = (_) {
         return FlutterGetItPageModule(
           module: module,
@@ -214,14 +295,32 @@ class _FlutterGetItState extends State<FlutterGetIt> {
         );
       };
     }
+
     return routesMap;
+  }
+
+  final _completer = Completer<void>();
+
+  Future<void> _callAllReady() async {
+    FGetItLogger.logWaitingAsyncByModule(widget.contextType.key);
+    await GetIt.I.allReady();
+    FGetItLogger.logWaitingAsyncByModuleCompleted(widget.contextType.key);
+    setState(() {
+      _completer.complete();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return widget.builder(
       context,
       _routes(),
+      _completer.isCompleted,
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

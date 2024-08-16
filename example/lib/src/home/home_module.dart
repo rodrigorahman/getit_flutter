@@ -1,4 +1,6 @@
+import 'package:example/src/home/home_controller.dart';
 import 'package:example/src/home/home_page.dart';
+import 'package:example/src/loader/load_dependencies.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
 class HomeModule extends FlutterGetItModule {
@@ -11,8 +13,15 @@ class HomeModule extends FlutterGetItModule {
   List<FlutterGetItPageRouter> get pages => [
         FlutterGetItPageRouter(
           name: '/Page',
-          page: (context) => HomePage(),
-          bindings: [],
+          builderAsync: (context, isReady, loader) => switch (isReady) {
+            true => HomePage(),
+            false => loader ?? const WidgetLoadDependencies(),
+          },
+          bindings: [
+            Bind.lazySingleton(
+              (i) => HomeController(),
+            ),
+          ],
         ),
       ];
 

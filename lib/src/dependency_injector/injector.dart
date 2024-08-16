@@ -1,10 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
-import '../core/flutter_getit_context.dart';
+import '../helper/flutter_get_it_helper.dart';
 import 'flutter_get_it_binding_opened.dart';
 
 /// Classe responsável pelo encapsulamento da busca das instancias do GetIt
@@ -21,14 +19,26 @@ class Injector {
     return GetIt.I.isRegistered<T>(instanceName: tag);
   }
 
+  static dynamic get arguments => FlutterGetItBindingOpened.argument;
+
   static bool any<T extends Object>() {
     return GetIt.I.getAll<T>().isNotEmpty;
   }
 
   /// Get para recupera a instancia do GetIt
-  static T get<T extends Object>({String? tag, String? factoryTag}) {
+  static T get<T extends Object>({
+    String? tag,
+    String? factoryTag,
+  }) {
     try {
       final getIt = GetIt.I;
+      FlutterGetItHelper.throwIfNot(
+        getIt.isRegistered<T>(),
+        FlutterError(
+          'The type $T is not registered in the GetIt injector, please check if it is registered in the module or in the main injector',
+        ),
+      );
+
       if (factoryTag != null) {
         final factoryAlreadyRegistered =
             FlutterGetItBindingOpened.containsFactoryOpenedByTag<T>(factoryTag);
@@ -40,10 +50,11 @@ class Injector {
       final containsFactoryDad =
           FlutterGetItBindingOpened.containsFactoryDad<T>();
       final containsHash = FlutterGetItBindingOpened.contains(obj.hashCode);
-      if (!(T == FlutterGetItContainerRegister || T == FlutterGetItContext) &&
-          !containsHash) {
-        DebugMode.fGetItLog(
-            '🎣$cyanColor Getting: $T - ${obj.hashCode}${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
+      if (!(T == FlutterGetItContainerRegister) && !containsHash) {
+        FGetItLogger.logGettingInstance<T>(
+          tag: tag,
+          factoryTag: factoryTag,
+        );
       }
 
       if (containsFactoryDad) {
@@ -53,41 +64,47 @@ class Injector {
       if (hasMixin<FlutterGetItMixin>(obj) && !containsHash) {
         (obj as dynamic).onInit();
       }
+
       FlutterGetItBindingOpened.registerHashCodeOpened(obj.hashCode);
       return obj;
     } on AssertionError catch (e) {
-      log('⛔️$redColor Error on get: $T\n$yellowColor${e.message.toString()}${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
-
-      throw Exception('${T.toString()} not found in injector}');
+      FGetItLogger.logErrorInGetInstance<T>(
+        e.toString(),
+        tag: tag,
+        factoryTag: factoryTag,
+      );
+      rethrow;
     }
   }
 
   static Future<T> getAsync<T extends Object>(
       {String? tag, String? factoryTag}) async {
     try {
-      DebugMode.fGetItLog(
-          '🎣🥱$yellowColor Getting async: $T${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
+      FGetItLogger.logGettingAsyncInstance<T>(tag: tag, factoryTag: factoryTag);
 
       return await GetIt.I.isReady<T>(instanceName: tag).then((_) {
-        DebugMode.fGetItLog(
-            '🎣😎$greenColor $T${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''} ready');
+        FGetItLogger.logAsyncInstanceReady<T>(
+          tag: tag,
+          factoryTag: factoryTag,
+        );
 
         return get<T>(tag: tag, factoryTag: factoryTag);
       });
     } on AssertionError catch (e) {
-      log('⛔️$redColor Error on get async: $T\n$yellowColor${e.message.toString()}${tag != null ? '$yellowColor with tag:$cyanColor $tag' : ''}');
-
+      FGetItLogger.logErrorInGetAsyncInstance<T>(
+        e.toString(),
+        tag: tag,
+        factoryTag: factoryTag,
+      );
       throw Exception('${T.toString()} not found in injector}');
     }
   }
 
   static Future<void> allReady() async {
-    DebugMode.fGetItLog(
-        '🥱$yellowColor Waiting complete all asynchronously singletons');
+    FGetItLogger.logWaitingAllReady();
 
     await GetIt.I.allReady().then((value) {
-      DebugMode.fGetItLog(
-          '😎$greenColor All asynchronously singletons complete');
+      FGetItLogger.logWaitingAllReadyCompleted();
     });
   }
 

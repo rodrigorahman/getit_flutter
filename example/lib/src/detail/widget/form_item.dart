@@ -9,7 +9,7 @@ class FormItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlutterGetItWidget(
-      name: id,
+      name: id + hashCode.toString(),
       binds: const [],
       onDispose: () {
         Injector.unRegisterFactoryByTag<FormItemController>(id);

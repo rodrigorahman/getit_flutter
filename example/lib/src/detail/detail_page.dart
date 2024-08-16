@@ -1,5 +1,9 @@
+import 'dart:developer';
+
 import 'package:example/src/detail/detail_controller.dart';
+import 'package:example/src/home/home_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_getit/flutter_getit.dart';
 
 import 'widget/form_item.dart';
 
@@ -10,6 +14,8 @@ class DetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final home1 = context.get<HomeController>(tag: 'HomeController2');
+    log('$home1');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home detail'),
@@ -22,7 +28,7 @@ class DetailPage extends StatelessWidget {
             ),
             const Divider(),
             const FormItem(
-              id: '',
+              id: 'FormItem2',
             ),
             const Divider(),
             const FormItem(

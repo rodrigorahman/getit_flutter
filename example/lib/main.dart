@@ -1,4 +1,5 @@
 import 'package:example/application/bindings/application_bindings.dart';
+import 'package:example/application/middleware/print_middleware.dart';
 import 'package:example/src/auth/repository/auth_repository.dart';
 import 'package:example/src/auth/view/active_account/active_account_controller.dart';
 import 'package:example/src/auth/view/active_account/active_account_page.dart';
@@ -8,8 +9,11 @@ import 'package:example/src/auth/view/login/login_page.dart';
 import 'package:example/src/auth/view/register/register_controller.dart';
 import 'package:example/src/auth/view/register/register_page.dart';
 import 'package:example/src/landing/landing_module.dart';
+import 'package:example/src/loader/load_dependencies.dart';
 import 'package:example/src/nav_bar/nav_bar_module.dart';
+import 'package:example/src/products/products_module.dart';
 import 'package:example/src/route_outlet_nav_bar/my_nav_bar.dart';
+import 'package:example/src/splash/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
@@ -24,19 +28,23 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlutterGetIt(
       bindings: MyApplicationBindings(),
-      debugMode: true,
+      middlewares: [
+        PrintMiddleware(),
+      ],
       modules: [
         LandingModule(),
         NavBarModule(),
+        ProductsModule(),
       ],
-      pages: [
+      modulesRouter: [
         FlutterGetItModuleRouter(
           name: '/outlet',
           pages: [
             FlutterGetItPageRouter(
               name: '/',
-              page: (context) {
-                return const RouteOutletMyNavBar();
+              builderAsync: (context, isReady, loader) => switch (isReady) {
+                true => const RouteOutletMyNavBar(),
+                false => loader ?? const WidgetLoadDependencies(),
               },
               bindings: [],
             ),
@@ -54,9 +62,12 @@ class MyApp extends StatelessWidget {
           pages: [
             FlutterGetItPageRouter(
               name: '/Login',
-              page: (context) => LoginPage(
-                controller: context.get(),
-              ),
+              builderAsync: (context, isReady, loader) => switch (isReady) {
+                true => LoginPage(
+                    controller: context.get(),
+                  ),
+                false => loader ?? const WidgetLoadDependencies(),
+              },
               bindings: [
                 Bind.lazySingleton<LoginController>(
                   (i) => LoginController(
@@ -78,9 +89,12 @@ class MyApp extends StatelessWidget {
               pages: [
                 FlutterGetItPageRouter(
                   name: '/Page',
-                  page: (context) => RegisterPage(
-                    controller: context.get(),
-                  ),
+                  builderAsync: (context, isReady, loader) => switch (isReady) {
+                    true => RegisterPage(
+                        controller: context.get(),
+                      ),
+                    false => loader ?? const WidgetLoadDependencies(),
+                  },
                   bindings: [
                     Bind.lazySingleton<RegisterController>(
                       (i) => RegisterController(),
@@ -101,7 +115,11 @@ class MyApp extends StatelessWidget {
                   pages: [
                     FlutterGetItPageRouter(
                       name: '/Page',
-                      page: (context) => const ActiveAccountPage(),
+                      builderAsync: (context, isReady, loader) =>
+                          switch (isReady) {
+                        true => const ActiveAccountPage(),
+                        false => loader ?? const WidgetLoadDependencies(),
+                      },
                       bindings: [],
                     ),
                   ],
@@ -111,15 +129,25 @@ class MyApp extends StatelessWidget {
           ],
         )
       ],
-      builder: (context, routes) {
+      // loggerConfig: MyDebugLog(),
+      pagesRouter: [
+        FlutterGetItPageRouter(
+            name: '/splash', builder: (context) => const SplashPage()),
+      ],
+      builder: (context, routes, isReady) {
+        print(routes);
         return MaterialApp(
           title: 'Flutter Demo',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
           ),
-          initialRoute: '/Landing/Initialize',
+          initialRoute: '/splash',
           routes: routes,
+          builder: (context, child) => switch (isReady) {
+            true => child ?? const SizedBox.shrink(),
+            false => const WidgetLoadDependencies(),
+          },
         );
       },
     );

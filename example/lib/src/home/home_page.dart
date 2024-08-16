@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:example/application/session/model/user_model.dart';
 import 'package:example/application/session/user_session.dart';
 import 'package:example/src/home/home_controller.dart';
+import 'package:example/src/param_example/param_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
@@ -10,20 +11,24 @@ class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   final _home1 = Injector.get<HomeController>(tag: 'HomeController');
-  final _home2 = Injector.get<HomeController>(tag: 'HomeController2');
 
   @override
   Widget build(BuildContext context) {
     log(_home1.toString());
-    log(_home2.toString());
     log(context.any<HomeController>().toString());
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          UserSession.updateMe(
-            UserModel(
-              name: 'Leo ${DateTime.now().second}',
+          showModalBottomSheet(
+            context: context,
+            builder: (context) => FlutterGetItWidget(
+              name: 'Test',
+              builder: (context) {
+                return const Center(
+                  child: Text('Test'),
+                );
+              },
             ),
           );
         },
@@ -32,8 +37,7 @@ class HomePage extends StatelessWidget {
         title: const Text('HomePage'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: ListView(
           children: [
             StreamBuilder<UserModel?>(
               stream: UserSession.me,
@@ -135,6 +139,26 @@ class HomePage extends StatelessWidget {
               },
               child: const Text(
                 'Detail Two Page',
+              ),
+            ),
+            const Divider(),
+            const SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                ParamPageDto dto = (
+                  name: 'FlutterGetIt',
+                  date: DateTime(2021),
+                );
+
+                Navigator.of(context).pushNamed(
+                  '/Params/Page',
+                  arguments: dto,
+                );
+              },
+              child: const Text(
+                'Page with Params',
               ),
             ),
           ],

@@ -11,8 +11,3 @@ abstract class ApplicationBindings extends FlutterGetItBindings {
   @override
   List<Bind> bindings();
 }
-
-abstract class NavigatorBindings extends FlutterGetItBindings {
-  @override
-  List<Bind> bindings();
-}

@@ -1,14 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
-import '../core/flutter_getit_context.dart';
+import '../dependency_injector/flutter_get_it_binding_opened.dart';
+import '../middleware/flutter_get_it_middleware.dart';
 
 abstract class FlutterGetItModule {
   List<Bind> get bindings => [];
   List<FlutterGetItPageRouter> get pages;
+  final List<FlutterGetItMiddleware> middlewares = [];
   String get moduleRouteName;
-  void onDispose(Injector i);
-  void onInit(Injector i);
+  void onDispose(Injector i) {}
+  void onInit(Injector i){}
 }
 
 final class FlutterGetItModuleInternalForPage extends FlutterGetItModule {
@@ -67,113 +72,168 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
   late final String moduleName;
   late final FlutterGetItContainerRegister containerRegister;
   List<String> routerModule = [];
+  Widget? onExecute;
 
   @override
   void initState() {
+    final config = _registerBindsAndCollectTheOnInitFunctions();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final modularRoute = ModalRoute.of(context);
+      FlutterGetItBindingOpened.argument = modularRoute?.settings.arguments;
+
+      await _callAllReady();
+      final canLoad = await _executeMiddlewares(
+        config.middlewareExecution,
+        route: modularRoute?.settings,
+      );
+      if (canLoad == MiddlewareResult.complete) {
+        for (var initExecute in config.initExecution) {
+          initExecute();
+        }
+        FGetItLogger.logWaitingAsyncByModuleCompleted(id);
+        setState(() {
+          _completer.complete();
+        });
+      }
+    });
+
+    super.initState();
+  }
+
+  ({
+    List<Function> initExecution,
+    List<FlutterGetItMiddleware> middlewareExecution
+  }) _registerBindsAndCollectTheOnInitFunctions() {
+    var initExecution = <Function>[];
     final FlutterGetItPageModule(
-      module: (FlutterGetItModule(:moduleRouteName, bindings: bindingsModule)),
+      module: (FlutterGetItModule(
+        :moduleRouteName,
+        bindings: bindingsModule,
+        middlewares: middlewaresModule
+      )),
       :page,
     ) = widget;
-    final flutterGetItContext = Injector.get<FlutterGetItContext>();
     containerRegister = Injector.get<FlutterGetItContainerRegister>();
+    var middlewareExecution = <FlutterGetItMiddleware>[];
+
     moduleName = '$moduleRouteName-module';
-    id = '$moduleRouteName-module${page.name}';
-    final moduleAlreadyRegistered =
-        flutterGetItContext.isRegistered(moduleName);
-
+    final allSubModulesNames = widget.moduleRouter.map((e) => e.name).toList();
+    id = '$moduleRouteName-module${allSubModulesNames.join()}${page.name}';
+    final moduleAlreadyRegistered = containerRegister.isRegistered(moduleName);
     if (!moduleAlreadyRegistered) {
-      DebugMode.fGetItLog(
-          '🛣️$yellowColor Entering Module: $moduleName - calling $yellowColor"onInit()"');
+      FGetItLogger.logEnterOnModule(moduleName);
+      initExecution.add(() => widget.module.onInit(Injector()));
     }
-
+    middlewareExecution.addAll(containerRegister.middlewares('APPLICATION'));
     //Module Binds
     containerRegister
       ..register(
         moduleName,
         bindingsModule,
+        middleware: middlewaresModule,
       )
-      ..load(moduleName);
-
-    if (!moduleAlreadyRegistered) {
-      widget.module.onInit(Injector());
-    }
+      ..load(moduleName)
+      ..middlewares(moduleRouteName).forEach(middlewareExecution.add);
 
     if (widget.moduleRouter.isNotEmpty) {
       for (var moduleRouter in widget.moduleRouter) {
         if (moduleRouter.name != moduleRouteName) {
-          final routeM = '$moduleName${moduleRouter.name}';
+          final indexRouter = widget.moduleRouter.indexOf(moduleRouter);
+          final lastNames = widget.moduleRouter
+              .sublist(0, indexRouter)
+              .map((e) => e.name)
+              .toList();
+          final routeM = '$moduleName${lastNames.join()}${moduleRouter.name}';
           routerModule.add(routeM);
 
           final moduleAlreadyRegisteredInternal =
-              flutterGetItContext.isRegistered(routeM);
+              containerRegister.isRegistered(routeM);
           if (!moduleAlreadyRegisteredInternal) {
-            DebugMode.fGetItLog(
-                '🛣️$yellowColor Entering Sub-Module: $routeM - calling $yellowColor"onInit()"');
+            FGetItLogger.logEnterOnSubModule(routeM);
+            initExecution.add(() => moduleRouter.onInit?.call(Injector()));
           }
-
           containerRegister
             ..register(
               routeM,
               moduleRouter.bindings,
+              middleware: moduleRouter.middlewares,
             )
             ..load(
               routeM,
-            );
-          if (!moduleAlreadyRegisteredInternal) {
-            moduleRouter.onInit?.call(Injector());
-          }
-          flutterGetItContext.registerId(
-            routeM,
-          );
+            )
+            ..middlewares(routeM).forEach(middlewareExecution.add);
         }
       }
     }
-
-    //Register Module
-    flutterGetItContext.registerId(
-      id,
-    );
 
     //Route Binds
     containerRegister
       ..register(
         id,
         page.bindings,
+        middleware: page.middlewares,
       )
       ..load(id);
 
-    super.initState();
+    middlewareExecution.addAll(page.middlewares);
+
+    return (
+      initExecution: initExecution,
+      middlewareExecution: middlewareExecution
+    );
+  }
+
+  final _completer = Completer<void>();
+
+  Future<void> _callAllReady() async {
+    FGetItLogger.logWaitingAsyncByModule(id);
+    await GetIt.I.allReady();
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.page.page(context);
+    return switch (widget.page.builder) {
+      null => switch (widget.page.builderAsync) {
+          null =>
+            throw FlutterError('builder or builderAsync must be provided'),
+          _ => widget.page.builderAsync!(
+              context,
+              _completer.isCompleted,
+              onExecute,
+            ),
+        },
+      _ => widget.page.builder!(context),
+    };
   }
 
   @override
   void dispose() {
-    final flutterGetItContext = Injector.get<FlutterGetItContext>();
-
     //Remove counter on context
-    flutterGetItContext.reduceId(moduleName);
-    flutterGetItContext.reduceId(id);
+    containerRegister.decrementListener(moduleName);
+    containerRegister.decrementListener(id);
+    containerRegister.unRegister(id);
+    for (var route in routerModule.reversed) {
+      containerRegister.decrementListener(route);
 
-    for (var route in routerModule) {
-      flutterGetItContext.reduceId(route);
-
-      final canRemoveModuleInternal =
-          flutterGetItContext.canUnregisterCoreModule(route);
-      if (canRemoveModuleInternal) {
+      final anyCoreDependents = containerRegister.anyCoreDependents(route);
+      if (!anyCoreDependents) {
         containerRegister.unRegister(route);
-        flutterGetItContext.deleteId(route);
-        DebugMode.fGetItLog(
-            '🛣️$yellowColor Exiting Sub-Module: $route - calling "onDispose()"');
         final element =
             widget.moduleRouter.cast<FlutterGetItModuleRouter?>().firstWhere(
                   (element) =>
                       element?.name.endsWith(route.split('/').last) ?? false,
                   orElse: () => null,
                 );
+        //Decrement all Dad Sub-modules behind the current module disposed
+        final currentIndex = routerModule.indexOf(route);
+        final subModules = routerModule.sublist(0, currentIndex);
+
+        for (var subRoute in subModules) {
+          containerRegister.decrementListener(subRoute);
+        }
+
+        FGetItLogger.logDisposeModule(route);
         if (element != null) {
           element.onDispose?.call(
             Injector(),
@@ -181,20 +241,71 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
         }
       }
     }
-
-    final canRemoveModuleCore =
-        flutterGetItContext.canUnregisterCoreModule(moduleName);
-
-    containerRegister.unRegister(id);
-    flutterGetItContext.deleteId(id);
-
-    if (canRemoveModuleCore) {
+    final anyCoreDependents = containerRegister.anyCoreDependents(moduleName);
+    if (!anyCoreDependents) {
       containerRegister.unRegister(moduleName);
-      flutterGetItContext.deleteId(moduleName);
-      DebugMode.fGetItLog(
-          '🛣️$yellowColor Exiting Module: ${widget.module.moduleRouteName} - calling "onDispose()"');
+      FGetItLogger.logDisposeModule(widget.module.moduleRouteName);
       widget.module.onDispose(Injector());
     }
     super.dispose();
+  }
+
+  Future<MiddlewareResult> _executeMiddlewares(
+      List<FlutterGetItMiddleware> middlewareExecution,
+      {RouteSettings? route}) async {
+    final flutterGetItMiddlewareContext =
+        FlutterGetItMiddlewareContext(context);
+    for (var middleware in middlewareExecution) {
+      switch (middleware) {
+        case FlutterGetItSyncMiddleware():
+          final resultMiddleware = middleware.execute(route);
+          if (resultMiddleware != MiddlewareResult.next) {
+            FGetItLogger.logAsyncDependenceFail(
+              middleware.runtimeType.toString(),
+              id,
+            );
+            middleware.onFail(
+              route,
+              flutterGetItMiddlewareContext,
+              resultMiddleware,
+            );
+            return resultMiddleware;
+          }
+
+          break;
+
+        case FlutterGetItAsyncMiddleware():
+          setState(() {
+            onExecute = middleware.onExecute;
+          });
+
+          final resultMiddleware = await middleware.execute(route);
+          if (resultMiddleware == MiddlewareResult.failure) {
+            setState(() {
+              onExecute = null;
+            });
+            FGetItLogger.logAsyncDependenceFail(
+              middleware.runtimeType.toString(),
+              id,
+            );
+            middleware.onFail(
+              route,
+              flutterGetItMiddlewareContext,
+              resultMiddleware,
+            );
+            return resultMiddleware;
+          }
+          setState(() {
+            onExecute = null;
+          });
+
+          break;
+      }
+      FGetItLogger.logAsyncDependenceComplete(
+        middleware.runtimeType.toString(),
+        id,
+      );
+    }
+    return MiddlewareResult.complete;
   }
 }
