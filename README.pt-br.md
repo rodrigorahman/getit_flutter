@@ -34,7 +34,7 @@ A configuração do Flutter GetIt é realizada adicionando um widget ao redor do
 |-------------------------|-------------
 | context                 | BuildContext
 | routes                  | Um mapa que deve ser adicionando na tag routes do MaterialApp ou CupertinoApp
-
+| isReady                 | Esse atributo indica se todos os middlewares e bindings assincronos foram carregados
 
 
 O atributo **[routes]** deve ser repassado para o MaterialApp, conforme ilustrado no exemplo abaixo:
@@ -52,13 +52,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlutterGetIt(
-      pages: [
+      modulesRouter: [
         FlutterGetItModuleRouter(
           name: '/Initialize',
           pages:[
             FlutterGetItPageRouter(
               name: '/Landing',
-              page: (context) => const Scaffold(
+              builder: (context) => const Scaffold(
                 body: Center(
                   child: Text('Initializing...'),
                 ),
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
           ]
         ),
       ],
-      builder: (context, routes) {
+      builder: (context, routes, isReady) {
         return MaterialApp(
           title: 'Flutter Demo',
           theme: ThemeData(
@@ -76,6 +76,10 @@ class MyApp extends StatelessWidget {
           ),
           initialRoute: '/Landing/Initialize',
           routes: routes,
+          builder: (context, child) => switch (isReady) {
+            true => child ?? const SizedBox.shrink(),
+            false => const WidgetLoadDependencies(),
+          },
         );
       },
     );
@@ -83,9 +87,12 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-O Flutter GetIt não reescreve as rotas padrão do Flutter; ele cria uma estrutura utilizando o ciclo de vida nativo do Flutter. Essa abordagem evita a reescrita desnecessária da navegação da aplicação, prevenindo bugs e problemas indesejados.
+O exemplo acima demonstra a configuração básica do FGetIt, incluindo o tratamento de carregamento (loader) em middlewares e bindings assíncronos.
+Mais abaixo vamos detalhar cada um desses itens.
 
-Porém para ele ter o controle das dependências você deve registrar as páginas da sua aplicação nos atributos [pages] conforme o exemplo acima ou [modules] que você verá um pouco mais pra frente.
+**Importante:** O Flutter GetIt não substitui as rotas padrão do Flutter; ele aproveita a estrutura existente utilizando o ciclo de vida nativo do Flutter. Essa abordagem mantém a navegação da aplicação intacta, evitando reescritas desnecessárias e prevenindo bugs e problemas indesejados.
+
+Porém para ele ter o controle das dependências você deve registrar as páginas da sua aplicação nos atributos [modulesRouter] conforme o exemplo acima, [pagesRouter] ou [modules] que você verá um pouco mais pra frente.
 
 ## FlutterGetItModuleRouter
 
@@ -114,7 +121,7 @@ FlutterGetItModuleRouter(
     pages: [
       FlutterGetItPageRouter(
         name: '/Page',
-        page: (context) => RegisterPage(
+        builder: (context) => RegisterPage(
           controller: context.get(),
         ),
         bindings: [
@@ -137,7 +144,7 @@ FlutterGetItModuleRouter(
         pages: [
           FlutterGetItPageRouter(
             name: '/Page',
-            page: (context) => const ActiveAccountPage(),
+            builder: (context) => const ActiveAccountPage(),
             bindings: [],
           ),
         ],
@@ -150,23 +157,22 @@ Na estrutura acima o **[FlutterGetItModuleRouter]** **[/Register]** possui uma p
 
 Um **[FlutterGetItModuleRouter]** pode ter quantas páginas e submodulos quiser, e pode ser aninhado a outros **[FlutterGetItModuleRouter]**. Os atribuitos deste componente são:
 
-| Atributo | Descrição
-|------|----------
-| name | Nome do modulo.
-| bindings | Binds que serão instanciadas e removidas no mesmo tempo de vida do **[module]** que utilizar.
-| onDispose | Aqui pode executar uma ação antes das Binds serem fechadas e removidas.
-| onInit | Aqui pode executar uma ação antes das Binds serem instanciadas.
-| pages | Páginas ou submodulos que serão instanciadas e removidas no mesmo tempo de vida do **[module]** que utilizar.
-
+| Atributo   | Descrição                                                                                    |
+|------------|--------------------------------------------------------------------------------------------- |
+| name       | Nome do módulo.                                                                              |
+| bindings   | Binds que serão instanciadas e removidas no mesmo tempo de vida do **[module]** que utilizar.|
+| onDispose  | Aqui pode executar uma ação antes das Binds serem fechadas e removidas.                      |
+| onInit     | Aqui pode executar uma ação antes das Binds serem instanciadas.                              |
+| pages      | Páginas ou submódulos que serão instanciados e removidos no mesmo tempo de vida do **[module]** que utilizar. |
 
 ## FlutterGetItPageRouter
 
-O **[FlutterGetItPageRouter]** é o componente responsável por criar uma rota de página dentro do seu aplicativo. Ele é composto por um **[name]**, que é o caminho da rota, e um **[page]**, que é o widget que será exibido na tela e também possui **[Binds]** para inicializar e **[pages]** caso queira criar uma arvore hierárquica de navegação.
+O **[FlutterGetItPageRouter]** é o componente responsável por criar uma rota de página dentro do seu aplicativo. Ele é composto por um **[name]**, que é o caminho da rota, e um **[builder]**, que é o widget que será exibido na tela e também possui **[Binds]** para inicializar e **[pages]** caso queira criar uma arvore hierárquica de navegação.
 
 ```dart
 FlutterGetItPageRouter(
           name: '/Landing',
-          page: (context) => const Scaffold(
+          builder: (context) => const Scaffold(
             body: Center(
               child: Text('Initializing...'),
             ),
@@ -181,7 +187,7 @@ O **[FlutterGetItPageRouter]** também possui um atributo **[bindings]**, que é
 ```dart
 FlutterGetItPageRouter(
           name: '/Landing/Initialize',
-          page: (context) => const Scaffold(
+          builder: (context) => const Scaffold(
             body: Center(
               child: Text('Initializing...'),
             ),
@@ -196,8 +202,7 @@ FlutterGetItPageRouter(
 
 Dessa forma, o flutter_getit adicionará, durante o carregamento da sua tela, uma instância de InitializeController ao get_it, possibilitando a utilização da sua página. No entanto, é importante destacar que ao sair dessa tela, o flutter_getit eliminará a instância da memória do seu aplicativo, garantindo uma gestão eficiente dos recursos.
 
-Você também poderá adicionar rotas "filhas" através do atributo **[pages]**, as quais possuirão a mesma estrutura **[FlutterGetItPageRouter]** ou **[FlutterGetItModuleRouter]**.
-É importante saber que as **[Bindings]** da rota "mãe" se manterão abertas, o **[FlutterGetIt]** sabe diferencias as **[Bindings]** de cada rota, portando se adicionar um controller a uma rota filha, ele apenas será instaciado ao entrar nesta rota, e removido ao sair da mesma. 
+O **[FlutterGetItPageRouter]** também possui um metodo **[buildAsync]** que será invocado quando algum binding ou middleware assincrono for encontrado nessa rota'
 
 ## Dependências de aplicação
 
@@ -297,6 +302,15 @@ class LandingModule extends FlutterGetItModule {
               ),
             ]
         ),
+        FlutterGetItPageRouter(
+          name: '/Simples',
+          page: (context) => const InitializePage(),
+          bindings: [
+            Bind.lazySingleton<InitializeController>(
+                  (i) => InitializeController(),
+            ),
+          ],
+        ),
       ];
 
   @override
@@ -365,17 +379,21 @@ class HomePage extends StatelessWidget {
 
 O flutter_getit suporta todos os outros bindings suportados pelo motor get_it:
 
-| Bind | Descrição
-|------|----------
-| Bind.lazySingleton | Esse bind vai inicializar a dependência somente quando o usuário chamá-la pela primeira vez. Após isso, ela se tornará um singleton, retornando a mesma instância toda vez que for requisitada.
-| Bind.lazySingletonAsync | Esse bind funciona como o "Bind.lazySingleton", mas sua primeira chamada será assíncrona.
-| Bind.singleton | Ao contrário do lazySingleton, o singleton fará a inicialização da instância imediatamente quando a página carregar.
-| Bind.singletonAsync | Esse bind funciona como o "Bind.singleton", mas sua primeira chamada será assíncrona.
-| Bind.factory | A factory faz com que toda vez que você solicitar uma instância para o gerenciador de dependências, ele fornecerá uma nova instância.
-| Bind.factoryAsync | Esse bind funciona como o "Bind.factory", mas sua primeira chamada será assíncrona.
+Aqui está a tabela formatada em Markdown:
 
-# Atributo **[keepAlive]**
-* Este atributo presente nas bindings, determinará que o FlutterGetIt não deixe que outros controllers ou modulos a removam, tornando-a permanente no ciclo de vida da app.
+| Bind                   | Descrição                                                                                                                                           |
+|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Bind.lazySingleton`    | Esse bind vai inicializar a dependência somente quando o usuário chamá-la pela primeira vez. Após isso, ela se tornará um singleton, retornando a mesma instância toda vez que for requisitada. |
+| `Bind.lazySingletonAsync` | Esse bind funciona como o `Bind.lazySingleton`, mas sua primeira chamada será assíncrona.                                                           |
+| `Bind.singleton`        | Ao contrário do `lazySingleton`, o `singleton` fará a inicialização da instância imediatamente quando a página carregar.                               |
+| `Bind.singletonAsync`   | Esse bind funciona como o `Bind.singleton`, mas sua primeira chamada será assíncrona.                                                                |
+| `Bind.factory`          | A `factory` faz com que toda vez que você solicitar uma instância para o gerenciador de dependências, ele fornecerá uma nova instância.               |
+| `Bind.factoryAsync`     | Esse bind funciona como o `Bind.factory`, mas sua primeira chamada será assíncrona.                                                                  |
+
+## Atributo **[keepAlive]**
+* O atributo `keepAlive`, presente nas bindings, instrui o FlutterGetIt a não descartar a classe, mantendo-a em memória durante todo o ciclo de vida da aplicação.
+
+É importante usar esse parâmetro com cautela e somente quando você tiver certeza absoluta do que está fazendo.
 
 # Exemplo Completo
 
@@ -412,7 +430,7 @@ class MyApplicationBindings extends ApplicationBindings {
 ```
 
 ## Importante sobre **[Binds Async]**
-* Através do aatalho do **[Injector.]** você pode aguardas suas Binds assíncronas ficarem prontas antes de iniciar qualquer ação. Normalmente usado durante a transição da SplashPage, para carregar dependências assíncronas.
+* Através do atalho do **[Injector.]** você pode aguardas suas Binds assíncronas ficarem prontas antes de iniciar qualquer ação. Normalmente usado durante a transição da SplashPage, para carregar dependências assíncronas.
 
 Exemplo:
 
@@ -431,8 +449,7 @@ class InitializeController with FlutterGetItMixin {
 ```
 
 ## Importante sobre **[Bind.factory]** e **[Bind.factoryAsync]**
-* A cada solicitação ao FlutterGetIt a factory retornará uma nova instancia do objeto solicitado, mas você pode definir uma **[factoryTag]** no momento de intanciar, assim o FlutterGetIt atribuirá essa tag ao Objeto tornando-o unico na arvore, podendo assim evitar duplicações e podendo ser chamdado em outros locais com a precisão da tag.
-* Você também pode remover uma Bind baseada na sua **[factoryTag]**.
+* A cada solicitação ao FlutterGetIt, a factory retornará uma nova instância do objeto solicitado. No entanto, você pode definir uma **[factoryTag]** no momento de instanciar o objeto. Com isso, o FlutterGetIt atribuirá essa tag ao objeto, tornando-o único na árvore. Dessa forma, ao solicitar o objeto usando a mesma tag, o FlutterGetIt retornará a instância já criada, evitando duplicações e permitindo que o objeto seja chamado em outros locais com a precisão da tag.* Você também pode remover uma Bind baseada na sua **[factoryTag]**.
 
 Exemplo de criação:
 ```dart
@@ -458,13 +475,13 @@ Injector.unRegisterAllFactories<FormItemController>();
 
 # FlutterGetItWidget
 
-| Atributo | Descrição
-|------|----------
-| name | O id é utilizado para identificação do elemento internamente e na extensão, exemplo "/HomeWidget" || "WidgetCounter".
-| binds | Binds que serão instanciadas e removidas no mesmo tempo de vida do **[widget || page]** que utilizar. 
-| onDispose | Aqui pode executar uma ação antes das Binds serem fechadas e removidas.
-| onInit | Aqui pode executar uma ação logo após as Binds serem iniciadas.
-| builder | Construção do Widget.
+| Atributo   | Descrição                                                                                                             |
+|------------|-----------------------------------------------------------------------------------------------------------------------|
+| `name`     | O id é utilizado para identificação do elemento internamente e na extensão, exemplo "/HomeWidget" ou "WidgetCounter".  |
+| `binds`    | Binds que serão instanciadas e removidas no mesmo tempo de vida do **[widget ou page]** que utilizar.                 |
+| `onDispose`| Aqui pode executar uma ação antes das Binds serem fechadas e removidas.                                                |
+| `onInit`   | Aqui pode executar uma ação logo após as Binds serem iniciadas.                                                        |
+| `builder`  | Construção do Widget.                                                                                                 |
 
 Exemplo:
 ```dart
@@ -500,7 +517,7 @@ Exemplo:
 
 # FlutterGetItView
 
-* O **[FlutterGetItView]** é um atralho que extende **[StatelessWidget]** permitindo que você reduza a quantidade de codigo no widget.
+* O **[FlutterGetItView]** é um atalho que extende **[StatelessWidget]** permitindo que você reduza a quantidade de codigo no widget.
 * A utilização proverá uma variavel chamada **[fGetit]** que assumirá o valor repassado <T> no **[FlutterGetItView]**.
  
 Exemplo:
@@ -520,14 +537,15 @@ class ActiveAccountPage extends FlutterGetItView<ActiveAccountController> {
 }
 ```
 
-# FlutterGetItMixin - Ciclo de vida do Objeto
+## Adicionando ciclo de vida aos bindings
 
-* O FlutterGetIt possui o mixin **[FlutterGetItMixin]** que lhe permite aplica-lo em sua classe, fazendo com que o Objeto para a ter um ciclo de inicialização e finalização.
+### FlutterGetItMixin - Ciclo de vida do Objeto
+* O FlutterGetIt oferece o mixin **[FlutterGetItMixin]**, que pode ser aplicado à sua classe, permitindo que o objeto tenha um ciclo de vida completo, com métodos de inicialização e finalização.
 
-| Atributo | Descrição
-|------|----------
-| onDispose | Chamado no momento que o Objeto é removido.
-| onInit | Chamado na primeira vez que o Objeto é instanciado.
+| Atributo    | Descrição                                      |
+|-------------|------------------------------------------------|
+| `onDispose` | Chamado no momento em que o objeto é removido. |
+| `onInit`    | Chamado na primeira vez que o objeto é instanciado. |
 
 Exemplo:
 
@@ -563,8 +581,8 @@ Exemplo:
       body: FlutterGetIt.navigator(
         navigatorName: 'NAVbarProducts',
         bindings: MyNavigatorBindings(),
-        pages: [
-          FlutterGetItPageRouter(
+        modulesRouter: [
+          FlutterGetItModuleRouter(
             name: '/Random',
             bindings: [
               Bind.lazySingleton<RandomController>(
@@ -696,4 +714,4 @@ transitionsBuilder: (context, animation, secondaryAnimation, child) => ScaleTran
  
 # Projeto com exemplo
 
-[Projeto exemplo](https://github.com/rodrigorahman/flutter_getit_2_example)
+[Projeto exemplo](https://github.com/rodrigorahman/getit_flutter/tree/main/example)
