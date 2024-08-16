@@ -151,7 +151,7 @@ class _MyNavBarState extends State<MyNavBar> {
           DetailModule(),
           ParamExampleModule(),
           /* AuthModule(),*/
-          ProductsModule(), 
+          ProductsModule(),
         ],
         builder: (context, routes, isReady) => Navigator(
           key: internalNav,

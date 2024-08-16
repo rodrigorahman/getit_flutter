@@ -135,7 +135,6 @@ class MyApp extends StatelessWidget {
             name: '/splash', builder: (context) => const SplashPage()),
       ],
       builder: (context, routes, isReady) {
-        print(routes);
         return MaterialApp(
           title: 'Flutter Demo',
           theme: ThemeData(
