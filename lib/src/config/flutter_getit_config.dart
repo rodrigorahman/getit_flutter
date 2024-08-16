@@ -188,7 +188,8 @@ class _FlutterGetItState extends State<FlutterGetIt>
       // Adding the pages within the page module to avoid altering the core of modules in fgetit."
       final pagesModule = pages.map(
         (page) {
-          assert(page is! FlutterGetItModuleRouter, 'You cannot use the FlutterGetItModuleRouter in the pagesRouter, use the modulesRouter instead.');
+          assert(page is! FlutterGetItModuleRouter,
+              'You cannot use the FlutterGetItModuleRouter in the pagesRouter, use the modulesRouter instead.');
           return FlutterGetItModuleRouter(
             name: '/',
             pages: [page],

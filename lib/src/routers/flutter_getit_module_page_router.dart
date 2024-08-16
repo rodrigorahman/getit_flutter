@@ -66,7 +66,6 @@ class FlutterGetItPageRouter {
   ///
   final List<Bind> bindings;
 
-
   /// The middlewares that will be used in this page as
   /// [FlutterGetItAsyncMiddleware] or [FlutterGetItSyncMiddleware].
   ///
@@ -115,7 +114,6 @@ class FlutterGetItModuleRouter extends FlutterGetItPageRouter {
   /// [FlutterGetItPageRouter] or [FlutterGetItModuleRouter].
   ///
   final List<FlutterGetItPageRouter> pages;
-
 
   FlutterGetItModuleRouter({
     /// The name of the ModuleRouter.

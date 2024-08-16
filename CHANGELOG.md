@@ -1,7 +1,10 @@
 # Versions
 
+## 3.0.0-rc.4
+- Change pages and module to pagesRouter and moduleRouter to separate responsibilities for handling modules or simple pages.
+
 ## 3.0.0-rc.3
-- A special thank you to @lleoserrano, who worked tirelessly on the amazing improvements to the package!
+- A special thank you to @lleoserrano and @brasizza, who worked so hard to make our package even better!
 
 - New component for internal routing using existing routes called FlutterGetItRouteOutlet.
 
