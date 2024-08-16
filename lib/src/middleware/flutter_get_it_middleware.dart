@@ -13,7 +13,4 @@ abstract class FlutterGetItMiddleware {
       fContext.pop();
     }
   }
-
-  FutureOr<void> onSuccess(RouteSettings? route,
-      FlutterGetItMiddlewareContext fContext, MiddlewareResult result) {}
 }
