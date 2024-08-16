@@ -12,8 +12,8 @@ abstract class FlutterGetItModule {
   List<FlutterGetItPageRouter> get pages;
   final List<FlutterGetItMiddleware> middlewares = [];
   String get moduleRouteName;
-  void onDispose(Injector i);
-  void onInit(Injector i);
+  void onDispose(Injector i) {}
+  void onInit(Injector i){}
 }
 
 final class FlutterGetItModuleInternalForPage extends FlutterGetItModule {

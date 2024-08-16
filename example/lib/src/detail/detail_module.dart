@@ -44,39 +44,48 @@ class DetailModule extends FlutterGetItModule {
             ),
           ],
           pages: [
-            FlutterGetItPageRouter(
+            FlutterGetItModuleRouter(
               name: '/One',
-              builderAsync: (context, isReady, loader) => switch (isReady) {
-                true => DetailPage(
-                    controller: context.get(),
-                  ),
-                false => loader ?? const WidgetLoadDependencies(),
-              },
-              bindings: [
-                Bind.lazySingleton<DetailController>(
-                  (i) => DetailController(),
-                ),
-              ],
               pages: [
-                FlutterGetItModuleRouter(
-                  name: '/Internal',
+                FlutterGetItPageRouter(
+                  name: '/',
+                  builderAsync: (context, isReady, loader) => switch (isReady) {
+                    true => DetailPage(
+                        controller: context.get(),
+                      ),
+                    false => loader ?? const WidgetLoadDependencies(),
+                  },
                   bindings: [
-                    Bind.lazySingleton<DetailInternalRepository>(
-                      (i) => DetailInternalRepository(),
+                    Bind.lazySingleton<DetailController>(
+                      (i) => DetailController(),
                     ),
                   ],
+                ),
+                FlutterGetItModuleRouter(
+                  name: '/Internal',
                   pages: [
                     FlutterGetItPageRouter(
+                      name: '/',
+                      bindings: [
+                        Bind.lazySingleton<DetailInternalRepository>(
+                          (i) => DetailInternalRepository(),
+                        ),
+                      ],
+                    ),
+                    FlutterGetItModuleRouter(
                       name: '/Page',
-                      builderAsync: (context, isReady, loader) =>
-                          switch (isReady) {
-                        true => DetailInternalPage(
-                            repository: context.get(),
-                          ),
-                        false => loader ?? const WidgetLoadDependencies(),
-                      },
-                      bindings: [],
                       pages: [
+                        FlutterGetItPageRouter(
+                          name: '/',
+                          builderAsync: (context, isReady, loader) =>
+                              switch (isReady) {
+                            true => DetailInternalPage(
+                                repository: context.get(),
+                              ),
+                            false => loader ?? const WidgetLoadDependencies(),
+                          },
+                          bindings: [],
+                        ),
                         FlutterGetItPageRouter(
                           name: '/Child',
                           builderAsync: (context, isReady, loader) =>
@@ -94,6 +103,56 @@ class DetailModule extends FlutterGetItModule {
                 )
               ],
             ),
+            // FlutterGetItPageRouter(
+            //   name: '/One',
+            //   builderAsync: (context, isReady, loader) => switch (isReady) {
+            //     true => DetailPage(
+            //         controller: context.get(),
+            //       ),
+            //     false => loader ?? const WidgetLoadDependencies(),
+            //   },
+            //   bindings: [
+            //     Bind.lazySingleton<DetailController>(
+            //       (i) => DetailController(),
+            //     ),
+            //   ],
+            //   pages: [
+            //     FlutterGetItModuleRouter(
+            //       name: '/Internal',
+            //       bindings: [
+            //         Bind.lazySingleton<DetailInternalRepository>(
+            //           (i) => DetailInternalRepository(),
+            //         ),
+            //       ],
+            //       pages: [
+            //         FlutterGetItPageRouter(
+            //           name: '/Page',
+            //           builderAsync: (context, isReady, loader) =>
+            //               switch (isReady) {
+            //             true => DetailInternalPage(
+            //                 repository: context.get(),
+            //               ),
+            //             false => loader ?? const WidgetLoadDependencies(),
+            //           },
+            //           bindings: [],
+            //           pages: [
+            //             FlutterGetItPageRouter(
+            //               name: '/Child',
+            //               builderAsync: (context, isReady, loader) =>
+            //                   switch (isReady) {
+            //                 true => DetailInternalChild(
+            //                     repository: context.get(),
+            //                   ),
+            //                 false => loader ?? const WidgetLoadDependencies(),
+            //               },
+            //               bindings: [],
+            //             ),
+            //           ],
+            //         ),
+            //       ],
+            //     )
+            //   ],
+            // ),
             FlutterGetItPageRouter(
               name: '/Two',
               builderAsync: (context, isReady, loader) => switch (isReady) {

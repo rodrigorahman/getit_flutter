@@ -66,10 +66,6 @@ class FlutterGetItPageRouter {
   ///
   final List<Bind> bindings;
 
-  /// Here you can define the pages that will be used as subPages or subModules of this page like
-  /// [FlutterGetItPageRouter] or [FlutterGetItModuleRouter].
-  ///
-  final List<FlutterGetItPageRouter> pages;
 
   /// The middlewares that will be used in this page as
   /// [FlutterGetItAsyncMiddleware] or [FlutterGetItSyncMiddleware].
@@ -81,7 +77,6 @@ class FlutterGetItPageRouter {
     this.builder,
     this.builderAsync,
     this.bindings = const [],
-    this.pages = const [],
     this.middlewares = const [],
   });
 
@@ -97,7 +92,6 @@ class FlutterGetItPageRouter {
       name: name ?? this.name,
       builder: builder ?? this.builder,
       bindings: bindings ?? this.bindings,
-      pages: pages ?? this.pages,
       middlewares: middlewares ?? this.middlewares,
     );
   }
@@ -116,6 +110,12 @@ class FlutterGetItModuleRouter extends FlutterGetItPageRouter {
   /// The module is initialized when some of the subPages or subModules build the module for the first time.
   ///
   final void Function(Injector i)? onInit;
+
+  /// Here you can define the pages that will be used as subPages or subModules of this page like
+  /// [FlutterGetItPageRouter] or [FlutterGetItModuleRouter].
+  ///
+  final List<FlutterGetItPageRouter> pages;
+
 
   FlutterGetItModuleRouter({
     /// The name of the ModuleRouter.
@@ -142,7 +142,7 @@ class FlutterGetItModuleRouter extends FlutterGetItPageRouter {
     /// The middlewares that will be used in this page as
     /// [FlutterGetItAsyncMiddleware] or [FlutterGetItSyncMiddleware].
     ///
-    super.pages,
+    required this.pages,
 
     /// The middlewares that will be used in this page as
     /// [FlutterGetItAsyncMiddleware] or [FlutterGetItSyncMiddleware].

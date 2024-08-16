@@ -13,6 +13,7 @@ import 'package:example/src/detail/detail_module.dart';
 import 'package:example/src/home/home_module.dart';
 import 'package:example/src/loader/load_dependencies.dart';
 import 'package:example/src/param_example/param_example_module.dart';
+import 'package:example/src/products/products_module.dart';
 import 'package:example/src/random/random_controller.dart';
 import 'package:example/src/random/random_page.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class _MyNavBarState extends State<MyNavBar> {
       body: FlutterGetIt.navigator(
         name: 'NAVbarProducts',
         bindings: MyNavigatorBindings(),
-        pages: [
+        pagesRouter: [
           FlutterGetItModuleRouter(
             name: '/Random',
             bindings: [
@@ -149,8 +150,8 @@ class _MyNavBarState extends State<MyNavBar> {
           HomeModule(),
           DetailModule(),
           ParamExampleModule(),
-          /* AuthModule(),
-          ProductsModule(), */
+          /* AuthModule(),*/
+          ProductsModule(), 
         ],
         builder: (context, routes, isReady) => Navigator(
           key: internalNav,
@@ -175,13 +176,13 @@ class _MyNavBarState extends State<MyNavBar> {
                     ?.pushNamedAndRemoveUntil('/Home/Page', (_) => false);
               case 1:
                 internalNav.currentState
-                    ?.pushNamedAndRemoveUntil('/Products/Page', (_) => false);
+                    ?.pushNamedAndRemoveUntil('/Products/Page/', (_) => false);
               case 2:
                 internalNav.currentState
                     ?.pushNamedAndRemoveUntil('/Home/Page', (_) => false);
               case 3:
                 internalNav.currentState
-                    ?.pushNamedAndRemoveUntil('/Products/Page', (_) => false);
+                    ?.pushNamedAndRemoveUntil('/Products/Page/', (_) => false);
             }
             setState(() {
               _currentIndex = value;

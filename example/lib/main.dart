@@ -11,7 +11,9 @@ import 'package:example/src/auth/view/register/register_page.dart';
 import 'package:example/src/landing/landing_module.dart';
 import 'package:example/src/loader/load_dependencies.dart';
 import 'package:example/src/nav_bar/nav_bar_module.dart';
+import 'package:example/src/products/products_module.dart';
 import 'package:example/src/route_outlet_nav_bar/my_nav_bar.dart';
+import 'package:example/src/splash/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
@@ -32,9 +34,9 @@ class MyApp extends StatelessWidget {
       modules: [
         LandingModule(),
         NavBarModule(),
+        ProductsModule(),
       ],
-      // loggerConfig: MyDebugLog(),
-      pages: [
+      modulesRouter: [
         FlutterGetItModuleRouter(
           name: '/outlet',
           pages: [
@@ -127,14 +129,20 @@ class MyApp extends StatelessWidget {
           ],
         )
       ],
+      // loggerConfig: MyDebugLog(),
+      pagesRouter: [
+        FlutterGetItPageRouter(
+            name: '/splash', builder: (context) => const SplashPage()),
+      ],
       builder: (context, routes, isReady) {
+        print(routes);
         return MaterialApp(
           title: 'Flutter Demo',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
           ),
-          initialRoute: '/Landing/Initialize',
+          initialRoute: '/splash',
           routes: routes,
           builder: (context, child) => switch (isReady) {
             true => child ?? const SizedBox.shrink(),

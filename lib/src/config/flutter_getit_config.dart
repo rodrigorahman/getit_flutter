@@ -25,7 +25,8 @@ class FlutterGetIt extends StatefulWidget {
     this.bindings,
     this.middlewares,
     this.modules,
-    this.pages,
+    this.pagesRouter,
+    this.modulesRouter,
     this.loggerConfig,
   })  : contextType = FlutterGetItContextType.main,
         name = null;
@@ -37,7 +38,8 @@ class FlutterGetIt extends StatefulWidget {
     this.middlewares,
     this.name,
     this.modules,
-    this.pages,
+    this.modulesRouter,
+    this.pagesRouter,
     this.loggerConfig,
   }) : contextType = FlutterGetItContextType.navigator;
 
@@ -73,7 +75,8 @@ class FlutterGetIt extends StatefulWidget {
 
   /// [pages] Define the pages that will serve as named routes based on [FlutterGetItPageRoute].
   ///
-  final List<FlutterGetItModuleRouter>? pages;
+  final List<FlutterGetItPageRouter>? pagesRouter;
+  final List<FlutterGetItModuleRouter>? modulesRouter;
 
   /// [contextType] The type of context that will be used in the [FlutterGetIt].
   final FlutterGetItContextType contextType;
@@ -160,7 +163,8 @@ class _FlutterGetItState extends State<FlutterGetIt>
   Map<String, WidgetBuilder> _routes() {
     final routesMap = <String, WidgetBuilder>{};
     final modules = widget.modules;
-    final pages = widget.pages;
+    final pages = widget.pagesRouter;
+    final modulesRouter = widget.modulesRouter ?? [];
 
     if (modules != null) {
       for (var module in modules) {
@@ -181,20 +185,34 @@ class _FlutterGetItState extends State<FlutterGetIt>
     }
 
     if (pages != null) {
-      for (var page in pages) {
+      // Adding the pages within the page module to avoid altering the core of modules in fgetit."
+      final pagesModule = pages.map(
+        (page) {
+          assert(page is! FlutterGetItModuleRouter, 'You cannot use the FlutterGetItModuleRouter in the pagesRouter, use the modulesRouter instead.');
+          return FlutterGetItModuleRouter(
+            name: '/',
+            pages: [page],
+          );
+        },
+      );
+      modulesRouter.addAll(pagesModule);
+    }
+
+    if (modulesRouter.isNotEmpty) {
+      for (var moduleRoute in modulesRouter) {
         final module = FlutterGetItModuleInternalForPage(
-          binds: page.bindings,
-          moduleRouteName: page.name,
-          onDispose: page.onDispose ?? (i) {},
-          onInit: page.onInit ?? (i) {},
-          pages: page.pages,
+          binds: moduleRoute.bindings,
+          moduleRouteName: moduleRoute.name,
+          onDispose: moduleRoute.onDispose ?? (i) {},
+          onInit: moduleRoute.onInit ?? (i) {},
+          pages: moduleRoute.pages,
         );
         routesMap.addAll(
           _recursivePage(
             module: module,
-            page: page,
+            page: moduleRoute,
             lastModuleName: '/',
-            moduleRouter: [page],
+            moduleRouter: [moduleRoute],
           ),
         );
       }
@@ -236,33 +254,39 @@ class _FlutterGetItState extends State<FlutterGetIt>
 
     var finalRoute = '$lastModuleName$pageRouteName';
 
-    final isModuleRouter = page is FlutterGetItModuleRouter;
+    checkBinds.addAll(
+      FlutterGetItCheckDependency.checkOnDependencies(
+        alreadyCheck: checkBinds,
+        bindings: module.bindings,
+      ),
+    );
 
-    checkBinds.addAll(FlutterGetItCheckDependency.checkOnDependencies(
-        alreadyCheck: checkBinds, bindings: module.bindings));
-
-    if (page.pages.isNotEmpty) {
-      for (final pageInternal in page.pages) {
-        checkBinds.addAll(FlutterGetItCheckDependency.checkOnDependencies(
-            alreadyCheck: checkBinds, bindings: pageInternal.bindings));
-        routesMap.addAll(
-          _recursivePage(
-            lastModuleName: finalRoute,
-            module: module,
-            page: pageInternal,
-            moduleRouter: switch (pageInternal) {
-              FlutterGetItModuleRouter() => [
-                  ...moduleRouter,
-                  pageInternal,
-                ],
-              _ => moduleRouter,
-            },
-          ),
-        );
+    if (page is FlutterGetItModuleRouter) {
+      if (page.pages.isNotEmpty) {
+        for (final pageInternal in page.pages) {
+          checkBinds.addAll(
+            FlutterGetItCheckDependency.checkOnDependencies(
+              alreadyCheck: checkBinds,
+              bindings: pageInternal.bindings,
+            ),
+          );
+          routesMap.addAll(
+            _recursivePage(
+              lastModuleName: finalRoute,
+              module: module,
+              page: pageInternal,
+              moduleRouter: switch (pageInternal) {
+                FlutterGetItModuleRouter() => [
+                    ...moduleRouter,
+                    pageInternal,
+                  ],
+                _ => moduleRouter,
+              },
+            ),
+          );
+        }
       }
-    }
-
-    if (!isModuleRouter) {
+    } else {
       routesMap[finalRoute.replaceAll(r'//', r'/')] = (_) {
         return FlutterGetItPageModule(
           module: module,
@@ -271,6 +295,7 @@ class _FlutterGetItState extends State<FlutterGetIt>
         );
       };
     }
+
     return routesMap;
   }
 
