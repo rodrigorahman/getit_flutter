@@ -33,7 +33,9 @@ class Injector {
     try {
       final getIt = GetIt.I;
       FlutterGetItHelper.throwIfNot(
-        getIt.isRegistered<T>(),
+        getIt.isRegistered<T>(
+          instanceName: tag,
+        ),
         FlutterError(
           'The type $T is not registered in the GetIt injector, please check if it is registered in the module or in the main injector',
         ),
