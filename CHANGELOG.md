@@ -1,5 +1,8 @@
 # Versions
 
+## 3.0.0-rc.6
+- Fix: Add check when the bind is already registered
+
 ## 3.0.0-rc.5
 - Fix: 
     In throwIf isRegistered tag was not being sent
