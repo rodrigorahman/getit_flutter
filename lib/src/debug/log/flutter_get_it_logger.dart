@@ -191,7 +191,7 @@ final class FGetItLogger {
       {String? tag, String? factoryTag}) {
     if (_config.enable) {
       _log(
-        '🚧$_yellowColor Info:$_whiteColor $T - $T${_tagLog(tag)}${_factoryLog(factoryTag)} $_yellowColor is$_whiteColor permanent,$_yellowColor and can\'t be disposed.',
+        '🚧$_yellowColor Info:$_whiteColor $T - ${_tagLog(tag)}${_factoryLog(factoryTag)} $_yellowColor is$_whiteColor permanent,$_yellowColor and can\'t be disposed.',
       );
     }
   }
@@ -199,7 +199,15 @@ final class FGetItLogger {
   static logDisposeInstance<T>(Bind bind) {
     if (_config.enable && _config.registerInstance) {
       _log(
-        '🚮$_yellowColor Dispose: $T (${bind.type.name}) - $T${_tagLog(bind.tag)}',
+        '🚮$_yellowColor Dispose: $T (${bind.type.name}) - ${_tagLog(bind.tag)}',
+      );
+    }
+  }
+
+  static void logInstanceAlreadyRegistered<T>(Bind bind) {
+    if (_config.enable && _config.registerInstance) {
+      _log(
+        '🚧$_yellowColor Attention you\'re trying to register the $T (${bind.type.name}) - ${_tagLog(bind.tag)} again.',
       );
     }
   }
