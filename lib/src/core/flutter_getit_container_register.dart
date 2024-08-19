@@ -105,10 +105,24 @@ final class FlutterGetItContainerRegister {
   void load(String id) {
     final index = _references.indexWhere((element) => element.id == id);
     if (index != -1) {
+      var bindsToRemoveBecauseWasRegisteredInAnotherModule = <int>[];
       for (var bind in _references[index].bindings) {
         if (!bind.loaded) {
           final indexBind = _references[index].bindings.indexOf(bind);
-          _references[index].bindings[indexBind] = bind.register();
+          final bindRegistered = bind.register();
+
+          if (bindRegistered != null) {
+            _references[index].bindings[indexBind] = bindRegistered;
+          } else {
+            bindsToRemoveBecauseWasRegisteredInAnotherModule.add(indexBind);
+          }
+        }
+      }
+
+      if (bindsToRemoveBecauseWasRegisteredInAnotherModule.isNotEmpty) {
+        for (var indexBind
+            in bindsToRemoveBecauseWasRegisteredInAnotherModule) {
+          _references[index].bindings.removeAt(indexBind);
         }
       }
     }

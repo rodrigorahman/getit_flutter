@@ -1,5 +1,10 @@
 # Versions
 
+## 3.0.0-rc.5
+- Fix: 
+    In throwIf isRegistered tag was not being sent
+    getAsync was not present in "BuildContext" extension
+
 ## 3.0.0-rc.4
 - Change pages and module to pagesRouter and moduleRouter to separate responsibilities for handling modules or simple pages.
 

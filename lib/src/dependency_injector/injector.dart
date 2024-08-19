@@ -120,6 +120,9 @@ extension InjectorContext on BuildContext {
   T get<T extends Object>({String? tag, String? factoryTag}) =>
       Injector.get<T>(tag: tag, factoryTag: factoryTag);
 
+  Future<T> getAsync<T extends Object>({String? tag, String? factoryTag}) =>
+      Injector.getAsync<T>(tag: tag, factoryTag: factoryTag);
+
   bool isRegistered<T extends Object>({String? tag}) =>
       Injector.isRegistered<T>(tag: tag);
 
