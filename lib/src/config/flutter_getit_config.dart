@@ -33,7 +33,7 @@ class FlutterGetIt extends StatefulWidget {
   })  : contextType = FlutterGetItContextType.main,
         name = null,
         assert((builder == null) != (builderPath == null),
-            'You should to use Builder or BuilderPath instead both');
+            'Please use either Builder or BuilderPath, not both.');
 
   const FlutterGetIt.navigator({
     super.key,
@@ -48,7 +48,7 @@ class FlutterGetIt extends StatefulWidget {
     this.loggerConfig,
   })  : contextType = FlutterGetItContextType.navigator,
         assert((builder == null) != (builderPath == null),
-            'You should to use Builder or BuilderPath instead both');
+            'Please use either Builder or BuilderPath, not both.');
 
   /// [builder] The builder that will be used to wrap the MaterialApp or CupertinoApp.
   ///
