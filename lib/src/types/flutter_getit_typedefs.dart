@@ -9,9 +9,11 @@ typedef BindBuilder = Bind Function();
 
 typedef BindRegister<T> = T Function(Injector i);
 typedef BindAsyncRegister<T> = Future<T> Function(Injector i);
-
 typedef ApplicationBuilder = Widget Function(
   BuildContext context,
   Map<String, WidgetBuilder> routes,
   bool isReady,
 );
+
+typedef ApplicationBuilderPath = Widget Function(
+    BuildContext context, bool isReady, RouteFactory onGenerateRoute);

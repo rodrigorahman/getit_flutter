@@ -7,6 +7,7 @@ import '../../flutter_getit.dart';
 import '../debug/extension/flutter_get_it_extension.dart';
 import '../dependency_injector/flutter_get_it_check_dependency.dart';
 import '../middleware/flutter_get_it_middleware.dart';
+import '../routers/flutter_get_it_route_params_extractor.dart';
 import '../types/flutter_getit_typedefs.dart';
 
 enum FlutterGetItContextType {
@@ -21,7 +22,8 @@ enum FlutterGetItContextType {
 class FlutterGetIt extends StatefulWidget {
   const FlutterGetIt({
     super.key,
-    required this.builder,
+    this.builder,
+    this.builderPath,
     this.bindings,
     this.middlewares,
     this.modules,
@@ -29,11 +31,14 @@ class FlutterGetIt extends StatefulWidget {
     this.modulesRouter,
     this.loggerConfig,
   })  : contextType = FlutterGetItContextType.main,
-        name = null;
+        name = null,
+        assert((builder == null) != (builderPath == null),
+            'You should to use Builder or BuilderPath instead both');
 
   const FlutterGetIt.navigator({
     super.key,
-    required this.builder,
+    this.builder,
+    this.builderPath,
     this.bindings,
     this.middlewares,
     this.name,
@@ -41,11 +46,14 @@ class FlutterGetIt extends StatefulWidget {
     this.modulesRouter,
     this.pagesRouter,
     this.loggerConfig,
-  }) : contextType = FlutterGetItContextType.navigator;
+  })  : contextType = FlutterGetItContextType.navigator,
+        assert((builder == null) != (builderPath == null),
+            'You should to use Builder or BuilderPath instead both');
 
   /// [builder] The builder that will be used to wrap the MaterialApp or CupertinoApp.
   ///
-  final ApplicationBuilder builder;
+  final ApplicationBuilder? builder;
+  final ApplicationBuilderPath? builderPath;
 
   /// [bindings] The bindings that will be used in the main context.
   /// Normally used to register the bindings that will be used in the main context throughout the application.
@@ -288,11 +296,15 @@ class _FlutterGetItState extends State<FlutterGetIt>
         }
       }
     } else {
-      routesMap[finalRoute.replaceAll(r'//', r'/')] = (_) {
+      routesMap[finalRoute.replaceAll(r'//', r'/')] = (BuildContext context) {
+        final path = ModalRoute.of(context)!.settings.name!;
+        final params =
+            FlutterGetItRouteParamsExtractor(finalRoute, path).extract();
         return FlutterGetItPageModule(
           module: module,
           page: page,
           moduleRouter: moduleRouter,
+          parameters: params,
         );
       };
     }
@@ -311,15 +323,121 @@ class _FlutterGetItState extends State<FlutterGetIt>
     });
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   super.build(context);
+
+  //   return widget.builder(
+  //     context,
+  //     _routes(),
+  //     _completer.isCompleted,
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    return widget.builder(
+    if (widget.builderPath != null) {
+      return widget.builderPath!(
+        context,
+        _completer.isCompleted,
+        _handleOnGenerateRoute(),
+      );
+    }
+    return widget.builder!(
       context,
       _routes(),
       _completer.isCompleted,
     );
+  }
+
+  RouteFactory _handleOnGenerateRoute() {
+    return (settings) {
+      final name = settings.name;
+
+      for (final route in _routes().keys) {
+        final regExpPattern = routeToRegExp(route);
+        if (regExpPattern.hasMatch(name!)) {
+          final params =
+              FlutterGetItRouteParamsExtractor(route, name).extract();
+          final moduleRouter = _findModuleRouterByRoute(route);
+          return MaterialPageRoute(
+            builder: (context) => FlutterGetItPageModule(
+              module: _findModuleByRoute(route),
+              page: _findPageByRoute(route),
+              moduleRouter: moduleRouter, // Preencher conforme necessário
+              parameters: params,
+            ),
+            settings: settings,
+          );
+        }
+      }
+      return null; // Retorne null se nenhuma rota correspondente for encontrada
+    };
+  }
+
+  List<FlutterGetItModuleRouter> _findModuleRouterByRoute(String route) {
+    List<FlutterGetItModuleRouter> moduleRouters = [];
+
+    for (final module in widget.modules ?? []) {
+      for (final page in module.pages) {
+        final fullPath =
+            '${module.moduleRouteName}${page.name}'.replaceAll(r'//', r'/');
+        final regExpPattern = routeToRegExp(fullPath);
+        if (regExpPattern.hasMatch(route)) {
+          moduleRouters.add(
+            FlutterGetItModuleRouter(
+              name: module.moduleRouteName,
+              pages: module.pages,
+              bindings: module.bindings,
+              onInit: module.onInit,
+              onDispose: module.onDispose,
+            ),
+          );
+        }
+      }
+    }
+
+    return moduleRouters;
+  }
+
+  RegExp routeToRegExp(String route) {
+    return RegExp(
+      '^' +
+          route.replaceAllMapped(RegExp(r'(:\w+)'), (match) {
+            return r'([^/]+)'; // Ajuste aqui para capturar qualquer coisa até a próxima /
+          }) +
+          r'$',
+    );
+  }
+
+  FlutterGetItModule _findModuleByRoute(String route) {
+    for (final module in widget.modules ?? []) {
+      for (final page in module.pages) {
+        final fullPath =
+            '${module.moduleRouteName}${page.name}'.replaceAll(r'//', r'/');
+        final regExpPattern = routeToRegExp(fullPath);
+        if (regExpPattern.hasMatch(route)) {
+          return module;
+        }
+      }
+    }
+    throw Exception('No module found for route: $route');
+  }
+
+  FlutterGetItPageRouter _findPageByRoute(String route) {
+    for (final module in widget.modules ?? []) {
+      for (final page in module.pages) {
+        final fullPath =
+            '${module.moduleRouteName}${page.name}'.replaceAll(r'//', r'/');
+        final regExpPattern = routeToRegExp(fullPath);
+        if (regExpPattern.hasMatch(route)) {
+          return page;
+        }
+      }
+    }
+    throw Exception('No page found for route: $route');
   }
 
   @override

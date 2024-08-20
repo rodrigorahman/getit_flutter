@@ -57,11 +57,13 @@ class FlutterGetItPageModule extends StatefulWidget {
     required this.module,
     required this.page,
     required this.moduleRouter,
+    this.parameters = const {},
   });
 
   final FlutterGetItModule module;
   final FlutterGetItPageRouter page;
   final List<FlutterGetItModuleRouter> moduleRouter;
+  final Map<String, String> parameters;
 
   @override
   State<FlutterGetItPageModule> createState() => _FlutterGetItPageModuleState();
@@ -74,16 +76,23 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
   List<String> routerModule = [];
   Widget? onExecute;
 
+  final _completer = Completer<void>();
+
   @override
   void initState() {
+    super.initState();
     final config = _registerBindsAndCollectTheOnInitFunctions();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final modularRoute = ModalRoute.of(context);
       FlutterGetItBindingOpened.argument = modularRoute?.settings.arguments;
 
-      await _callAllReady();
-      final canLoad = await _executeMiddlewares(
+      if (widget.parameters.isNotEmpty) {
+        FlutterGetItBindingOpened.argument ??= widget.parameters;
+      }
+
+      _callAllReady();
+      final canLoad = _executeMiddlewares(
         config.middlewareExecution,
         route: modularRoute?.settings,
       );
@@ -92,13 +101,12 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
           initExecute();
         }
         FGetItLogger.logWaitingAsyncByModuleCompleted(id);
-        setState(() {
-          _completer.complete();
-        });
       }
-    });
 
-    super.initState();
+      setState(() {
+        _completer.complete();
+      });
+    });
   }
 
   ({
@@ -183,8 +191,6 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
       middlewareExecution: middlewareExecution
     );
   }
-
-  final _completer = Completer<void>();
 
   Future<void> _callAllReady() async {
     FGetItLogger.logWaitingAsyncByModule(id);
