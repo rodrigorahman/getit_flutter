@@ -356,6 +356,15 @@ class _FlutterGetItState extends State<FlutterGetIt>
     return (settings) {
       final name = settings.name;
 
+      // Primeira tentativa: encontrar uma rota exata
+      if (_routes().containsKey(name)) {
+        return MaterialPageRoute(
+          builder: (context) => _routes()[name]!(context),
+          settings: settings,
+        );
+      }
+
+      // Segunda tentativa: aplicar extração de parâmetros dinâmicos
       for (final route in _routes().keys) {
         final regExpPattern = routeToRegExp(route);
         if (regExpPattern.hasMatch(name!)) {
@@ -373,7 +382,9 @@ class _FlutterGetItState extends State<FlutterGetIt>
           );
         }
       }
-      return null; // Retorne null se nenhuma rota correspondente for encontrada
+
+      // Caso nenhuma rota seja encontrada
+      return null;
     };
   }
 
@@ -406,7 +417,7 @@ class _FlutterGetItState extends State<FlutterGetIt>
     return RegExp(
       '^' +
           route.replaceAllMapped(RegExp(r'(:\w+)'), (match) {
-            return r'([^/]+)'; // Ajuste aqui para capturar qualquer coisa até a próxima /
+            return r'([^/]+)';
           }) +
           r'$',
     );
