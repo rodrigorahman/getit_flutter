@@ -54,7 +54,7 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
     final moduleAlreadyRegistered = containerRegister.isRegistered(id);
 
     if (moduleAlreadyRegistered) {
-      throw Exception('Widget $id already registered');
+      //throw Exception('Widget $id already registered');
     }
 
     containerRegister
