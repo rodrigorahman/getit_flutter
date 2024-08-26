@@ -297,14 +297,10 @@ class _FlutterGetItState extends State<FlutterGetIt>
       }
     } else {
       routesMap[finalRoute.replaceAll(r'//', r'/')] = (BuildContext context) {
-        final path = ModalRoute.of(context)!.settings.name!;
-        final params =
-            FlutterGetItRouteParamsExtractor(finalRoute, path).extract();
         return FlutterGetItPageModule(
           module: module,
           page: page,
           moduleRouter: moduleRouter,
-          parameters: params,
         );
       };
     }
@@ -322,17 +318,6 @@ class _FlutterGetItState extends State<FlutterGetIt>
       _completer.complete();
     });
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   super.build(context);
-
-  //   return widget.builder(
-  //     context,
-  //     _routes(),
-  //     _completer.isCompleted,
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -370,15 +355,15 @@ class _FlutterGetItState extends State<FlutterGetIt>
         if (regExpPattern.hasMatch(name!)) {
           final params =
               FlutterGetItRouteParamsExtractor(route, name).extract();
+
           final moduleRouter = _findModuleRouterByRoute(route);
           return MaterialPageRoute(
             builder: (context) => FlutterGetItPageModule(
               module: _findModuleByRoute(route),
               page: _findPageByRoute(route),
               moduleRouter: moduleRouter, // Preencher conforme necessário
-              parameters: params,
             ),
-            settings: settings,
+            settings: RouteSettings(name: settings.name, arguments: params),
           );
         }
       }

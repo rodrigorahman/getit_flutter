@@ -57,13 +57,11 @@ class FlutterGetItPageModule extends StatefulWidget {
     required this.module,
     required this.page,
     required this.moduleRouter,
-    this.parameters = const {},
   });
 
   final FlutterGetItModule module;
   final FlutterGetItPageRouter page;
   final List<FlutterGetItModuleRouter> moduleRouter;
-  final Map<String, String> parameters;
 
   @override
   State<FlutterGetItPageModule> createState() => _FlutterGetItPageModuleState();
@@ -86,10 +84,6 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final modularRoute = ModalRoute.of(context);
       FlutterGetItBindingOpened.argument = modularRoute?.settings.arguments;
-
-      if (widget.parameters.isNotEmpty) {
-        FlutterGetItBindingOpened.argument ??= widget.parameters;
-      }
 
       _callAllReady();
       final canLoad = _executeMiddlewares(
