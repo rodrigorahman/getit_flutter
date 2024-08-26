@@ -36,7 +36,7 @@ class _MyNavBarState extends State<MyNavBar> {
       body: FlutterGetIt.navigator(
         name: 'NAVbarProducts',
         bindings: MyNavigatorBindings(),
-        pagesRouter: [
+        modulesRouter: [
           FlutterGetItModuleRouter(
             name: '/Random',
             bindings: [
@@ -47,6 +47,18 @@ class _MyNavBarState extends State<MyNavBar> {
             pages: [
               FlutterGetItPageRouter(
                 name: '/Page',
+                builderAsync: (context, isReady, loader) => switch (isReady) {
+                  true => const RandomPage(),
+                  false => loader ?? const WidgetLoadDependencies(),
+                },
+                bindings: [
+                  Bind.lazySingleton<RandomController>(
+                    (i) => RandomController('Random by FlutterGetItPageRouter'),
+                  ),
+                ],
+              ),
+              FlutterGetItPageRouter(
+                name: '/Page2',
                 builderAsync: (context, isReady, loader) => switch (isReady) {
                   true => const RandomPage(),
                   false => loader ?? const WidgetLoadDependencies(),

@@ -172,11 +172,16 @@ final class Bind<T extends Object> {
     return this.copyWith(loaded: false);
   }
 
-  Bind<T> register() {
+  Bind<T>? register() {
     final getIt = GetIt.I;
+    final isRegistered = getIt.isRegistered<T>(instanceName: tag);
 
-    if (keepAlive && loaded) {
-      return this;
+    if (isRegistered) {
+      if (isRegistered) {
+        FGetItLogger.logInstanceAlreadyRegistered<T>(this);
+        return null;
+      }
+      return null;
     }
 
     FGetItLogger.logRegisteringInstance<T>(this);
