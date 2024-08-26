@@ -11,7 +11,13 @@ class RandomPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(context.get<RandomController>().title),
       ),
-      body: Container(),
+      body: Center(
+        child: ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed('/Random/Page2');
+            },
+            child: const Text('Random Page2 ')),
+      ),
     );
   }
 }

@@ -253,7 +253,7 @@ class _FlutterGetItState extends State<FlutterGetIt>
       pageRouteName = '/${page.name}';
     }
 
-    var finalRoute = '$lastModuleName$pageRouteName';
+    var finalRoute = '$lastModuleName$pageRouteName'.replaceAll(r'//', r'/');
 
     checkBinds.addAll(
       FlutterGetItCheckDependency.checkOnDependencies(
