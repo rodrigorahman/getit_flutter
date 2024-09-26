@@ -183,15 +183,27 @@ final class Bind<T extends Object> {
     switch (type) {
       case RegisterType.singleton:
         if (dependsOn.isEmpty) {
+          final obj = bindRegister!(Injector());
+          if (hasMixin<FlutterGetItMixin>(obj)) {
+            (obj as dynamic).onInit();
+          }
+          FlutterGetItBindingOpened.registerHashCodeOpened(obj.hashCode);
           getIt.registerSingleton<T>(
-            bindRegister!(Injector()),
+            obj,
             instanceName: tag,
             dispose: (entity) => null,
             signalsReady: false,
           );
         } else {
           getIt.registerSingletonWithDependencies<T>(
-            () => bindRegister!(Injector()),
+            () {
+              final obj = bindRegister!(Injector());
+              if (hasMixin<FlutterGetItMixin>(obj)) {
+                (obj as dynamic).onInit();
+              }
+              FlutterGetItBindingOpened.registerHashCodeOpened(obj.hashCode);
+              return obj;
+            },
             instanceName: tag,
             dispose: (entity) => null,
             dependsOn: dependsOn,
@@ -206,7 +218,14 @@ final class Bind<T extends Object> {
         );
       case RegisterType.singletonAsync:
         getIt.registerSingletonAsync<T>(
-          () async => await bindAsyncRegister!(Injector()),
+          () async {
+            final obj = await bindAsyncRegister!(Injector());
+            if (hasMixin<FlutterGetItMixin>(obj)) {
+              (obj as dynamic).onInit();
+            }
+            FlutterGetItBindingOpened.registerHashCodeOpened(obj.hashCode);
+            return obj;
+          },
           instanceName: tag,
           dispose: (entity) => null,
           dependsOn: dependsOn,

@@ -36,7 +36,7 @@ class _MyNavBarState extends State<MyNavBar> {
       body: FlutterGetIt.navigator(
         name: 'NAVbarProducts',
         bindings: MyNavigatorBindings(),
-        pagesRouter: [
+        modulesRouter: [
           FlutterGetItModuleRouter(
             name: '/Random',
             bindings: [
