@@ -85,17 +85,25 @@ final class FlutterGetItContainerRegister {
   void unRegister(String id) {
     final index = _references.indexWhere((element) => element.id == id);
     if (index != -1) {
+      final otherReferences = [
+        ..._references.where((element) => element.id != id)
+      ];
       for (var bind in _references[index].bindings) {
         if (bind.loaded) {
           final indexBind = _references[index].bindings.indexOf(bind);
-          final hasUsed = _references.any(
+
+          final isUsed = otherReferences.any(
             (element) => element.bindings.any(
-              (b) => b.bindingClassName == bind.bindingClassName 
-              && b.tag == bind.tag,
+              (b) =>
+                  b.bindingClassName == bind.bindingClassName &&
+                  b.tag == bind.tag,
             ),
           );
-          if(!hasUsed) {
+          if (!isUsed) {
             _references[index].bindings[indexBind] = bind.unRegister();
+          } else {
+            _references[index].bindings[indexBind] =
+                bind.copyWith(loaded: false);
           }
         }
       }
@@ -113,7 +121,6 @@ final class FlutterGetItContainerRegister {
   void load(String id) {
     final index = _references.indexWhere((element) => element.id == id);
     if (index != -1) {
-      var bindsToRemoveBecauseWasRegisteredInAnotherModule = <int>[];
       for (var bind in _references[index].bindings) {
         if (!bind.loaded) {
           final indexBind = _references[index].bindings.indexOf(bind);
@@ -121,16 +128,7 @@ final class FlutterGetItContainerRegister {
 
           if (bindRegistered != null) {
             _references[index].bindings[indexBind] = bindRegistered;
-          } else {
-            bindsToRemoveBecauseWasRegisteredInAnotherModule.add(indexBind);
           }
-        }
-      }
-
-      if (bindsToRemoveBecauseWasRegisteredInAnotherModule.isNotEmpty) {
-        for (var indexBind
-            in bindsToRemoveBecauseWasRegisteredInAnotherModule) {
-          _references[index].bindings.removeAt(indexBind);
         }
       }
     }
