@@ -1,4 +1,9 @@
 # Versions
+## 3.0.1
+    Fix: FGetit it was removing dependency when would still be use in another module
+
+## 3.0.0
+- **Breaking Change**: For existing users, please review the detailed in the documentation.
 
 ## 3.0.0-rc.6
 - Fix: Add check when the bind is already registered
