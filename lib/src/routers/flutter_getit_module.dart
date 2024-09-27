@@ -86,7 +86,7 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
       FlutterGetItBindingOpened.argument = modularRoute?.settings.arguments;
 
       _callAllReady();
-      final canLoad = _executeMiddlewares(
+      final canLoad = await _executeMiddlewares(
         config.middlewareExecution,
         route: modularRoute?.settings,
       );

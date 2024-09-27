@@ -88,7 +88,15 @@ final class FlutterGetItContainerRegister {
       for (var bind in _references[index].bindings) {
         if (bind.loaded) {
           final indexBind = _references[index].bindings.indexOf(bind);
-          _references[index].bindings[indexBind] = bind.unRegister();
+          final hasUsed = _references.any(
+            (element) => element.bindings.any(
+              (b) => b.bindingClassName == bind.bindingClassName 
+              && b.tag == bind.tag,
+            ),
+          );
+          if(!hasUsed) {
+            _references[index].bindings[indexBind] = bind.unRegister();
+          }
         }
       }
 
