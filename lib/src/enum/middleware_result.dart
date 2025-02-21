@@ -1,1 +1,2 @@
-enum MiddlewareResult { next, failure, complete }
+/* enum MiddlewareResult { next, failure, complete }
+ */

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/* import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
 import 'flutter_get_it_middleware.dart';
@@ -8,3 +8,4 @@ abstract class FlutterGetItSyncMiddleware extends FlutterGetItMiddleware {
     return MiddlewareResult.next;
   }
 }
+ */

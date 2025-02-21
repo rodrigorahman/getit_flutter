@@ -21,7 +21,6 @@ tags:
 
 topics:
   - dependency-injection
-  - di
   - injection
   - router
   - routing
@@ -33,7 +32,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  get_it: ^7.7.0
+  get_it: ^8.0.3
+  uuid: ^4.5.1
 
 dev_dependencies:
   flutter_lints: ^4.0.0

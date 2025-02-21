@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/* import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
 
@@ -86,3 +86,4 @@ class _FlutterGetItWidgetState extends State<FlutterGetItWidget> {
     super.dispose();
   }
 }
+ */

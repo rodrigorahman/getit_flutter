@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/* import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
 
@@ -11,3 +11,4 @@ class FlutterGetItView<T extends Object> extends StatelessWidget {
     return const Placeholder();
   }
 }
+ */

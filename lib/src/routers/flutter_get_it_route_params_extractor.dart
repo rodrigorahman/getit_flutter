@@ -22,8 +22,9 @@ class FlutterGetItRouteParamsExtractor {
       final patternSegment = patternSegments[i];
       final routeSegment = routeSegments.length > i ? routeSegments[i] : null;
 
-      if (routeSegment == null)
+      if (routeSegment == null) {
         break; // Se não houver mais segmentos, sair do loop
+      }
 
       if (_isDynamicSegment(patternSegment)) {
         final paramName = _createParamName(patternSegments, i, patternSegment);

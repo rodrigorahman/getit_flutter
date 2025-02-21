@@ -1,4 +1,4 @@
-import 'dart:async';
+/* import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -309,3 +309,4 @@ class _FlutterGetItPageModuleState extends State<FlutterGetItPageModule> {
     return MiddlewareResult.complete;
   }
 }
+ */

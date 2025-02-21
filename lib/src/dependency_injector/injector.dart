@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/* import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../flutter_getit.dart';
@@ -128,3 +128,4 @@ extension InjectorContext on BuildContext {
 
   bool any<T extends Object>() => Injector.any<T>();
 }
+ */

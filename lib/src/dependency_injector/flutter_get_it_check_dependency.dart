@@ -1,4 +1,4 @@
-import 'package:flutter/rendering.dart';
+/* import 'package:flutter/rendering.dart';
 
 import '../../flutter_getit.dart';
 
@@ -38,3 +38,4 @@ final class FlutterGetItCheckDependency {
     return bindings.map((bind) => bind.bindingClassName).toSet();
   }
 }
+ */

@@ -1,4 +1,4 @@
-import '../../flutter_getit.dart';
+/* import '../../flutter_getit.dart';
 import '../middleware/flutter_get_it_middleware.dart';
 import 'model/binding_register.dart';
 
@@ -99,8 +99,9 @@ final class FlutterGetItContainerRegister {
                   b.tag == bind.tag,
             ),
           );
-          if (!isUsed) {
-            _references[index].bindings[indexBind] = bind.unRegister();
+          if (!isUsed && _references[index].listeners == 0) //TODO
+          {
+            _references[index].bindings[indexBind] = bind.unRegister('');
           } else {
             _references[index].bindings[indexBind] =
                 bind.copyWith(loaded: false);
@@ -110,7 +111,9 @@ final class FlutterGetItContainerRegister {
 
       if (!_references[index].bindings.any(
             (element) => element.loaded,
-          )) _references.removeAt(index);
+          )) {
+        _references.removeAt(index);
+      }
     }
   }
 
@@ -124,7 +127,7 @@ final class FlutterGetItContainerRegister {
       for (var bind in _references[index].bindings) {
         if (!bind.loaded) {
           final indexBind = _references[index].bindings.indexOf(bind);
-          final bindRegistered = bind.register();
+          final bindRegistered = bind.register('');
 
           if (bindRegistered != null) {
             _references[index].bindings[indexBind] = bindRegistered;
@@ -150,3 +153,4 @@ final class FlutterGetItContainerRegister {
     return qntOfModuleId > 0;
   }
 }
+ */

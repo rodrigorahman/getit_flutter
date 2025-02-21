@@ -7,26 +7,24 @@ import '../../../flutter_getit.dart';
 
 @protected
 final class FlutterGetItExtension {
-  final FlutterGetItContainerRegister _register;
-
-  FlutterGetItExtension({
-    required FlutterGetItContainerRegister register,
-  }) : _register = register {
+  FlutterGetItExtension() {
     registerExtension(
       'ext.br.com.academiadoflutter.flutter_getit.listAll',
       (_, parameters) async {
         final dataDefault = readyReferences();
 
         return ServiceExtensionResponse.result(
-            jsonEncode({'data': dataDefault}));
+          jsonEncode(
+            {'data': dataDefault},
+          ),
+        );
       },
     );
   }
 
   Map<String, List<Map<String, dynamic>>> readyReferences() {
-    final references = _register.references();
-
     var myMap = <String, List<Map<String, dynamic>>>{};
+    /* final references = _register.references();
 
     for (var ref in references) {
       myMap[ref.id] = <Map<String, dynamic>>[];
@@ -61,7 +59,7 @@ final class FlutterGetItExtension {
         );
       }
     }
-
+ */
     return myMap;
   }
 }

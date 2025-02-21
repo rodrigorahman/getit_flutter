@@ -1,4 +1,4 @@
-import '../../dependency_injector/binds/bind.dart';
+/* import '../../dependency_injector/binds/bind.dart';
 import '../../middleware/flutter_get_it_middleware.dart';
 
 final class RegisterModel {
@@ -31,7 +31,9 @@ final class RegisterModel {
   /// Add a listener to the context.
   ///
   void addListener() {
+    print('Old listeners: $listeners');
     listeners++;
+    print('New listeners: $listeners');
   }
 
   /// Remove a listener from the context.
@@ -55,3 +57,4 @@ final class RegisterModel {
     );
   }
 }
+ */

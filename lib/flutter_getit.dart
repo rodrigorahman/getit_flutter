@@ -12,6 +12,20 @@ export 'src/middleware/flutter_get_it_sync_middleware.dart';
 export 'src/mixin/flutter_get_it_mixin.dart';
 export 'src/routers/flutter_getit_module.dart';
 export 'src/routers/flutter_getit_module_page_router.dart';
+export 'src/v4/controller/flutter_get_it_controller.dart';
+//v4
+export 'src/v4/core/f_get_it.dart';
+export 'src/v4/debug/debug_fill_properties/material_debugger_wrapper.dart';
+export 'src/v4/delegate/flutter_get_it_delegate.dart';
+export 'src/v4/extensions/flutter_get_it_navigator.dart';
+export 'src/v4/middleware/flutter_get_it_middleware.dart';
+export 'src/v4/observer/flutter_get_it_route_observer.dart';
+export 'src/v4/router/flutter_get_it_router.dart';
+export 'src/v4/wallet/flutter_get_it_wallet.dart';
+export 'src/v4/widgets/flutter_get_it_error_page.dart';
+export 'src/v4/widgets/flutter_get_it_loader.dart';
+export 'src/v4/router/params/f_get_it_router_params.dart';
+//
 export 'src/widget/flutter_getit_route_outlet.dart';
 export 'src/widget/flutter_getit_view.dart';
 export 'src/widget/flutter_getit_widget.dart';

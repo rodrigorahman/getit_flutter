@@ -1,168 +1,74 @@
-import 'dart:developer';
-
-import 'package:example/application/session/model/user_model.dart';
-import 'package:example/application/session/user_session.dart';
 import 'package:example/src/home/home_controller.dart';
-import 'package:example/src/param_example/param_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({super.key});
-
-  final _home1 = Injector.get<HomeController>(tag: 'HomeController');
+  final String title;
+  const HomePage({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
-    log(_home1.toString());
-    log(context.any<HomeController>().toString());
-
+    final controller = context.get<HomeController>();
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            builder: (context) => FlutterGetItWidget(
-              name: 'Test',
-              builder: (context) {
-                return const Center(
-                  child: Text('Test'),
-                );
-              },
-            ),
-          );
-        },
-      ),
       appBar: AppBar(
-        title: const Text('HomePage'),
+        title: Text('Home Page $title - ${controller.title}'),
       ),
-      body: Center(
-        child: ListView(
-          children: [
-            StreamBuilder<UserModel?>(
-              stream: UserSession.me,
-              builder: (context, user) {
-                return Text(user.data?.name ?? 'No User');
+      body: Column(
+        children: [
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/Home2');
               },
+              child: const Text('Go to Home 2 (Don\'t exist)'),
             ),
-            const Divider(),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pushNamed('/Auth/Login');
-              },
-              child: const Text(
-                'PushNamed - Login',
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pushNamed('/Auth/Register/Page');
+          ),
+          const SizedBox(height: 10),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/Products');
               },
               child: const Text(
-                'PushNamed - Register - Page',
+                'Go to "/Products" (It\'s a module not a route)',
               ),
             ),
-            const SizedBox(
-              height: 16,
+          ),
+          const SizedBox(height: 10),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/Products/');
+              },
+              child: const Text(
+                'Go to "/Products/" (It\'s a route)',
+              ),
             ),
-            ElevatedButton(
-              onPressed: () async {
+          ),
+          const SizedBox(height: 10),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/Products/29/Detail');
+              },
+              child: const Text(
+                'Go directly to "/Products/29/Detail" (It\'s a route)',
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
                 Navigator.of(context)
-                    .pushNamed('/Auth/Register/ActiveAccount/Page');
+                    .pushNamed('/Products/30/Detail', arguments: 'Block');
               },
               child: const Text(
-                'PushNamed - ActiveAccount - Page',
+                'Go directly to "/Products/30/Detail" (It\'s a route) but with a middleware that blocks the navigation',
               ),
             ),
-            const SizedBox(
-              height: 16,
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pushNamed('/Auth/Register/ActiveAccount');
-              },
-              child: const Text(
-                'PushNamed - Wrong page',
-              ),
-            ),
-            const Divider(),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pushNamed('/Random/Page');
-              },
-              child: const Text(
-                'PushNamed - RandomPage',
-              ),
-            ),
-            const Divider(),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pushNamed('/Detail/Factories/One');
-              },
-              child: const Text(
-                'Detail One Page',
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context)
-                    .pushNamed('/Detail/Factories/One/Internal/Page');
-              },
-              child: const Text(
-                'Detail One Internal',
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context)
-                    .pushNamed('/Detail/Factories/One/Internal/Page/Child');
-              },
-              child: const Text(
-                'Detail One Internal Child',
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pushNamed('/Detail/Factories/Two');
-              },
-              child: const Text(
-                'Detail Two Page',
-              ),
-            ),
-            const Divider(),
-            const SizedBox(
-              height: 16,
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                ParamPageDto dto = (
-                  name: 'FlutterGetIt',
-                  date: DateTime(2021),
-                );
-
-                Navigator.of(context).pushNamed(
-                  '/Params/Page',
-                  arguments: dto,
-                );
-              },
-              child: const Text(
-                'Page with Params',
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

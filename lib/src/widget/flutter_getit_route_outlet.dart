@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/* import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
 
@@ -30,7 +30,7 @@ class FlutterGetItRouteOutlet extends StatelessWidget {
       key: navKey,
       initialRoute: initialRoute,
       onGenerateRoute: (settings) {
-        final pages = context.get<Map<String, WidgetBuilder>>(
+        final pages = InjectorContext(context).get<Map<String, WidgetBuilder>>(
           tag: 'RoutesMap_${contextType.key}',
         );
         final widget = pages[settings.name];
@@ -68,3 +68,4 @@ class PageNotFound extends StatelessWidget {
     );
   }
 }
+ */

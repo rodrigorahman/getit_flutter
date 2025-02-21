@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/* import 'package:flutter/material.dart';
 
 import '../../flutter_getit.dart';
 import '../middleware/flutter_get_it_middleware.dart';
@@ -174,3 +174,4 @@ class FlutterGetItModuleRouter extends FlutterGetItPageRouter {
     );
   }
 }
+ */

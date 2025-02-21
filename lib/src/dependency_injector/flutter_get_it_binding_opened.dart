@@ -1,4 +1,4 @@
-import '../../flutter_getit.dart';
+/* import '../../flutter_getit.dart';
 
 typedef FactoryRegister = ({Object obj, String? factoryTag});
 
@@ -96,3 +96,4 @@ final class FlutterGetItBindingOpened {
     return _factory.containsKey(T);
   }
 }
+ */

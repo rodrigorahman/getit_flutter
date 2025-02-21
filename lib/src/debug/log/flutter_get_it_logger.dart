@@ -41,6 +41,7 @@ final class FGetItLogger {
   static const _logName = 'FGetIt';
   static late FGetItLoggerConfig _config;
   static int logCount = 0;
+  static late List<Type> _applicationMiddlewares;
   static const FGetItLogColor _colors = (
     cyan: '\x1b[36m',
     red: '\x1b[31m',
@@ -50,8 +51,9 @@ final class FGetItLogger {
     blue: '\x1b[34m',
   );
 
-  FGetItLogger(FGetItLoggerConfig s) {
+  FGetItLogger(FGetItLoggerConfig s, List<Type> applicationMiddlewares) {
     _config = s;
+    _applicationMiddlewares = applicationMiddlewares;
   }
 
   static String get _cyanColor => _config.colored ? _colors.cyan : '';
@@ -100,7 +102,9 @@ final class FGetItLogger {
   }
 
   static String _tagLog(String? tag) {
-    return tag != null ? '$_yellowColor with tag:$_cyanColor $tag' : '';
+    return (tag != null && tag.isNotEmpty)
+        ? '$_yellowColor with tag:$_cyanColor $tag'
+        : ' NO TAG';
   }
 
   static logGettingInstance<T>({String? tag, String? factoryTag}) {
@@ -207,15 +211,16 @@ final class FGetItLogger {
   static void logInstanceAlreadyRegistered<T>(Bind bind) {
     if (_config.enable && _config.registerInstance) {
       _log(
-        '🚧$_yellowColor Attention you\'re trying to register the $T (${bind.type.name}) - ${_tagLog(bind.tag)} again.',
+        '| 🎣 $_yellowColor$T (${bind.type.name}) -${_tagLog(bind.tag)}\n| 🚨$_redColor Already registered on $_redColor[ ${bind.fullNameOfModuleRegister} ]',
       );
+      logMidDivider();
     }
   }
 
   static logRegisteringInstance<T>(Bind bind) {
     if (_config.enable && _config.registerInstance) {
       _log(
-        '📠$_blueColor Registering: $T$_yellowColor as$_blueColor ${bind.type.name}${bind.keepAlive ? '$_yellowColor with$_blueColor keepAlive' : ''}${_tagLog(bind.tag)}',
+        '| 📠$_blueColor Registering: $T$_yellowColor as$_blueColor ${bind.type.name}${bind.keepAlive ? '$_yellowColor with$_blueColor keepAlive' : ''}${_tagLog(bind.tag)}',
       );
     }
   }
@@ -223,7 +228,7 @@ final class FGetItLogger {
   static logUnregisterFactory<T>(String factoryTag, String hashCode) {
     if (_config.enable && _config.disposingInstance) {
       _log(
-        '🚮$_yellowColor Dispose: $T -$_blueColor as (Factory child)$_yellowColor - $hashCode - FactoryTag: $factoryTag',
+        '| 🚮$_yellowColor Dispose: $T -$_blueColor as (Factory child)$_yellowColor - $hashCode - FactoryTag: $factoryTag',
       );
     }
   }
@@ -268,11 +273,129 @@ final class FGetItLogger {
     }
   }
 
+  static void logMidDivider() {
+    if (_config.enable) {
+      _log('$_yellowColor|-----------------------------------\n');
+    }
+  }
+
   static logDisposeSubModule(String moduleName) {
     if (_config.enable && _config.enterAndExitModule) {
       _log(
         '🛣️$_yellowColor Exiting Sub-Module: ${moduleName.replaceAll('-module', '')} - calling $_yellowColor"onDispose()"',
       );
+    }
+  }
+
+  static void logCantUnregisteringInstance<T>(Bind bind) {
+    if (_config.enable) {
+      _log(
+        '| 🚮$_yellowColor Dispose unavailable for $T (${bind.type.name}) - ${_tagLog(bind.tag)}\n| 🚨$_redColor Listeners$_redColor [ ${bind.listeners.join(' || ')} ]',
+      );
+    }
+  }
+
+  static void logNavigationTo(FlutterGetItRouteBase route) {
+    if (_config.enable) {
+      _log(
+          '${_initDivider(color: _yellowColor)}| 🛣️$_yellowColor Navigating to: ${route.fullPath}\n| Bindings: [ ${route.binds.map((e) => e.runtimeType.toString()).join(' || ')} ]\n| Middlewares: [ ${route.middlewares.map((e) => e.runtimeType.toString()).join(' || ')} ]\n| Application Middlewares: [ ${_applicationMiddlewares.map((e) => e).join(' || ')} ]${_endDivider(color: _yellowColor)}');
+    }
+  }
+
+  static String _initDivider({String? color}) {
+    return '${color ?? _yellowColor}-----------------------------------\n';
+  }
+
+  static String _endDivider({String? color}) {
+    return '\n${color ?? _yellowColor}-----------------------------------';
+  }
+
+  static void logInitDivider() {
+    if (_config.enable) {
+      _log('/${_initDivider(color: _yellowColor)}');
+    }
+  }
+
+  static void logEndDivider() {
+    if (_config.enable) {
+      _log(_endDivider(color: _yellowColor).replaceAll('\n', '\\'));
+    }
+  }
+
+  static void logInitMiddleware(String origin) {
+    if (_config.enable) {
+      _log(
+          '/${_initDivider(color: _yellowColor)}| ⏳$_yellowColor Init middlewares by: $origin');
+    }
+  }
+
+  static void logRunningMiddleware(String middleware) {
+    if (_config.enable) {
+      _log('| ⏰$_yellowColor Running: $middleware');
+    }
+  }
+
+  static void logMiddlewareSuccess(String middleware) {
+    if (_config.enable) {
+      _log('| ✅$_greenColor Completed: $middleware');
+    }
+  }
+
+  static void logMiddlewareFail(String middleware) {
+    if (_config.enable) {
+      _log('| 🚨$_redColor Fail: $middleware');
+    }
+  }
+
+  static void logMiddlewareSkipped(String middleware) {
+    if (_config.enable) {
+      _log('\n| ⏩$_yellowColor Skipped: $middleware');
+    }
+  }
+
+  static void logSolvingAsyncDependenciesFor(String fullName) {
+    if (_config.enable) {
+      _log('| ⏰$_yellowColor Solving async dependencies for: $fullName');
+    }
+  }
+
+  static void logSolvingAsyncDependenciesCompleted(String fullName) {
+    if (_config.enable) {
+      _log('| ✅$_greenColor Complete async dependencies for: $fullName');
+    }
+  }
+
+  static void logInformThatTheNewRouteIsAsync(String path, String origin) {
+    if (_config.enable) {
+      _log(
+          '| ⏰$_yellowColor The navigation to "$path" will be async, because we detected: $origin');
+    }
+  }
+
+  static void logInformThatTheNewRouteIsSync(String path) {
+    if (_config.enable) {
+      _log(
+          '| ⏰$_yellowColor The navigation to "$path" will be sync, we don\'t detected any AsyncMiddleware or AsyncBinds');
+    }
+  }
+
+  static void logInitInitialRoute() {
+    if (_config.enable) {
+      _log(
+          '| ⏰$_yellowColor Init initial route detected, solving async dependencies');
+    }
+  }
+
+  static void logCallingDisposeRoute(String fullPath) {
+    if (_config.enable) {
+      _log('| 🚮$_yellowColor Calling dispose for: $fullPath');
+    }
+  }
+
+  static void logRedirectingTo(String currentPath, String redirectPath) {
+    if (_config.enable) {
+      _log(
+          '| 🔀$_redColor Attention you are trying navigate to: $_yellowColor$currentPath$_redColor define as a$_yellowColor "FlutterGetItModuleRoute"$_greenColor but we\'re redirecting to: $_yellowColor$redirectPath');
     }
   }
 }

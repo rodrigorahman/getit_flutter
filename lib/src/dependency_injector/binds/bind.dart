@@ -2,7 +2,6 @@ import 'package:get_it/get_it.dart';
 
 import '../../../flutter_getit.dart';
 import '../../types/flutter_getit_typedefs.dart';
-import '../flutter_get_it_binding_opened.dart';
 
 enum RegisterType {
   singleton,
@@ -18,19 +17,12 @@ final class Bind<T extends Object> {
   final BindAsyncRegister<T>? bindAsyncRegister;
   final RegisterType type;
   final bool keepAlive;
-  final bool isTheFactoryDad;
   final String? tag;
   final Iterable<Type> dependsOn;
-  final bool loaded;
-
-  Bind._(
-      this.bindRegister,
-      this.type,
-      this.keepAlive,
-      this.tag,
-      this.isTheFactoryDad,
-      this.dependsOn,
-      this.loaded,
+  List<String> listeners = [];
+  String fullNameOfModuleRegister = '';
+  bool isInitialized = false;
+  Bind._(this.bindRegister, this.type, this.keepAlive, this.tag, this.dependsOn,
       this.bindAsyncRegister);
 
   Bind._async(
@@ -38,9 +30,7 @@ final class Bind<T extends Object> {
     this.type,
     this.keepAlive,
     this.tag,
-    this.isTheFactoryDad,
     this.dependsOn,
-    this.loaded,
     this.bindRegister,
   );
 
@@ -57,9 +47,7 @@ final class Bind<T extends Object> {
         RegisterType.singleton,
         keepAlive,
         tag,
-        false,
         dependsOn,
-        false,
         null,
       );
 
@@ -73,9 +61,7 @@ final class Bind<T extends Object> {
         RegisterType.lazySingleton,
         keepAlive,
         tag,
-        false,
         [],
-        false,
         null,
       );
 
@@ -88,9 +74,7 @@ final class Bind<T extends Object> {
         RegisterType.factory,
         false,
         tag,
-        true,
         [],
-        false,
         null,
       );
 
@@ -105,9 +89,7 @@ final class Bind<T extends Object> {
         RegisterType.singletonAsync,
         keepAlive,
         tag,
-        false,
         dependsOn,
-        false,
         null,
       );
 
@@ -121,9 +103,7 @@ final class Bind<T extends Object> {
         RegisterType.lazySingletonAsync,
         keepAlive,
         tag,
-        false,
         [],
-        false,
         null,
       );
 
@@ -136,64 +116,70 @@ final class Bind<T extends Object> {
         RegisterType.factoryAsync,
         false,
         tag,
-        true,
         [],
-        false,
         null,
       );
 
-  Bind unRegister() {
+  void unRegister(String fullNameOfModuleListener) {
+    final bind = GetIt.I.get<Bind<T>>(instanceName: tag);
+    bind.listeners.remove(fullNameOfModuleListener);
     if (keepAlive) {
       FGetItLogger.logTryUnregisterBingWithKeepAlive<T>();
-      return this;
+      return;
     }
 
-    final isFactory =
-        type == RegisterType.factory || type == RegisterType.factoryAsync;
-
-    if (isFactory && !isTheFactoryDad) {
-      return this;
-    } else if (isFactory && isTheFactoryDad) {
-      FlutterGetItBindingOpened.unRegisterFactories<T>();
+    if (bind.listeners.isEmpty) {
+      FGetItLogger.logDisposeInstance<T>(this);
+      GetIt.I.unregister<T>(
+        instanceName: tag,
+        disposingFunction: (entity) async {
+          if (itIs<FlutterGetItController>(entity)) {
+            (entity as FlutterGetItController).onDispose();
+          }
+          isInitialized = false;
+        },
+      );
+      GetIt.I.unregister<Bind<T>>(instanceName: tag);
+    } else {
+      FGetItLogger.logCantUnregisteringInstance<T>(this);
     }
+    FGetItLogger.logMidDivider();
 
-    FGetItLogger.logDisposeInstance<T>(this);
-    GetIt.I.unregister<T>(
-      instanceName: tag,
-      disposingFunction: (entity) async {
-        if (hasMixin<FlutterGetItMixin>(entity)) {
-          (entity as FlutterGetItMixin).onDispose();
-        }
-
-        FlutterGetItBindingOpened.unRegisterHashCodeOpened(entity.hashCode);
-      },
-    );
-
-    return this.copyWith(loaded: false);
+    return;
   }
 
-  Bind<T>? register() {
+  T getInstance() {
+    isInitialized = true;
+    return GetIt.I.get<T>(instanceName: tag);
+  }
+
+  void register(String fullNameOfModule) {
     final getIt = GetIt.I;
     final isRegistered = getIt.isRegistered<T>(instanceName: tag);
 
     if (isRegistered) {
+      final bind = getIt.get<Bind<T>>(instanceName: tag);
+      bind.listeners.add(fullNameOfModule);
       FGetItLogger.logInstanceAlreadyRegistered<T>(this);
-      return copyWith(loaded: true);
+      return;
     }
 
+    this.listeners.add(fullNameOfModule);
+    this.fullNameOfModuleRegister = fullNameOfModule;
     FGetItLogger.logRegisteringInstance<T>(this);
+    getIt.registerSingleton<Bind<T>>(this, instanceName: tag);
     switch (type) {
       case RegisterType.singleton:
         if (dependsOn.isEmpty) {
           getIt.registerSingleton<T>(
-            bindRegister!(Injector()),
+            bindRegister!(FGetIt()),
             instanceName: tag,
             dispose: (entity) => null,
             signalsReady: false,
           );
         } else {
           getIt.registerSingletonWithDependencies<T>(
-            () => bindRegister!(Injector()),
+            () => bindRegister!(FGetIt()),
             instanceName: tag,
             dispose: (entity) => null,
             dependsOn: dependsOn,
@@ -202,13 +188,13 @@ final class Bind<T extends Object> {
         }
       case RegisterType.lazySingleton:
         getIt.registerLazySingleton<T>(
-          () => bindRegister!(Injector()),
+          () => bindRegister!(FGetIt()),
           instanceName: tag,
           dispose: (entity) => null,
         );
       case RegisterType.singletonAsync:
         getIt.registerSingletonAsync<T>(
-          () async => await bindAsyncRegister!(Injector()),
+          () async => await bindAsyncRegister!(FGetIt()),
           instanceName: tag,
           dispose: (entity) => null,
           dependsOn: dependsOn,
@@ -216,53 +202,28 @@ final class Bind<T extends Object> {
         );
       case RegisterType.lazySingletonAsync:
         getIt.registerLazySingletonAsync<T>(
-          () async => await bindAsyncRegister!(Injector()),
+          () async => await bindAsyncRegister!(FGetIt()),
           instanceName: tag,
           dispose: (entity) => null,
         );
 
       case RegisterType.factory:
-        FlutterGetItBindingOpened.registerFactoryDad<T>();
         getIt.registerFactory<T>(
-          () => bindRegister!(Injector()),
+          () => bindRegister!(FGetIt()),
           instanceName: tag,
         );
       case RegisterType.factoryAsync:
-        FlutterGetItBindingOpened.registerFactoryDad<T>();
         getIt.registerFactoryAsync<T>(
-          () async => await bindAsyncRegister!(Injector()),
+          () async => await bindAsyncRegister!(FGetIt()),
           instanceName: tag,
         );
     }
 
-    return copyWith(loaded: true);
+    return;
   }
 
   @override
   String toString() {
     return 'Bind{bindRegister=$bindRegister, type=$type}';
-  }
-
-  //copyWith method
-  Bind<T> copyWith({
-    BindRegister<T>? bindRegister,
-    BindAsyncRegister<T>? bindAsyncRegister,
-    RegisterType? type,
-    bool? keepAlive,
-    bool? isTheFactoryDad,
-    String? tag,
-    Iterable<Type>? dependsOn,
-    bool? loaded,
-  }) {
-    return Bind<T>._(
-      bindRegister ?? this.bindRegister,
-      type ?? this.type,
-      keepAlive ?? this.keepAlive,
-      tag ?? this.tag,
-      isTheFactoryDad ?? this.isTheFactoryDad,
-      dependsOn ?? this.dependsOn,
-      loaded ?? this.loaded,
-      bindAsyncRegister ?? this.bindAsyncRegister,
-    );
   }
 }

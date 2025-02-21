@@ -1,4 +1,4 @@
-import 'dart:async';
+/* import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -439,3 +439,4 @@ class _FlutterGetItState extends State<FlutterGetIt>
   @override
   bool get wantKeepAlive => true;
 }
+ */
